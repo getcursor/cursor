@@ -26,6 +26,11 @@ connector.registerDeleteClick(() => {
 })
 
 // @ts-ignore
+connector.registerOpenContainingFolderClick(() => {
+    store.dispatch(gs.openContainingFolder(null))
+})
+
+// @ts-ignore
 connector.registerDeleteFolderClick(() => {
     store.dispatch(gs.deleteFolder(null))
 })

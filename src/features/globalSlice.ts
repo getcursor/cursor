@@ -416,6 +416,22 @@ export const deleteFile = createAsyncThunk(
     }
 )
 
+export const openContainingFolder = createAsyncThunk(
+    'global/openContainingFolder',
+    async (fileId: number | null, { getState, dispatch }) => {
+        const state = (<FullState>getState()).global
+        if (fileId == null) {
+            fileId = state.rightClickId
+            if (!fileId) {
+                return
+            }
+        }
+        let path = getPathForFileId(state, fileId)
+
+        await connector.openContainingFolder(path)
+    }
+)
+
 export const commitRename = createAsyncThunk(
     'global/commitRename',
     async (

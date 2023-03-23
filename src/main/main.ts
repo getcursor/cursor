@@ -663,13 +663,19 @@ const createWindow = () => {
                     event.sender.send('rename_file_click')
                 },
             },
-            { type: 'separator' },
             {
                 label: 'Delete',
                 click: () => {
                     event.sender.send('delete_file_click')
                 },
             },
+            { type: 'separator' },
+            {
+                label: 'Open Containing Folder',
+                click: () => {
+                    event.sender.send('open_containing_folder_click')
+                }
+            }
         ]
         const menu = Menu.buildFromTemplate(template)
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
@@ -789,6 +795,12 @@ const createWindow = () => {
         return true
     })
 
+    ipcMain.handle('open_folder', async function (event: Event, path: string) {
+        // open the folder in the file explorer
+        shell.showItemInFolder(path)
+        return true
+    })
+    
     ipcMain.handle(
         'delete_folder',
         async function (event: Event, path: string) {
