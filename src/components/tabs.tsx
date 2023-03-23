@@ -51,7 +51,14 @@ function Tab({ tid }: { tid: number }) {
                 dispatch(gs.selectTab(tid))
             }}
         >
-            <div>
+            <div onMouseDown={
+                (e) => {
+                    if(e.button == 1) { // middle click
+                        e.stopPropagation()
+                        dispatch(gt.closeTab(tid))
+                    }
+                }
+            }>
                 <div className="tab__icon">{getIconElement(file.name)}</div>
                 <div className="tab__name">{name}</div>
                 <div
