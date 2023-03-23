@@ -243,7 +243,7 @@ body {
 }
 
 .titlebar__ai_button:hover,
-..titlebar__right_button:hover {
+.titlebar__right_button:hover {
     cursor: pointer;
 }
 
@@ -1699,7 +1699,7 @@ cm-diff-cancel > div {
     background-color: #ccc;
     color: #333;
     opacity: 0.9;
-    padding: 4px 8px;
+    padding: 4px 18px;
     z-index: 10;
     border-radius: 5px;
 }
