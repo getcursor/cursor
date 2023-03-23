@@ -249,6 +249,7 @@ const electronConnector = {
         }),
     rightClickFile: () => ipcRenderer.invoke('right_click_file', null),
     deleteFile: (path: string) => ipcRenderer.invoke('delete_file', path),
+    openContainingFolder: (path: string) => ipcRenderer.invoke('open_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
     rightClickFolder: (path: string, isRoot: boolean) =>
         ipcRenderer.invoke('right_click_folder', {
@@ -277,6 +278,7 @@ const electronConnector = {
     remove_all: () => {
         ipcRenderer.removeAllListeners('rename_file_click')
         ipcRenderer.removeAllListeners('delete_file_click')
+        ipcRenderer.removeAllListeners('open_containing_folder_click')
         ipcRenderer.removeAllListeners('new_file_click')
         ipcRenderer.removeAllListeners('new_folder_click')
         ipcRenderer.removeAllListeners('new_chat_click')
@@ -286,6 +288,8 @@ const electronConnector = {
         ipcRenderer.on('rename_file_click', callback),
     registerDeleteClick: (callback: Callback) =>
         ipcRenderer.on('delete_file_click', callback),
+    registerOpenContainingFolderClick: (callback: Callback) =>
+        ipcRenderer.on('open_containing_folder_click', callback),
     registerDeleteFolderClick: (callback: Callback) =>
         ipcRenderer.on('delete_folder_click', callback),
     registerNewFileClick: (callback: Callback) =>
