@@ -228,7 +228,8 @@ export function App() {
         (e: KeyboardEvent) => {
             const AI_KEYS = ['k', 'l', 'Backspace', 'Enter']
             //
-            if (e.metaKey) {
+            const isControl = connector.PLATFORM_CM_KEY === 'Ctrl'
+            if ((isControl && e.ctrlKey) || (!isControl && e.metaKey)) {
                 if (AI_KEYS.includes(e.key)) {
                     if (e.shiftKey && e.key == 'Enter') {
                         dispatch(ct.pressAICommand('Shift-Enter'))

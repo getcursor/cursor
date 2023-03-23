@@ -316,7 +316,7 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('commandPalette')
                     },
-                    accelerator: 'cmd+shift+p',
+                    accelerator: META_KEY + '+shift+p',
                 },
             ],
         },

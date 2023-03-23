@@ -1228,11 +1228,19 @@ export const pressAICommand = createAsyncThunk(
             case 'k':
                 if (chatState.chatIsOpen && lastBotMessage?.finished) {
                     if (editorView) {
-                        // When there is an editorView, we dispatch something
-                        dispatch(changeMsgType('chat_edit'))
-                        dispatch(changeDraftMsgType('chat_edit'))
+                        // Check if editorView in focus
+                        if (!editorView.hasFocus) {
+                            // When there is an editorView not in focus, we dispatch this
+                            dispatch(changeMsgType('chat_edit'))
+                            dispatch(changeDraftMsgType('chat_edit'))
+                            return
+                        }
                     }
-                } else if (editorView) {
+                    // Close the chat if the chat is open then
+                    dispatch(setChatOpen(false))
+                }
+
+                if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({
