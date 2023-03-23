@@ -4,9 +4,13 @@ This is the repo for [Cursor](https://www.cursor.so), an editor built for pair p
 
 Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like us to prioritize.
 
+## Getting Started
+
+Head over to [our website](https://cursor.so/) to download and try out the editor.
+
 ## Contributing
 
-### Install
+### Setup
 
 MacOS/Linux:
 
