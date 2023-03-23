@@ -6,24 +6,28 @@ Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you
 
 ## Contributing
 
-To get started:
-```
-npm i
-./setup.sh # for unix
-```
+### Install
 
-or
+Unix:
 
 ```
 npm i
-./setup.ps1 # for windows
+./setup.sh
 ```
 
-To run:
+Windows:
+
+```
+npm i
+./setup.ps1
+```
+
+### Run
 
 ```
 npm start
 ```
 
+### Advanced
 
 Interested in working on Cursor remotely? Feel free to reach out to hiring@cursor.so.
