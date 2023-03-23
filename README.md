@@ -7,23 +7,16 @@ Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you
 ## Contributing
 
 To get started:
-
-Get resources:
-
 ```
+npm i
 ./setup.sh # for unix
 ```
 
 or
 
 ```
-./setup.ps1 # for windows
-```
-
-Install dependencies:
-
-```
 npm i
+./setup.ps1 # for windows
 ```
 
 To run:
@@ -31,3 +24,6 @@ To run:
 ```
 npm start
 ```
+
+
+Interested in working on Cursor as a remotely? Feel free to reach out to hiring@cursor.so.
