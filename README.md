@@ -26,4 +26,4 @@ npm start
 ```
 
 
-Interested in working on Cursor as a remotely? Feel free to reach out to hiring@cursor.so.
+Interested in working on Cursor remotely? Feel free to reach out to hiring@cursor.so.
