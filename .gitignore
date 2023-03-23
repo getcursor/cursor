@@ -113,8 +113,6 @@ out/
 build/
 /lsp/
 settings.json
-todesktop.json
-todesktop-runtime-config.json
 resources/**
 lsp/**
 *.zip
