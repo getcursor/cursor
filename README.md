@@ -30,4 +30,4 @@ npm start
 
 ### Advanced
 
-Interested in working on Cursor remotely? Feel free to reach out to hiring@cursor.so.
+Interested in getting paid to work on Cursor remotely? Feel free to reach out to hiring@cursor.so.
