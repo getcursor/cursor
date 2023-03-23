@@ -8,7 +8,7 @@ Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you
 
 ### Install
 
-Unix:
+MacOS/Linux:
 
 ```
 npm i
