@@ -8,8 +8,21 @@ Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you
 
 To get started:
 
+Get resources:
+
 ```
-./setup.sh
+./setup.sh # for unix
+```
+
+or
+
+```
+./setup.ps1 # for windows
+```
+
+Install dependencies:
+
+```
 npm i
 ```
 
