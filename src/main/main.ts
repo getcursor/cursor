@@ -795,7 +795,7 @@ const createWindow = () => {
         return true
     })
 
-    ipcMain.handle('open_folder', async function (event: Event, path: string) {
+    ipcMain.handle('open_containing_folder', async function (event: Event, path: string) {
         // open the folder in the file explorer
         shell.showItemInFolder(path)
         return true
