@@ -4,12 +4,6 @@ module.exports = {
         icon: 'assets/icon/icon',
         extraResource: ['./lsp', './resources', './tutor'],
         osxSign: {},
-        osxNotarize: {
-            tool: 'notarytool',
-            appleId: 'truell20@gmail.com',
-            appleIdPassword: 'uoud-ynaw-ccco-skvn',
-            teamId: 'VDXQ22DGB9',
-        },
     },
     rebuildConfig: {},
     makers: [
@@ -27,18 +21,6 @@ module.exports = {
                 options: {
                     icon: 'assets/icon/icon.png',
                 },
-            },
-        },
-    ],
-    publishers: [
-        {
-            name: '@electron-forge/publisher-github',
-            config: {
-                repository: {
-                    owner: 'Cursor-AI',
-                    name: 'portal',
-                },
-                prerelease: true,
             },
         },
     ],
