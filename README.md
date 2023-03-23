@@ -1,5 +1,20 @@
-## Cursor
+# Cursor
 
-This is an issues-only repo for [Cursor](https://www.cursor.so), an AI source editor that helps you build software quickly and effortlessly. 
+This is the repo for the client-side of [Cursor](https://www.cursor.so), an IDE built for pair programming with AI. 
 
 Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like us to prioritize.
+
+## Contributing
+
+To get started:
+
+```
+./setup.sh
+npm i
+```
+
+To run:
+
+```
+npm start
+```
