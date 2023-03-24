@@ -34,6 +34,10 @@ const lspDir = app.isPackaged
     ? path.join(process.resourcesPath, 'lsp')
     : path.join(__dirname, '..', '..', 'lsp')
 
+    if (!fs.existsSync(lspDir)) {
+    fs.mkdirSync(lspDir)
+}
+
 // Get the architecture and osType from electron
 // architecture can take the values of 'arm', 'arm64', 'ia32', or 'x64'
 const architecture = process.arch
@@ -419,7 +423,7 @@ class LSPManager {
 
             case 'c':
                 let cVersion = await getLatestVersion(
-                    'https://api.github.com/clangd/clangd/releases/latest'
+                    'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
                 if (osType === 'Darwin') {
                     remoteUrl = `https://github.com/clangd/clangd/releases/download/${cVersion}/clangd-mac-${cVersion}.zip`
@@ -434,7 +438,6 @@ class LSPManager {
                 if (!fs.existsSync(cDir)) {
                     fs.mkdirSync(cDir)
                 }
-
                 // fetch and download it
                 downloadPath = path.join(lspDir, 'c', 'clangd.zip')
                 await downloadFile(remoteUrl, downloadPath)
