@@ -509,12 +509,12 @@ export function useExtensions({
 
     useEffect(() => {
       if (settings.tabSize != undefined) {
-        editorRef.current.view?.dispatch({
-            effects: indentCompartment.reconfigure([
-                indentUnit.of(" ".repeat(Number(settings.tabSize))), 
-                EditorState.tabSize.of(Number(settings.tabSize))
-            ]),
-        })
+          editorRef.current.view?.dispatch({
+              effects: indentCompartment.reconfigure([
+                  indentUnit.of(" ".repeat(Number(settings.tabSize))), 
+                  EditorState.tabSize.of(Number(settings.tabSize))
+              ]),
+          })
       }
     }, [settings.tabSize, editorRef.current, justCreated])
 
