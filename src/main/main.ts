@@ -324,6 +324,18 @@ const createWindow = () => {
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
 
+    globalShortcut.register('CommandOrControl+M', () => {
+        main_window.minimize()
+    })
+
+    globalShortcut.register('CommandOrControl+Shift+M', () => {
+        if (main_window.isMaximized()) {
+            main_window.restore();
+        } else {
+            main_window.maximize()
+        }
+    })
+
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
         log.info('STORING SETTINGS')
         log.info(settings)
