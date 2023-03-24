@@ -17,7 +17,7 @@
         "lint": "eslint --ext .ts,.tsx .",
         "test": "jest",
         "precommit": "pretty-quick --staged",
-        "prepare": "cd .. && husky install .husky"
+        "prepare": "chmod +x ./node_modules/husky/lib/bin.js && husky install"
     },
     "keywords": [],
     "license": "MIT",
