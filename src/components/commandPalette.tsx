@@ -385,7 +385,6 @@ export function InnerCommandPalette({
 
     const comboRef = useRef<HTMLInputElement>(null)
     const fullComboRef = useRef<HTMLDivElement>(null)
-
     useEffect(() => {
         if (selectedIndex != 0 && selectedIndex >= filteredResults.length) {
             setSelectedIndex(filteredResults.length - 1)
@@ -419,7 +418,7 @@ export function InnerCommandPalette({
                         closeTrigger()
                         setQuery('')
                     }, 100)
-                    //setShowing(false);
+                    // setShowing(false)
                 } else {
                 }
             }
@@ -436,12 +435,21 @@ export function InnerCommandPalette({
     }, [showing, comboRef.current, comboBtn.current])
 
     useEffect(() => {
-        const selectedElement = document.querySelector('.file__line_selected')
-        selectedElement?.scrollIntoView({ block: 'center' })
+        const dataTestId = `command-item-${selectedIndex}`
+        const selected = comboOptionsRef?.current?.querySelector(
+            `div[data-test-id="${dataTestId}"]`
+        )
+        if (selected) {
+            selected?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+            })
+        }
     }, [selectedIndex]) // Only run when selectedIndex changes
 
     const keyDownHandler = useCallback(
         (e: { key: string; preventDefault: () => void }) => {
+            const lastIndex = filteredResults.length - 1
             if (e.key === 'Enter') {
                 e.preventDefault()
                 // click on the selected item
@@ -456,20 +464,18 @@ export function InnerCommandPalette({
             }
             if (e.key === 'ArrowDown') {
                 e.preventDefault()
-                if (selectedIndex >= filteredResults.length - 1) {
-                    setSelectedIndex(0)
-                } else {
-                    setSelectedIndex(
-                        Math.min(selectedIndex + 1, filteredResults.length - 1)
-                    )
+                let newIndex = 0
+                if (selectedIndex < lastIndex) {
+                    newIndex = Math.min(selectedIndex + 1, lastIndex)
                 }
+                setSelectedIndex(newIndex)
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault()
+                let newIndex = Math.max(0, selectedIndex - 1)
                 if (selectedIndex <= 0) {
-                    setSelectedIndex(filteredResults.length - 1)
-                } else {
-                    setSelectedIndex(Math.max(0, selectedIndex - 1))
+                    newIndex = lastIndex
                 }
+                setSelectedIndex(newIndex)
             } else if (e.key === 'Escape') {
                 e.preventDefault()
                 closeTrigger()
@@ -526,9 +532,10 @@ export function InnerCommandPalette({
                                         const command = allCommands[obj.id]
                                         let toret = null
                                         if (obj.clickable === null) {
-                                            toret = (
+                                            return (
                                                 <CommandResult
                                                     key={command.id}
+                                                    dataTestId={`command-item-${index}`}
                                                     command={command}
                                                     query={query}
                                                     closeTrigger={closeTrigger}
@@ -538,9 +545,10 @@ export function InnerCommandPalette({
                                                 />
                                             )
                                         } else {
-                                            toret = (
+                                            return (
                                                 <AICommandResult
                                                     key={command.id}
+                                                    dataTestId={`command-item-${index}`}
                                                     command={command}
                                                     query={query}
                                                     isClickable={obj.clickable}
@@ -551,16 +559,6 @@ export function InnerCommandPalette({
                                                 />
                                             )
                                         }
-                                        return (
-                                            <div
-                                                onMouseEnter={() => {
-                                                    // set selected index
-                                                    setSelectedIndex(index)
-                                                }}
-                                            >
-                                                {toret}
-                                            </div>
-                                        )
                                     }
                                 )}
                             </Combobox.Options>
@@ -577,10 +575,12 @@ export function CommandResult({
     query,
     isSelected,
     closeTrigger,
+    dataTestId,
 }: {
     command: Command
     query: string
     isSelected: boolean
+    dataTestId: string
     closeTrigger: () => void
 }) {
     const dispatch = useAppDispatch()
@@ -598,6 +598,7 @@ export function CommandResult({
         <div
             className={cx('command_line', { selected_command: isSelected })}
             onClick={executeCommand}
+            data-test-id={dataTestId}
         >
             <div className="file__name">
                 {command.name
@@ -635,12 +636,14 @@ export function AICommandResult({
     isClickable,
     isSelected,
     closeTrigger,
+    dataTestId,
 }: {
     command: Command
     query: string
     isClickable: boolean
     isSelected: boolean
     closeTrigger: () => void
+    dataTestId: string
 }) {
     const dispatch = useAppDispatch()
     const executeCommand = useCallback(
@@ -666,6 +669,7 @@ export function AICommandResult({
                 { selected_command: isSelected },
                 { disabled_command: !clickable }
             )}
+            data-test-id={dataTestId}
             onMouseDown={clickable ? executeCommand : dummyCommand}
             // onClick={() =>
         >
