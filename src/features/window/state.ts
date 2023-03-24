@@ -300,6 +300,7 @@ export interface Settings {
     useFour: string
     contextType: string
     textWrapping: string
+    tabSize: string
 }
 
 export interface SettingsState {
@@ -400,6 +401,7 @@ export const initialSettingsState = {
         useFour: 'disabled',
         contextType: 'none',
         textWrapping: 'disabled',
+        tabSize: '2'
     },
 }
 
