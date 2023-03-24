@@ -281,7 +281,7 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+=',
+                    accelerator: META_KEY + '+plus',
                 },
                 {
                     label: 'Zoom Out',
@@ -323,6 +323,10 @@ const createWindow = () => {
     ])
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
+
+    globalShortcut.register(META_KEY + '+=', () => {
+        main_window.webContents.send('zoom_in')
+    })
 
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
         log.info('STORING SETTINGS')
