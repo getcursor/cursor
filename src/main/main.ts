@@ -281,7 +281,7 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+plus',
+                    accelerator: META_KEY + '+=',
                 },
                 {
                     label: 'Zoom Out',
