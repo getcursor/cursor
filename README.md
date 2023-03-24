@@ -31,7 +31,3 @@ npm i
 ```
 npm start
 ```
-
-### Advanced
-
-Interested in getting paid to work on Cursor remotely? Feel free to reach out to hiring@cursor.so.
