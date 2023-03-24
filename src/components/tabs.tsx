@@ -50,6 +50,9 @@ function Tab({ tid }: { tid: number }) {
             onClick={() => {
                 dispatch(gs.selectTab(tid))
             }}
+            onContextMenu={() => {
+                dispatch(gs.toggleAdditionalOptions())
+            }}
         >
             <div onMouseDown={
                 (e) => {
@@ -105,6 +108,34 @@ function TabPath({ tid }: { tid: number }) {
     )
 }
 
+function TabOptions() {
+    const dispatch = useAppDispatch()
+
+    return (
+        <>
+            <div className="tab__options">
+                <ul className="tab__options-list">
+                    <li className="tab__options-list-item">
+                        <div
+                            className="tab__close"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                dispatch(gt.closeAllTabs())
+                                dispatch(gs.toggleAdditionalOptions())
+                            }}
+                        >
+                            <span className="text__close-all-tabs">
+                                Close all tabs
+                            </span>
+                            <FontAwesomeIcon icon={faClose} />
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </>
+    )
+}
+
 export function TabBar({
     tabIds,
     activeTabId = null,
@@ -115,6 +146,8 @@ export function TabBar({
     // Add event listener to translate vertical scroll to horizontal scroll
     const dispatch = useAppDispatch()
     const tabBarRef = useRef<HTMLDivElement>(null)
+    const showAdditionalOptions = useAppSelector(gsel.getShowAdditionalOptions)
+    
     useEffect(() => {
         const tabBar = tabBarRef.current
         if (tabBar) {
@@ -192,7 +225,13 @@ export function TabBar({
                 )}
             </div>
 
-            {activeTabId != null ? <TabPath tid={activeTabId} /> : null}
+            
+            {activeTabId != null ? (
+                <>
+                    {showAdditionalOptions ? <TabOptions /> : null}
+                    <TabPath tid={activeTabId} />
+                </>
+            ) : null}
         </div>
     )
 }

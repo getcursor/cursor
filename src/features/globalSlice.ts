@@ -1536,6 +1536,9 @@ const globalSlice = createSlice({
         toggleTerminal(state: State, action: PayloadAction<null>) {
             state.terminalOpen = !state.terminalOpen
         },
+        toggleAdditionalOptions (state: State) {
+            state.showAdditionalOptions = !state.showAdditionalOptions
+        }
     },
 })
 
@@ -1587,5 +1590,6 @@ export const {
     openTerminal,
     toggleTerminal,
     closeRateLimit,
+    toggleAdditionalOptions,
 } = globalSlice.actions
 export default globalSlice.reducer

@@ -695,6 +695,39 @@ li.rta__item--selected mark {
     background-color: var(--tab-active);
 }
 
+.tab__options {
+    display: flex;
+    background-color: var(--reject-transparent-button);
+    color: var(--text);
+    animation: fadeIn .2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.tab__options-list {
+    min-width: 180px;
+}
+
+.tab__options-list-item {
+    padding: 0 10px;
+}
+
+.tab__options-list-item:hover {
+    background-color: var(--tab-no-active);
+}
+
+.text__close-all-tabs {
+    cursor: pointer;
+    margin-right: 8px;
+}
+
 .tab__path {
     color: var(--text);
     /* add left padding of 20px */

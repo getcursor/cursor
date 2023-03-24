@@ -126,6 +126,8 @@ export interface State {
 
     zoomFactor: number
 
+    showAdditionalOptions: boolean
+
     showError: boolean
     showRateLimit: boolean
     errorType: string
@@ -436,6 +438,8 @@ export const initialState = {
         byIds: {},
         bySplits: [] as any,
     },
+
+    showAdditionalOptions: false,
 
     showError: false,
     showRateLimit: false,

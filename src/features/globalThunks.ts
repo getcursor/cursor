@@ -5,6 +5,17 @@ import { saveFile, forceCloseTab } from './globalSlice'
 import { getPathForFileId } from './window/fileUtils'
 import { removeEditor } from './codemirror/codemirrorSlice'
 
+export const closeAllTabs = createAsyncThunk(
+    'global/closeAllTabs',
+    async (_, { getState, dispatch }) => {
+        const state = (<FullState>getState()).global
+        const tabIds = Object.keys(state.tabs).map((id) => parseInt(id))
+        for (const tabId of tabIds) {
+            await dispatch(closeTab(tabId))
+        }
+    }
+)
+
 export const closeTab = createAsyncThunk(
     'global/closeTab',
     async (tabId: number | null, { getState, dispatch }) => {

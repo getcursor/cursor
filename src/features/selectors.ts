@@ -536,6 +536,8 @@ export const getRemoteCommand = (state: FullState) => state.global.remoteCommand
 export const getRemotePath = (state: FullState) => state.global.remotePath
 export const getRemoteBad = (state: FullState) => state.global.remoteBad
 
+export const getShowAdditionalOptions = (state: FullState) => state.global.showAdditionalOptions
+
 export const getFolderOpen = (fid: number) =>
     createSelector(
         (state: {}) => (<FullState>state).global.folders[fid],
