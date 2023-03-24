@@ -117,3 +117,5 @@ resources/**
 lsp/**
 *.zip
 scripts/**
+
+run_todesktop.sh
