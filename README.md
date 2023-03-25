@@ -24,7 +24,7 @@ Head over to [our website](https://cursor.so/) to download and try out the edito
 
 Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like us to prioritize.
 
-Longterm, we're building Cursor into the world's most productive development environment. We want to: 
+Long term, we're building Cursor into the world's most productive development environment. Using LLMs, we want to: 
 - Auto-fix errors as soon as they show up in your terminal
 - Embed AI-written documentation into the UI 
 - "Heal" your repository when you're halfway through a refactor
