@@ -20,16 +20,17 @@
 
 Head over to [our website](https://cursor.so/) to download and try out the editor.
 
-## Roadmap
-
 Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like us to prioritize.
 
-Long term, we're building Cursor into the world's most productive development environment. Using LLMs, we want to: 
+## Roadmap
+
+Long term, our plan is to build Cursor into the world's most productive development environment. Using LLMs, we want to do things like: 
 - Auto-fix errors as soon as they show up in your terminal
 - Embed AI-written documentation into the UI 
 - "Heal" your repository when you're halfway through a refactor
+- Allow you to code by editing a "pseudocode" version of your codebase
 
-If you're excited about this future, reach out to hiring@cursor.so
+If you're excited about working on this future, reach out to hiring@cursor.so
 
 ## Development
 
