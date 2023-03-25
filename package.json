@@ -6,7 +6,7 @@
         "email": "mntruell@gmail.com"
     },
     "productName": "Cursor",
-    "version": "0.1.4",
+    "version": "0.1.6",
     "description": "Cursor is an AI-first coding environment.",
     "main": ".webpack/main",
     "scripts": {

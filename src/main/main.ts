@@ -108,6 +108,7 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
+    const width = 1500, height = 800;
     // Create the browser window.
     const main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
@@ -117,8 +118,10 @@ const createWindow = () => {
                   trafficLightPosition: { x: 10, y: 10 },
               }
             : { frame: false }),
-        width: 1500,
-        height: 800,
+        width: width,
+        height: height,
+        minWidth: width / 2
+        minHeight: height / 2,
         title: 'Cursor',
         webPreferences: {
             // @ts-ignore
