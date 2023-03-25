@@ -332,6 +332,10 @@ const createWindow = () => {
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
 
+    globalShortcut.register(META_KEY + '+=', () => {
+        main_window.webContents.send('zoom_in')
+    })
+    
     globalShortcut.register('CommandOrControl+M', () => {
         main_window.minimize()
     })
