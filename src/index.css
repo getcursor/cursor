@@ -542,6 +542,10 @@ li.rta__item--selected mark {
     overflow-y: auto;
 }
 
+.cover-bar {
+    pointer-events: none;
+}
+
 .window__editorcontainer .cover-bar {
     background-color: var(--background);
     right: 0px;
