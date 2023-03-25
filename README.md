@@ -34,7 +34,7 @@ If you're excited about working on this future, reach out to hiring@cursor.so
 
 ## Development
 
-We welcome PRs! To get started:
+We welcome PRs 😊 To get started:
 
 ```
 git clone git@github.com:getcursor/cursor.git
