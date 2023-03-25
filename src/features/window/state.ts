@@ -301,6 +301,7 @@ export interface Settings {
     contextType: string
     textWrapping: string
     tabSize?: string
+    editorTheme: string
 }
 
 export interface SettingsState {
@@ -401,7 +402,8 @@ export const initialSettingsState = {
         useFour: 'disabled',
         contextType: 'none',
         textWrapping: 'disabled',
-        tabSize: undefined
+        tabSize: undefined,
+        editorTheme: 'VSCode Dark',
     },
 }
 

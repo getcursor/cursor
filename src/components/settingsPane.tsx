@@ -134,7 +134,25 @@ export function SettingsPopup() {
                                     value={settings.tabSize}
                                 />
                             </div>
-
+                            <div className="settings__item">
+                                <div className="settings__item_title">
+                                    Editor Theme
+                                </div>
+                                <div className="settings__item_description">
+                                    Controls the color theme of the editor
+                                </div>
+                                <Dropdown
+                                    options={['VSCode Dark', 'Dark', 'Light']}
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                editorTheme: e.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.editorTheme}
+                                />
+                            </div>
                             <div className="settings__item">
                                 <div className="settings__item_title">
                                     Text Wrapping

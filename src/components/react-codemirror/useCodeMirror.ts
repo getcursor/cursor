@@ -22,7 +22,7 @@ import {
 } from '../../features/codemirror/codemirrorSlice'
 import { getViewId } from '../../features/codemirror/codemirrorSelectors'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { machine } from 'os'
+import { defaultLightThemeOption } from './theme/light'
 
 export interface UseCodeMirror extends ReactCodeMirrorProps {
     container?: HTMLDivElement | null
@@ -70,16 +70,6 @@ export function useCodeMirror(props: UseCodeMirror) {
     }, [viewId])
     const [state, setState] = useState<EditorState>()
 
-    const defaultLightThemeOption = EditorView.theme(
-        {
-            '&': {
-                backgroundColor: '#fff',
-            },
-        },
-        {
-            dark: false,
-        }
-    )
     const defaultThemeOption = EditorView.theme({
         '&': {
             height,

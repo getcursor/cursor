@@ -189,7 +189,7 @@ export default function Editor({ tabId }: { tabId: number }) {
     const settings = useAppSelector(getSettings)
     const textWrapping = settings.textWrapping == 'enabled'
 
-    //const [seenDiffs, setSeenDiffs] = useState<any[]>([]);
+    const [theme, setTheme] = useState(vscodeDark)
     const transactions: ReduxTransaction[] = useAppSelector(
         getPendingTransactions(tabId)
     )
@@ -250,6 +250,15 @@ export default function Editor({ tabId }: { tabId: number }) {
     }
 
     useEffect(() => {
+        // lower case the theme
+        const _strTheme = settings.editorTheme.toLowerCase()
+        if(_strTheme == 'light' || _strTheme == 'dark'){
+            setTheme(_strTheme)
+        }else{
+            setTheme(vscodeDark)
+        }
+    },[settings])
+    useEffect(() => {
         if (!commandBarOpen && isPaneActive) {
             editorRef.current.view?.focus()
         }
@@ -289,7 +298,7 @@ export default function Editor({ tabId }: { tabId: number }) {
                     tabId={tabId}
                     key={filePath}
                     viewKey={tab.paneId}
-                    theme={vscodeDark}
+                    theme={theme}
                     ref={editorRef}
                     customDispatch={customDispatch}
                     autoFocus={isPaneActive && isRenaming == null}

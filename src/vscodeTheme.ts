@@ -77,7 +77,6 @@ export const createTheme = ({
 
     return { themeOptions, extension }
 
-    return extension
 }
 
 interface CreateThemeOptions {
