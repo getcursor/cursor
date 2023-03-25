@@ -246,7 +246,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: 'Shift+Cmd+Z',
+                    accelerator: META_KEY+'Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },

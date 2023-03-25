@@ -2229,7 +2229,7 @@ cm-diff-cancel > div {
     padding: 8px 12px;
     cursor: pointer;
     display: flex;
-    justify-content: center;
+/*     justify-content: center; */
     align-items: center;
 }
 
