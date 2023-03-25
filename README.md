@@ -5,7 +5,7 @@
 
 **[Cursor](cursor.so) is an editor made for programming with AI.** It's early days, but right now Cursor can help you with a few things...
 
-- **Write**: Generate 10-50 lines of code with an intelligent AI
+- **Write**: Generate 10-100 lines of code with an AI that's smarter than Copilot
 - **Diff**: Ask the AI to edit a block of code, see only proposed changes
 - **Chat**: ChatGPT-style interface that understands your current file
 - **And more**: ask to fix lint errors, generate tests/comments on hover, etc.
