@@ -21,6 +21,8 @@ export interface ReactCodeMirrorProps
     viewKey: number
     /** value of the auto created model in the editor. */
     value?: string
+    fileName?: string
+    filePath?: string
     height?: string
     minHeight?: string
     maxHeight?: string
@@ -126,6 +128,8 @@ export const ReactCodeMirror = forwardRef<
         root,
         initialState,
         tabId,
+        fileName,
+        filePath,
         ...other
     } = props
     const editor = useRef<HTMLDivElement>(null)
@@ -172,14 +176,33 @@ export const ReactCodeMirror = forwardRef<
 
     const defaultClassNames =
         typeof theme === 'string' ? `cm-theme-${theme}` : 'cm-theme'
+
+    function isImageFile(fileName: string): boolean {
+        const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'svg']
+        const extension = fileName.split('.').pop()?.toLowerCase()
+        return extension !== undefined && imageExtensions.includes(extension)
+    }
+
+    const isImage = fileName && isImageFile(fileName)
+
     return (
-        <div
-            ref={editor}
-            className={`${defaultClassNames}${
-                className ? ` ${className}` : ''
-            }`}
-            {...other}
-        ></div>
+        <>
+            {isImage ? (
+                <img
+                    src={`file://${filePath}`}
+                    alt={fileName}
+                    style={{ maxWidth: '100%', maxHeight: '100%' }}
+                />
+            ) : (
+                <div
+                    ref={editor}
+                    className={`${defaultClassNames}${
+                        className ? ` ${className}` : ''
+                    }`}
+                    {...other}
+                ></div>
+            )}
+        </>
     )
 })
 
