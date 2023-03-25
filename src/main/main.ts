@@ -44,6 +44,11 @@ const store = new Store()
 type Event = IpcMainInvokeEvent
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+// Add electron-reloader
+try {
+    require('electron-reloader')(module)
+} catch (_) {}
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
     app.quit()
@@ -108,6 +113,7 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
+    const width = 1500, height = 800;
     // Create the browser window.
     const main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
@@ -117,8 +123,10 @@ const createWindow = () => {
                   trafficLightPosition: { x: 10, y: 10 },
               }
             : { frame: false }),
-        width: 1500,
-        height: 800,
+        width: width,
+        height: height,
+        minWidth: width / 2
+        minHeight: height / 2,
         title: 'Cursor',
         webPreferences: {
             // @ts-ignore
@@ -246,7 +254,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: 'Shift+Cmd+Z',
+                    accelerator: META_KEY+'Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -326,6 +334,18 @@ const createWindow = () => {
 
     globalShortcut.register(META_KEY + '+=', () => {
         main_window.webContents.send('zoom_in')
+    })
+    
+    globalShortcut.register('CommandOrControl+M', () => {
+        main_window.minimize()
+    })
+
+    globalShortcut.register('CommandOrControl+Shift+M', () => {
+        if (main_window.isMaximized()) {
+            main_window.restore();
+        } else {
+            main_window.maximize()
+        }
     })
 
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
@@ -678,8 +698,8 @@ const createWindow = () => {
                 label: 'Open Containing Folder',
                 click: () => {
                     event.sender.send('open_containing_folder_click')
-                }
-            }
+                },
+            },
         ]
         const menu = Menu.buildFromTemplate(template)
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
@@ -799,12 +819,15 @@ const createWindow = () => {
         return true
     })
 
-    ipcMain.handle('open_containing_folder', async function (event: Event, path: string) {
-        // open the folder in the file explorer
-        shell.showItemInFolder(path)
-        return true
-    })
-    
+    ipcMain.handle(
+        'open_containing_folder',
+        async function (event: Event, path: string) {
+            // open the folder in the file explorer
+            shell.showItemInFolder(path)
+            return true
+        }
+    )
+
     ipcMain.handle(
         'delete_folder',
         async function (event: Event, path: string) {

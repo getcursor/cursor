@@ -6,7 +6,7 @@
         "email": "mntruell@gmail.com"
     },
     "productName": "Cursor",
-    "version": "0.1.4",
+    "version": "0.1.6",
     "description": "Cursor is an AI-first coding environment.",
     "main": ".webpack/main",
     "scripts": {
@@ -59,6 +59,7 @@
         "css-loader": "^6.7.2",
         "electron": "22.0.0",
         "electron-devtools-installer": "^3.2.0",
+        "electron-reloader": "^1.2.3",
         "electron-winstaller": "^5.1.0",
         "husky": "^8.0.3",
         "identity-obj-proxy": "^3.0.0",
@@ -135,6 +136,7 @@
         "emojilib": "^3.0.8",
         "fix-path": "^4.0.0",
         "fork-ts-checker-webpack-plugin": "^7.2.14",
+        "fuse.js": "^6.6.2",
         "gunzip-file": "^0.1.1",
         "line-diff": "^2.1.1",
         "lodash.debounce": "^4.0.8",
