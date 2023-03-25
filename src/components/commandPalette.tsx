@@ -528,7 +528,6 @@ export function InnerCommandPalette({
                                         if (obj.clickable === null) {
                                             toret = (
                                                 <CommandResult
-                                                    key={command.id}
                                                     command={command}
                                                     query={query}
                                                     closeTrigger={closeTrigger}
@@ -540,7 +539,6 @@ export function InnerCommandPalette({
                                         } else {
                                             toret = (
                                                 <AICommandResult
-                                                    key={command.id}
                                                     command={command}
                                                     query={query}
                                                     isClickable={obj.clickable}
@@ -553,6 +551,7 @@ export function InnerCommandPalette({
                                         }
                                         return (
                                             <div
+                                                key={command.id}
                                                 onMouseEnter={() => {
                                                     // set selected index
                                                     setSelectedIndex(index)
