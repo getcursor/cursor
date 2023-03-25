@@ -117,6 +117,26 @@ export function SettingsPopup() {
 
                             <div className="settings__item">
                                 <div className="settings__item_title">
+                                    Tab Size
+                                </div>
+                                <div className="settings__item_description">
+                                    Controls the tab size
+                                </div>
+                                <Dropdown
+                                    options={['2', '4', '8']}
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                tabSize: e.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.tabSize}
+                                />
+                            </div>
+
+                            <div className="settings__item">
+                                <div className="settings__item_title">
                                     Text Wrapping
                                 </div>
                                 <div className="settings__item_description">
