@@ -44,6 +44,11 @@ const store = new Store()
 type Event = IpcMainInvokeEvent
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+// Add electron-reloader
+try {
+    require('electron-reloader')(module)
+} catch (_) {}
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
     app.quit()
@@ -677,8 +682,8 @@ const createWindow = () => {
                 label: 'Open Containing Folder',
                 click: () => {
                     event.sender.send('open_containing_folder_click')
-                }
-            }
+                },
+            },
         ]
         const menu = Menu.buildFromTemplate(template)
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
@@ -798,12 +803,15 @@ const createWindow = () => {
         return true
     })
 
-    ipcMain.handle('open_containing_folder', async function (event: Event, path: string) {
-        // open the folder in the file explorer
-        shell.showItemInFolder(path)
-        return true
-    })
-    
+    ipcMain.handle(
+        'open_containing_folder',
+        async function (event: Event, path: string) {
+            // open the folder in the file explorer
+            shell.showItemInFolder(path)
+            return true
+        }
+    )
+
     ipcMain.handle(
         'delete_folder',
         async function (event: Event, path: string) {
