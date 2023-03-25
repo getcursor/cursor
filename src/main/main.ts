@@ -113,7 +113,8 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
-    const width = 1500, height = 800;
+    const width = 1500,
+        height = 800
     // Create the browser window.
     const main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
@@ -254,7 +255,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: META_KEY+'Shift+Z',
+                    accelerator: META_KEY + 'Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -335,14 +336,14 @@ const createWindow = () => {
     globalShortcut.register(META_KEY + '+=', () => {
         main_window.webContents.send('zoom_in')
     })
-    
+
     globalShortcut.register('CommandOrControl+M', () => {
         main_window.minimize()
     })
 
     globalShortcut.register('CommandOrControl+Shift+M', () => {
         if (main_window.isMaximized()) {
-            main_window.restore();
+            main_window.restore()
         } else {
             main_window.maximize()
         }
@@ -871,7 +872,22 @@ const createWindow = () => {
         return null
     })
     setupLSPs(store)
-    setupTerminal(main_window)
+    const projectPathObj = store.get('projectPath')
+    if (
+        typeof projectPathObj === 'object' &&
+        projectPathObj !== null &&
+        'defaultFolder' in projectPathObj
+    ) {
+        const projectPath = projectPathObj.defaultFolder
+        if (typeof projectPath === 'string') {
+            setupTerminal(main_window, projectPath)
+        } else {
+            setupTerminal(main_window)
+        }
+    } else {
+        setupTerminal(main_window)
+    }
+
     setupSearch()
     log.info('setting up index')
     setupCommentIndexer()
