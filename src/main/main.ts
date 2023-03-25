@@ -125,7 +125,7 @@ const createWindow = () => {
             : { frame: false }),
         width: width,
         height: height,
-        minWidth: width / 2
+        minWidth: width / 2,
         minHeight: height / 2,
         title: 'Cursor',
         webPreferences: {
