@@ -41,4 +41,8 @@ export function setupTerminal(mainWindow: any) {
     ptyProcess.on('data', (data: any) => {
         mainWindow.webContents.send('terminal-incData', data)
     })
+
+    ipcMain.handle("terminal-resize", (event, size) => {
+      ptyProcess.resize(size.cols, size.rows);
+    });
 }
