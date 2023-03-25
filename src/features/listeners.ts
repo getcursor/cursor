@@ -51,6 +51,11 @@ connector.registerCloseTab(() => {
 })
 
 // @ts-ignore
+connector.registerCloseAllTabs(() => {
+    store.dispatch(gt.closeAllTabs())
+})
+
+// @ts-ignore
 connector.registerOpenFolder(() => {
     store.dispatch(gs.openFolder(null))
 })

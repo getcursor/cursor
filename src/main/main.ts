@@ -335,7 +335,7 @@ const createWindow = () => {
     globalShortcut.register(META_KEY + '+=', () => {
         main_window.webContents.send('zoom_in')
     })
-    
+
     globalShortcut.register('CommandOrControl+M', () => {
         main_window.minimize()
     })
@@ -698,6 +698,19 @@ const createWindow = () => {
                 label: 'Open Containing Folder',
                 click: () => {
                     event.sender.send('open_containing_folder_click')
+                },
+            },
+        ]
+        const menu = Menu.buildFromTemplate(template)
+        menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
+    })
+
+    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
+        const template: MenuItemConstructorOptions[] = [
+            {
+                label: 'Close All',
+                click: () => {
+                    event.sender.send('close_all_tabs_click')
                 },
             },
         ]

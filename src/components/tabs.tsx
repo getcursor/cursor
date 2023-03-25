@@ -50,8 +50,9 @@ function Tab({ tid }: { tid: number }) {
             onClick={() => {
                 dispatch(gs.selectTab(tid))
             }}
+            onContextMenu={() => dispatch(gs.rightClickTab(tid))}
         >
-            <div onMouseDown={
+           <div onMouseDown={
                 (e) => {
                     if(e.button == 1) { // middle click
                         e.stopPropagation()

@@ -249,6 +249,7 @@ const electronConnector = {
             new_path: new_path,
         }),
     rightClickFile: () => ipcRenderer.invoke('right_click_file', null),
+    rightClickTab: () => ipcRenderer.invoke('right_click_tab', null),
     deleteFile: (path: string) => ipcRenderer.invoke('delete_file', path),
     openContainingFolder: (path: string) => ipcRenderer.invoke('open_containing_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
@@ -284,6 +285,7 @@ const electronConnector = {
         ipcRenderer.removeAllListeners('new_folder_click')
         ipcRenderer.removeAllListeners('new_chat_click')
         ipcRenderer.removeAllListeners('close_tab')
+        ipcRenderer.removeAllListeners('close_all_tabs_click')
     },
     registerRenameClick: (callback: Callback) =>
         ipcRenderer.on('rename_file_click', callback),
@@ -305,6 +307,8 @@ const electronConnector = {
     registerCloseTab: (callback: Callback) =>
         ipcRenderer.on('close_tab', callback),
 
+    registerCloseAllTabs: (callback: Callback) =>
+        ipcRenderer.on('close_all_tabs_click', callback),
     openFolder: () => ipcRenderer.invoke('open_folder', null),
     registerOpenFolder: (callback: Callback) =>
         ipcRenderer.on('open_folder_triggered', callback),
