@@ -278,6 +278,15 @@ export function ChatPopup() {
     const messages = useAppSelector(csel.getCurrentConversationMessages())
     const filePath = useAppSelector(getCurrentFilePath)
 
+    const commandBoxRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if(!isGenerating && commandBoxRef) {
+            setTimeout(() => {
+                commandBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, 100)
+        }
+    }, [isGenerating]);
     const onApply = () => {
         dispatch(ct.pressAICommand('k'))
         dispatch(cs.setCurrentDraftMessage('Make the chanage'))
@@ -350,6 +359,7 @@ export function ChatPopup() {
                                 'opacity-100': !isGenerating,
                                 'opacity-0': isGenerating,
                             })}
+                            ref={commandBoxRef}
                         >
                             {!isGenerating && (
                                 <CommandBar parentCaller={'chat'} />
