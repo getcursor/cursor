@@ -113,7 +113,8 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
-    const width = 1500, height = 800;
+    const width = 1500,
+        height = 800
     // Create the browser window.
     const main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
@@ -254,7 +255,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: META_KEY+'Shift+Z',
+                    accelerator: META_KEY + 'Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -342,7 +343,7 @@ const createWindow = () => {
 
     globalShortcut.register('CommandOrControl+Shift+M', () => {
         if (main_window.isMaximized()) {
-            main_window.restore();
+            main_window.restore()
         } else {
             main_window.maximize()
         }
@@ -531,10 +532,17 @@ const createWindow = () => {
 
     log.info('setting up handle get_file')
     ipcMain.handle('get_file', async function (event: Event, filePath: string) {
-        // read the file and return the contents
-        var data = ''
+        // Check if the file is an image
+        const extension = filePath.split('.').pop()?.toLowerCase()
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(
+            extension || ''
+        )
+
+        // Read the file using the binary encoding if it's an image
+        const encoding = isImage ? 'binary' : 'utf8'
+        let data = ''
         try {
-            data = await fileSystem.readFileSync(filePath, 'utf8')
+            data = await fileSystem.readFileSync(filePath, encoding)
         } catch {
             data = ''
         }
@@ -904,7 +912,7 @@ const modifyHeaders = () => {
                     {
                         ...details.responseHeaders,
                         'Content-Security-Policy': [
-                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
+                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: file: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
                         ],
                     },
                     details.responseHeaders

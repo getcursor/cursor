@@ -352,6 +352,8 @@ export default function Editor({ tabId }: { tabId: number }) {
                         100
                     )}
                     value={cachedContent}
+                    fileName={fileName}
+                    filePath={filePath}
                     extensions={extensions}
                     initialState={initialState}
                 />
