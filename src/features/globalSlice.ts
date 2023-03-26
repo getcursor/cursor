@@ -613,6 +613,9 @@ export const openFolder = createAsyncThunk(
 
         dispatch(overwriteFolder({ folderPath, folderData }))
 
+        // Show the new folder in the FileTree view
+        dispatch(openFileTree())
+
         // Now we are going to setup the lsp server
         await dispatch(startConnections(folderPath))
 
@@ -636,8 +639,6 @@ export const openFolder = createAsyncThunk(
             dispatch(setRemoteCommand(remote.remoteCommand))
         if (remote != null && remote.remotePath != null)
             dispatch(setRemotePath(remote.remotePath))
-
-        dispatch(openFileTree())
     }
 )
 
