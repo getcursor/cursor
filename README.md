@@ -3,7 +3,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/getcursor/cursor/blob/main/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]() [![](https://dcbadge.vercel.app/api/server/PJEgRywgRy?style=flat&compact=true)](https://discord.gg/PJEgRywgRy)
 
-**[Cursor](cursor.so) is an editor made for programming with AI.** It's early days, but right now Cursor can help you with a few things...
+**[Cursor](https://cursor.so) is an editor made for programming with AI.** It's early days, but right now Cursor can help you with a few things...
 
 - **Write**: Generate 10-100 lines of code with an AI that's smarter than Copilot
 - **Diff**: Ask the AI to edit a block of code, see only proposed changes
