@@ -30,8 +30,6 @@ Long term, our plan is to build Cursor into the world's most productive developm
 - "Heal" your repository when you're halfway through a refactor
 - Allow you to code by editing a "pseudocode" version of your codebase
 
-If you're excited about working on this future, reach out to hiring@cursor.so
-
 ## Development
 
 We welcome PRs :) To get started:
