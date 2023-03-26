@@ -290,7 +290,7 @@ export function ChatPopup() {
 
     const onApply = () => {
         dispatch(ct.pressAICommand('k'))
-        dispatch(cs.setCurrentDraftMessage('Make the chanage'))
+        dispatch(cs.setCurrentDraftMessage('Make the change'))
         dispatch(ct.submitCommandBar(null))
     }
     // get index for last bot message
