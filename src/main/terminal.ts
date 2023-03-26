@@ -3,7 +3,7 @@ import * as pty from 'node-pty'
 
 import { ipcMain } from 'electron'
 
-export function setupTerminal(mainWindow: any) {
+export function setupTerminal(mainWindow: any, rootPath?: string) {
     let shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
     const filteredEnv: { [key: string]: string } = Object.entries(
@@ -25,7 +25,7 @@ export function setupTerminal(mainWindow: any) {
                 name: 'xterm-color',
                 cols: 80,
                 rows: 24,
-                cwd: process.env.HOME,
+                cwd: rootPath || process.env.HOME, // Use the rootPath or default to the home directory
                 env: filteredEnv,
             })
             ptyProcess = res
@@ -42,7 +42,7 @@ export function setupTerminal(mainWindow: any) {
         mainWindow.webContents.send('terminal-incData', data)
     })
 
-    ipcMain.handle("terminal-resize", (event, size) => {
-      ptyProcess.resize(size.cols, size.rows);
-    });
+    ipcMain.handle('terminal-resize', (event, size) => {
+        ptyProcess.resize(size.cols, size.rows)
+    })
 }
