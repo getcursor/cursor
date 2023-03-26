@@ -401,7 +401,7 @@ export const initialSettingsState = {
         useFour: 'disabled',
         contextType: 'none',
         textWrapping: 'disabled',
-        tabSize: undefined
+        tabSize: undefined,
     },
 }
 
