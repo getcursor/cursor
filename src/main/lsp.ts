@@ -34,7 +34,7 @@ const lspDir = app.isPackaged
     ? path.join(process.resourcesPath, 'lsp')
     : path.join(__dirname, '..', '..', 'lsp')
 
-    if (!fs.existsSync(lspDir)) {
+if (!fs.existsSync(lspDir)) {
     fs.mkdirSync(lspDir)
 }
 
