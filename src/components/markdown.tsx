@@ -278,7 +278,7 @@ export function ChatPopup() {
     const messages = useAppSelector(csel.getCurrentConversationMessages())
     const filePath = useAppSelector(getCurrentFilePath)
 
-    const commandBoxRef = useRef<HTMLDivElement>(null);
+    const commandBoxRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if(!isGenerating && commandBoxRef) {
@@ -286,7 +286,8 @@ export function ChatPopup() {
                 commandBoxRef.current?.scrollIntoView({ behavior: "smooth" });
             }, 100)
         }
-    }, [isGenerating]);
+    }, [isGenerating])
+
     const onApply = () => {
         dispatch(ct.pressAICommand('k'))
         dispatch(cs.setCurrentDraftMessage('Make the chanage'))
