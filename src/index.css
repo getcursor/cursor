@@ -2365,6 +2365,7 @@ cm-diff-cancel > div {
 }
 
 .command_line:hover {
+    background-color: var(--left-pane-hover);
 }
 
 .command_line_selected {
