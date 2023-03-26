@@ -84,6 +84,7 @@ import { LSPNotifyMap } from './lsp/stdioClient'
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
 import { changeSettings } from './settings/settingsSlice'
 import { updateCommentsForFile } from './comment/commentSlice'
+import { openFileTree } from './tools/toolSlice'
 import { updateTestsForFile } from './tests/testSlice'
 import { getPane } from './selectors'
 
@@ -635,6 +636,8 @@ export const openFolder = createAsyncThunk(
             dispatch(setRemoteCommand(remote.remoteCommand))
         if (remote != null && remote.remotePath != null)
             dispatch(setRemotePath(remote.remotePath))
+
+        dispatch(openFileTree())
     }
 )
 
