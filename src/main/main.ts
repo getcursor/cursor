@@ -255,7 +255,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: META_KEY + 'Shift+Z',
+                    accelerator: META_KEY + '+Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -281,7 +281,6 @@ const createWindow = () => {
                 },
             ],
         } as MenuItemConstructorOptions,
-        // add a zoom
         {
             label: 'View',
             submenu: [
@@ -290,7 +289,14 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+plus',
+                    accelerator: META_KEY + '+Plus',
+                },
+                {
+                    label: 'Zoom In',
+                    click: () => {
+                        main_window.webContents.send('zoom_in')
+                    },
+                    accelerator: META_KEY + '+=',
                 },
                 {
                     label: 'Zoom Out',
@@ -311,21 +317,21 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('search')
                     },
-                    accelerator: META_KEY + '+shift+f',
+                    accelerator: META_KEY + '+Shift+F',
                 },
                 {
                     label: 'File Search',
                     click: () => {
                         main_window.webContents.send('fileSearch')
                     },
-                    accelerator: META_KEY + '+p',
+                    accelerator: META_KEY + '+P',
                 },
                 {
                     label: 'Command Palette',
                     click: () => {
                         main_window.webContents.send('commandPalette')
                     },
-                    accelerator: META_KEY + '+shift+p',
+                    accelerator: META_KEY + '+Shift+P',
                 },
             ],
         },
@@ -333,15 +339,11 @@ const createWindow = () => {
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
 
-    globalShortcut.register(META_KEY + '+=', () => {
-        main_window.webContents.send('zoom_in')
-    })
-
-    globalShortcut.register('CommandOrControl+M', () => {
+    globalShortcut.register(META_KEY + '+M', () => {
         main_window.minimize()
     })
 
-    globalShortcut.register('CommandOrControl+Shift+M', () => {
+    globalShortcut.register(META_KEY + '+Shift+M', () => {
         if (main_window.isMaximized()) {
             main_window.restore()
         } else {
