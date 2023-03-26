@@ -470,6 +470,14 @@ export const rightClickFile = createAsyncThunk(
     }
 )
 
+export const rightClickTab = createAsyncThunk(
+    'global/rightClickTab',
+    async (tabId: number) => {
+        await connector.rightClickTab()
+        return tabId
+    }
+)
+
 export const rightClickFolder = createAsyncThunk(
     'global/rightClickFolder',
     async (folderId: number, { getState }) => {
