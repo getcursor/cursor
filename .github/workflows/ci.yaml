@@ -37,10 +37,6 @@ jobs:
               shell: pwsh
               run: ./setup.ps1
 
-            - name: Install required linux packages
-              if: ${{ matrix.os == 'ubuntu-latest' }}
-              run: sudo apt-get update && sudo apt-get install -y dpkg fakeroot tree
-
             - name: Install dependencies
               run: npm ci
 
