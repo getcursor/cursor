@@ -53,7 +53,7 @@ Finally, to run the client:
 npm start
 ```
 
-To enable debugging on the command line, run the client 
+To enable debugging on the command line, run the client
 
 ```
 npm run debug
