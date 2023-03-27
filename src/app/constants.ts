@@ -2,14 +2,10 @@ import {
     faTimes,
     faHistory,
     IconDefinition,
-    faChevronLeft,
-    faChevronRight,
 } from '@fortawesome/free-solid-svg-icons'
 import {
     faChevronsLeft,
-    faChevronsRight,
 } from '@fortawesome/pro-regular-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { setChatOpen, toggleChatHistory } from '../features/chat/chatSlice'
 import { store } from './store'
 
