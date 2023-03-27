@@ -254,10 +254,11 @@ export function doMoveTabToPane(state: State, tabId: number, paneId: number, tab
     const tab = state.tabs[tabId]
 
     const isNewPane = oldPaneId !== paneId;
-    const tabAlreadyExistInPane = newPane.tabIds.find(tabId => state.tabs[tabId].fileId === tab.fileId) !== undefined && isNewPane;
-    if (tabAlreadyExistInPane) {
-      deleteTab(state, tabId);
-      return;
+    const maybeTabId = newPane.tabIds.find(tabId => state.tabs[tabId].fileId === tab.fileId)
+    if ((maybeTabId != null) && isNewPane) {
+        deleteTab(state, tabId);
+        setActiveTab(state, maybeTabId);
+        return;
     }
 
     const oldPane = state.paneState.byIds[oldPaneId]
