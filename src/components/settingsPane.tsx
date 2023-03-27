@@ -8,7 +8,6 @@ import {
     copilotChangeEnable,
     copilotChangeSignin,
     installLanguageServer,
-    killConnection,
     runLanguageServer,
     stopLanguageServer,
     getConnections,
@@ -19,14 +18,11 @@ import {
 import Dropdown from 'react-dropdown'
 import 'react-dropdown/style.css'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { setRepoId } from '../features/globalSlice'
-import { getProgress, getRootPath } from '../features/selectors'
 import {
     copilotStatus,
     getLanguages,
     languageServerStatus,
 } from '../features/lsp/languageServerSelector'
-import { State } from '../features/window/state'
 
 import {
     signInCursor,
@@ -42,23 +38,6 @@ export function SettingsPopup() {
     const settings = useAppSelector(ssel.getSettings)
     const isSettingsOpen = useAppSelector(ssel.getSettingsIsOpen)
     const languageServerNames = useAppSelector(getLanguages)
-    const synced: boolean = useAppSelector(
-        (state) => state.global.repoProgress.state == 'done'
-    )
-    const embeddingOptions = useMemo(() => {
-        if (synced) {
-            return ['embeddings', 'copilot', 'none']
-        } else {
-            return ['copilot', 'none']
-        }
-    }, [synced])
-    const [uploadPreference, setUploadPreference] = useState(false)
-    useEffect(() => {
-        // @ts-ignore
-        connector.getUploadPreference().then((preference) => {
-            setUploadPreference(preference)
-        })
-    }, [isSettingsOpen])
 
     const customStyles = {
         overlay: {

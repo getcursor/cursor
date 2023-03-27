@@ -1,22 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { FileTree, getIconElement } from './filetree'
-import { getConnections } from '../features/lsp/languageServerSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-    faFolder,
     faChevronDown,
     faChevronRight,
-    faFile,
-    faCode,
-    faImage,
-    faCodeMerge,
-    faEyeSlash,
-    faGear,
-    faComputer,
-    faInfoCircle,
     faArrowRightLong,
 } from '@fortawesome/sharp-solid-svg-icons'
-import { throttleCallback, normalThrottleCallback } from './componentUtils'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { getLeftTab, getLeftTabActive } from '../features/tools/toolSelectors'
 import {
@@ -215,7 +204,6 @@ const handleSearch = async (query: string, setResults: any, rootPath: any) => {
         return
     }
 
-    // @ts-ignore
     connector
         .searchRipGrep({
             query: query,
@@ -245,11 +233,6 @@ const handleSearch = async (query: string, setResults: any, rootPath: any) => {
             }
             const newestResults = [...fileLevelResultsMap.values()]
             setResults(newestResults)
-            if (newestResults.length != 0) {
-                const firstResult = newestResults[0].results[0]
-                const start = firstResult.data.submatches[0].start
-                const end = firstResult.data.submatches[0].end
-            }
         })
 }
 
@@ -461,8 +444,4 @@ function LineResultComponent({ result }: { result: RawResult }) {
             </div>
         </div>
     )
-}
-
-function useCache(arg0: (...args: any[]) => void) {
-    throw new Error('Function not implemented.')
 }

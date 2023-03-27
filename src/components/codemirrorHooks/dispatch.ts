@@ -10,16 +10,10 @@ import {
 } from '@codemirror/state'
 import { useAppDispatch } from '../../app/hooks'
 import { flushTransactions } from '../../features/globalSlice'
-import { getPendingTransactions } from '../../features/selectors'
 import { ReduxTransaction, LineChange } from '../../features/window/state'
-import { posToOffset } from '../../features/lsp/lspPlugin'
 import { showBar } from '../../features/extensions/cmdZBar'
 
-import { store } from '../../app/store'
 import { reduxTransaction } from '../../features/extensions/utils'
-import { lineNumbersState } from '../../features/linter/fixLSPExtension'
-import { setDiff } from '../../features/extensions/diff'
-// import { showBar } from '../../features/extensions/cmdZBar'
 
 type TransactionFunction = CustomTransaction | CustomTransaction[]
 
@@ -359,9 +353,7 @@ function getTransaction(
 
 export const customDispatchEffect = StateEffect.define<CustomTransaction>()
 
-const runningaverage: number[] = []
 export function customDispatch(view: EditorView, tr: Transaction) {
-    const start = performance.now()
     // First we handle the original default transaction
     view.update([tr])
 
@@ -388,12 +380,6 @@ export function customDispatch(view: EditorView, tr: Transaction) {
     //     runningaverage.shift();
     // }
     // const average = runningaverage.reduce((a, b) => a + b, 0) / runningaverage.length;
-
-    const end = performance.now()
-    const timeTaken = end - start
-
-    if (timeTaken > 30) {
-    }
 }
 
 const syncAnnotation = Annotation.define<boolean>()
