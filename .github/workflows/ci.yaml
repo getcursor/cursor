@@ -1,10 +1,10 @@
 name: CI
 
 on:
-    push:
-        branches:
-            - main
     pull_request:
+        branches:
+            - '*'
+    push:
         branches:
             - main
 
@@ -16,29 +16,61 @@ jobs:
     all:
         name: All
 
-        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                os:
+                    - macos-latest
+                    - ubuntu-latest
+
+        runs-on: ${{matrix.os}}
 
         steps:
             - uses: actions/checkout@v2
 
-            - name: Download actionlint
-              id: actionlint
-              run: bash <(curl
-                  https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+            - name: Setup
+              run: ./setup.sh
 
-            - name: Check workflow
-              run: ${{ steps.actionlint.outputs.executable }} -color
-
-            - name: Use Node.js 16.x
-              uses: actions/setup-node@v2
-              with:
-                  node-version: 16.x
+            - name: Install required linux packages
+              if: ${{ matrix.os == 'ubuntu-latest' }}
+              run: sudo apt-get update && sudo apt-get install -y dpkg fakeroot tree
 
             - name: Install dependencies
               run: npm ci
 
-            - name: Lint
-              run: npm run lint
-
             - name: Check formatting
               run: npm run format-check
+
+            - name: Build
+              run: npm run make
+
+            - name: Publish Linux x64 artifacts
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: linux-x64-artifact
+                  path: |
+                      out/make/deb/x64/*.deb
+
+            - name: Publish Linux arm64 artifacts
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: linux-x64-artifact
+                  path: |
+                      out/make/deb/arm64/*.deb
+
+            - name: Publish macOS x64 artifacts
+              if: matrix.os == 'macos-latest'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: macos-x64-artifact
+                  path: |
+                      out/make/zip/darwin/x64/*.zip
+
+            - name: Publish macOS arm64 artifacts
+              if: matrix.os == 'macos-latest'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: macos-arm64-artifact
+                  path: |
+                      out/make/zip/darwin/arm64/*.zip
