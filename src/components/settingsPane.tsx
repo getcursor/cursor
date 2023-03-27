@@ -100,14 +100,14 @@ export function SettingsPopup() {
                         >
                             <i className="fas fa-times"></i>
                         </div>
-                        <div className="settings__title">SETTINGS</div>
+                        <div className="settings__title">{settings.language == 'English'? 'SETTINGS': '设置'}</div>
                         <div className="settings__content">
                             <div className="settings__item">
                                 <div className="settings__item_title">
-                                    Key Bindings
+                                    {settings.language == 'English'? 'Key Bindings': '快捷键'}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls whether to use vim, emacs, or none
+                                    {settings.language == 'English'? 'Controls whether to use vim, emacs, or none': '编辑器风格：vim/emacs/无'} 
                                 </div>
                                 <Dropdown
                                     options={['none', 'vim', 'emacs']}
@@ -124,10 +124,10 @@ export function SettingsPopup() {
 
                             <div className="settings__item">
                                 <div className="settings__item_title">
-                                    Text Wrapping
+                                    {settings.language == 'English'? 'Text Wrapping': '自动换行'}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls whether text wrapping is enabled
+                                    {settings.language == 'English'? 'Controls whether text wrapping is enabled': '是否启用自动换行'}
                                 </div>
                                 <Dropdown
                                     options={['enabled', 'disabled']}
@@ -144,10 +144,10 @@ export function SettingsPopup() {
 
                             <div className="settings__item">
                                 <div className="settings__item_title">
-                                    Tab Size
+                                    {settings.language == 'English'? 'Tab Size': 'Tab大小'}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls the tab size
+                                    {settings.language == 'English'? 'Controls the tab size': '设置Tab大小'}
                                 </div>
                                 <Dropdown
                                     options={['2', '4', '8']}
@@ -161,6 +161,27 @@ export function SettingsPopup() {
                                     value={settings.tabSize}
                                 />
                             </div>
+
+                            <div className="settings__item">
+                                <div className="settings__item_title">
+                                    {settings.language == 'English'? 'Language': '语言'}
+                                </div>
+                                <div className="settings__item_description">
+                                    {settings.language == 'English'? 'Choose your language preference': '偏好语言'}
+                                </div>
+                                <Dropdown
+                                    options={['English', '中文']}
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                language: e.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.language}
+                                />
+                            </div>
+
                             <CursorLogin />
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!

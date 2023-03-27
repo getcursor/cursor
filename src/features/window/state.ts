@@ -296,12 +296,16 @@ export interface ChatState {
     commandBarHistoryIndex: number
 }
 
+/**
+ * https://github.com/getcursor/cursor/issues/134
+ */
 export interface Settings {
     keyBindings: 'none' | 'vim' | 'emacs'
     useFour: string
     contextType: string
     textWrapping: string
     tabSize?: string
+    language: 'English' | '中文'
 }
 
 export interface SettingsState {

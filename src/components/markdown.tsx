@@ -12,6 +12,7 @@ import { Message } from '../features/window/state'
 import { faArrowUp, faClose } from '@fortawesome/pro-regular-svg-icons'
 import { getIconElement } from '../components/filetree'
 import * as gs from '../features/globalSlice'
+import * as ssel from '../features/settings/settingsSelectors'
 
 import {
     EditorView,
@@ -581,6 +582,44 @@ const Item = ({
 
 const Loading = ({ data }: { data: any }) => <div>Loading</div>
 
+function usePlaceHolder(placeholder: React.MutableRefObject<string>, getMsgType: any){
+    const settings = useAppSelector(ssel.getSettings)
+
+    useEffect(() => {
+        switch (settings.language){
+            case 'English':
+                if (getMsgType == 'edit') {
+                    placeholder.current = 'Instructions for editing selection...'
+                } else if (getMsgType == 'freeform') {
+                    placeholder.current = 'Chat about the current file/selection...'
+                } else if (getMsgType == 'generate') {
+                    placeholder.current = 'Instructions for code to generate...'
+                } else if (getMsgType == 'chat_edit') {
+                    placeholder.current = 'Instructions for editing the current file...'
+                } else {
+                    // TODO - this case should not exist
+                    placeholder.current = 'Chat about the current file/selection...'
+                }
+                break
+            case '中文':
+                if (getMsgType == 'edit') {
+                    placeholder.current = '编辑选中指令...'
+                } else if (getMsgType == 'freeform') {
+                    placeholder.current = '聊聊当前文件/选择...'
+                } else if (getMsgType == 'generate') {
+                    placeholder.current = '生成指令...'
+                } else if (getMsgType == 'chat_edit') {
+                    placeholder.current = '编辑当前文件指令...'
+                } else {
+                    // TODO - this case should not exist
+                    placeholder.current = '聊聊当前文件/选择...'
+                }
+                break
+        }    
+    },[settings, getMsgType, placeholder])
+    // return placeholder.current
+}
+
 export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     const dispatch = useAppDispatch()
     const currentDraft = useAppSelector(csel.getCurrentDraftMessage)
@@ -600,19 +639,9 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     >(null)
 
     const getMsgType = useAppSelector(csel.getMsgType)
-    let placeholder = '...'
-    if (getMsgType == 'edit') {
-        placeholder = 'Instructions for editing selection...'
-    } else if (getMsgType == 'freeform') {
-        placeholder = 'Chat about the current file/selection...'
-    } else if (getMsgType == 'generate') {
-        placeholder = 'Instructions for code to generate...'
-    } else if (getMsgType == 'chat_edit') {
-        placeholder = 'Instructions for editing the current file...'
-    } else {
-        // TODO - this case should not exist
-        placeholder = 'Chat about the current file/selection...'
-    }
+    // let placeholder = '...'
+    const placeholder = useRef<string>('...')
+    usePlaceHolder(placeholder, getMsgType)
 
     const builder = useRef<ContextBuilder>()
 
@@ -648,7 +677,7 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     return (
         <ReactTextareaAutocomplete
             className="commandBar__input"
-            placeholder={placeholder}
+            placeholder={placeholder.current}
             loadingComponent={Loading}
             scrollToItem={(container, item) => {
                 if (item) {

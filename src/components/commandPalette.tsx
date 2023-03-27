@@ -38,6 +38,8 @@ import {
 import { getCodeMirrorView } from '../features/codemirror/codemirrorSlice'
 import { toggleChatHistory } from '../features/chat/chatSlice'
 import { pressAICommand } from '../features/chat/chatThunks'
+import * as ssel from '../features/settings/settingsSelectors'
+
 
 const commandKey = connector.PLATFORM_META_KEY + ''
 
@@ -88,6 +90,368 @@ interface Command {
 interface AICommand extends Command {
     type: 'ai'
     hintFileOpen?: string
+}
+
+interface AllCommands {
+    // aiCommands
+    edit: AICommand
+    generate: AICommand
+    freeform: AICommand
+    freeform_select: AICommand
+    // splitPaneCommands
+    splitPaneRight: Command
+    splitPaneLeft: Command
+    splitPaneUp: Command
+    splitPaneDown: Command
+    // main commands
+    terminal: Command
+    ssh: Command
+    chatHistory: Command
+    search: Command
+    searchFiles: Command
+    settings: Command
+    fileTree: Command
+    feedback: Command
+}
+
+function useCommands( commands : React.MutableRefObject<AllCommands>){
+    // const dispatch = useAppDispatch()
+    const settings = useAppSelector(ssel.getSettings)
+
+    useEffect(() => {
+        switch (settings.language) {
+            case 'English':
+                commands.current = {
+                    edit: {
+                        id: 'edit',
+                        type: 'ai',
+                        name: 'Edit Selection',
+                        description: 'Changes the highlighted code',
+                        hint: 'Changes the highlighted code',
+                        error: 'Try highlighting code',
+                        shortcut: [commandKey + 'K'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('k'))
+                        },
+                    },
+                    generate: {
+                        id: 'generate',
+                        type: 'ai',
+                        name: 'Generate',
+                        description: 'Writes new code',
+                        hint: 'Writes new code',
+                        error: 'Try opening a file',
+                        shortcut: [commandKey + 'K'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('k'))
+                        },
+                    },
+                    freeform: {
+                        id: 'freeform',
+                        type: 'ai',
+                        name: 'Chat',
+                        hint: 'Answers questions about anything',
+                        hintFileOpen: 'Answers questions about the current file or anything',
+                        error: 'Try unhighlighting',
+                        description: 'Ask a question about the current file or anything',
+                        shortcut: [commandKey + 'L'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('l'))
+                        },
+                    },
+                    freeform_select: {
+                        id: 'freeform_select',
+                        type: 'ai',
+                        name: 'Chat Selection',
+                        hint: 'Answers questions about the highlighted code',
+                        error: 'Try highlighting code',
+                        description: 'Ask a question about the current file',
+                        shortcut: [commandKey + 'L'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('l'))
+                        },
+                    },
+                    splitPaneRight: {
+                        id: 'splitPaneRight',
+                        type: 'normal',
+                        name: 'View: Split Editor Right',
+                        description: 'Split the current pane to the right',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Right))
+                        },
+                    },
+                    splitPaneDown: {
+                        id: 'splitPaneDown',
+                        type: 'normal',
+                        name: 'View: Split Editor Down',
+                        description: 'Split the current pane downwards',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Bottom))
+                        },
+                    },
+                    splitPaneLeft: {
+                        id: 'splitPaneLeft',
+                        type: 'normal',
+                        name: 'View: Split Editor Left',
+                        description: 'Split the current pane to the left',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Left))
+                        },
+                    },
+                    splitPaneUp: {
+                        id: 'splitPaneUp',
+                        type: 'normal',
+                        name: 'View: Split Editor Up',
+                        description: 'Split the current pane upwards',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Top))
+                        },
+                    },
+                    terminal: {
+                        id: 'terminal',
+                        type: 'normal',
+                        name: 'Terminal',
+                        description: 'Open the integrated terminal',
+                        shortcut: ['Ctrl+`'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openTerminal(null))
+                        },
+                    },
+                    ssh: {
+                        id: 'ssh',
+                        type: 'normal',
+                        name: 'Open SSH Folder',
+                        description: 'Open a remote folder over ssh',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openRemotePopup(null))
+                        },
+                    },
+                    chatHistory: {
+                        id: 'chatHistory',
+                        type: 'normal',
+                        name: 'Open Chat History',
+                        description: 'Shows past chat conversations',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleChatHistory())
+                        },
+                    },
+                    search: {
+                        id: 'search',
+                        type: 'normal',
+                        name: 'Search',
+                        description: 'Exact match/regex match search through the repo',
+                        shortcut: [commandKey + 'F'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openSearch())
+                        },
+                    },
+                    searchFiles: {
+                        id: 'searchFiles',
+                        type: 'normal',
+                        name: 'Search Files',
+                        description: 'Search for a specific file',
+                        shortcut: [commandKey + 'P'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(triggerFileSearch())
+                        },
+                    },
+                    settings: {
+                        id: 'settings',
+                        type: 'normal',
+                        name: 'Settings',
+                        description: 'Open the settings menu',
+                        shortcut: [commandKey + 'H'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleSettings())
+                        },
+                    },
+                    fileTree: {
+                        id: 'fileTree',
+                        type: 'normal',
+                        name: 'File Tree',
+                        description: 'Open the file tree',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openFileTree())
+                        },
+                    },
+                    feedback: {
+                        id: 'feedback',
+                        type: 'normal',
+                        name: 'Feedback',
+                        description: 'Open the feedback form',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleFeedback(null))
+                        },
+                    },
+                }
+                break
+            case '中文':
+                commands.current = {
+                    edit: {
+                        id: 'edit',
+                        type: 'ai',
+                        name: '编辑',
+                        description: 'Changes the highlighted code',
+                        hint: '让Chat-GPT编辑选中代码',
+                        error: '试试选中代码使其高亮~',
+                        shortcut: [commandKey + 'K'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('k'))
+                        },
+                    },
+                    generate: {
+                        id: 'generate',
+                        type: 'ai',
+                        name: '生成',
+                        description: 'Writes new code',
+                        hint: '让Chat-GPT生成代码',
+                        error: '试试打开一个文件~',
+                        shortcut: [commandKey + 'K'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('k'))
+                        },
+                    },
+                    freeform: {
+                        id: 'freeform',
+                        type: 'ai',
+                        name: '聊天',
+                        hint: '和Chat-GPT聊聊您的问题',
+                        hintFileOpen: '和Chat-GPT聊聊关于当前文件的问题',
+                        error: '试试取消选中~',
+                        description: 'Ask a question about the current file or anything',
+                        shortcut: [commandKey + 'L'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('l'))
+                        },
+                    },
+                    freeform_select: {
+                        id: 'freeform_select',
+                        type: 'ai',
+                        name: '聊天选中',
+                        hint: '和Chat-GPT聊聊您选中的代码',
+                        error: '试试选中代码使其高亮~',
+                        description: 'Ask a question about the current file',
+                        shortcut: [commandKey + 'L'],
+                        action: (dispatch: any) => {
+                            dispatch(pressAICommand('l'))
+                        },
+                    },
+                    splitPaneRight: {
+                        id: 'splitPaneRight',
+                        type: 'normal',
+                        name: '布局：向右拆分',
+                        description: 'Split the current pane to the right',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Right))
+                        },
+                    },
+                    splitPaneDown: {
+                        id: 'splitPaneDown',
+                        type: 'normal',
+                        name: '布局：向下拆分',
+                        description: 'Split the current pane downwards',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Bottom))
+                        },
+                    },
+                    splitPaneLeft: {
+                        id: 'splitPaneLeft',
+                        type: 'normal',
+                        name: '布局：向左拆分',
+                        description: 'Split the current pane to the left',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Left))
+                        },
+                    },
+                    splitPaneUp: {
+                        id: 'splitPaneUp',
+                        type: 'normal',
+                        name: '布局：向上拆分',
+                        description: 'Split the current pane upwards',
+                        action: (dispatch: any) => {
+                            dispatch(splitCurrentPane(HoverState.Top))
+                        },
+                    },
+                    terminal: {
+                        id: 'terminal',
+                        type: 'normal',
+                        name: '终端',
+                        description: '打开终端',
+                        shortcut: ['Ctrl+`'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openTerminal(null))
+                        },
+                    },
+                    ssh: {
+                        id: 'ssh',
+                        type: 'normal',
+                        name: '打开 SSH 文件夹',
+                        description: 'Open a remote folder over ssh',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openRemotePopup(null))
+                        },
+                    },
+                    chatHistory: {
+                        id: 'chatHistory',
+                        type: 'normal',
+                        name: '打开聊天记录',
+                        description: 'Shows past chat conversations',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleChatHistory())
+                        },
+                    },
+                    search: {
+                        id: 'search',
+                        type: 'normal',
+                        name: '搜索',
+                        description: 'Exact match/regex match search through the repo',
+                        shortcut: [commandKey + 'F'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openSearch())
+                        },
+                    },
+                    searchFiles: {
+                        id: 'searchFiles',
+                        type: 'normal',
+                        name: '搜索文件',
+                        description: 'Search for a specific file',
+                        shortcut: [commandKey + 'P'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(triggerFileSearch())
+                        },
+                    },
+                    settings: {
+                        id: 'settings',
+                        type: 'normal',
+                        name: '设置',
+                        description: 'Open the settings menu',
+                        shortcut: [commandKey + 'H'],
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleSettings())
+                        },
+                    },
+                    fileTree: {
+                        id: 'fileTree',
+                        type: 'normal',
+                        name: '文件树 (File Tree)',
+                        description: 'Open the file tree',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(openFileTree())
+                        },
+                    },
+                    feedback: {
+                        id: 'feedback',
+                        type: 'normal',
+                        name: '反馈 (Feedback)',
+                        description: 'Open the feedback form',
+                        action: (dispatch: Dispatch<AnyAction>) => {
+                            dispatch(toggleFeedback(null))
+                        },
+                    },
+                }
+                break
+        }
+    }, [settings])
 }
 
 const aiCommands: { [key in AICommandIds]: AICommand } = {
@@ -259,7 +623,7 @@ const mainCommands: { [key in MainCommandIds]: Command } = {
         },
     },
 }
-const allCommands = { ...aiCommands, ...splitPaneCommands, ...mainCommands }
+const allCommands_default = { ...aiCommands, ...splitPaneCommands, ...mainCommands }
 
 export default function CommandPalettes() {
     const dispatch = useAppDispatch()
@@ -365,6 +729,9 @@ export function InnerCommandPalette({
     const comboOptionsRef = useRef<HTMLUListElement>(null)
 
     const dispatch = useAppDispatch()
+    const allCommands = useRef<AllCommands>(allCommands_default)
+
+    useCommands(allCommands)
 
     const { results: aiResults } = useAIResults()
     const otherResults = useMemo(
@@ -377,7 +744,7 @@ export function InnerCommandPalette({
 
     const filteredResults = useMemo(() => {
         return [...aiResults, ...otherResults].filter((obj) => {
-            return allCommands[obj.id].name
+            return allCommands.current[obj.id].name
                 .toLowerCase()
                 .includes(query.toLowerCase())
         })
@@ -455,7 +822,7 @@ export function InnerCommandPalette({
                 // click on the selected item
                 if (filteredResults[selectedIndex]) {
                     closeTrigger()
-                    allCommands[filteredResults[selectedIndex].id].action(
+                    allCommands.current[filteredResults[selectedIndex].id].action(
                         dispatch
                     )
 
@@ -529,7 +896,7 @@ export function InnerCommandPalette({
                                         },
                                         index: number
                                     ) => {
-                                        const command = allCommands[obj.id]
+                                        const command = allCommands.current[obj.id]
                                         let toret = null
                                         if (obj.clickable === null) {
                                             return (
