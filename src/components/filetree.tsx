@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

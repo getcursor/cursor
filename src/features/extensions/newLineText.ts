@@ -1,6 +1,14 @@
-import { ViewUpdate, ViewPlugin, DecorationSet, keymap , EditorView, Decoration , WidgetType } from '@codemirror/view'
+import {
+    ViewUpdate,
+    ViewPlugin,
+    DecorationSet,
+    keymap,
+    EditorView,
+    Decoration,
+    WidgetType,
+} from '@codemirror/view'
 import { syntaxTree } from '@codemirror/language'
-import { RangeSet, Range , Prec } from '@codemirror/state'
+import { RangeSet, Range, Prec } from '@codemirror/state'
 import { store } from '../../app/store'
 
 class LineText extends WidgetType {

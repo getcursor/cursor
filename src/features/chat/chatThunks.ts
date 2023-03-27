@@ -894,7 +894,8 @@ export const diffResponse = createAsyncThunk(
 
             const getFullState = () => getState() as FullState
             const lastBotMessage = getLastBotMessage(getFullState().chatState)
-            const useDiagnostics = lastBotMessage?.useDiagnostics || type == 'lsp'
+            const useDiagnostics =
+                lastBotMessage?.useDiagnostics || type == 'lsp'
 
             const data = await getPayload({
                 getState: getFullState,

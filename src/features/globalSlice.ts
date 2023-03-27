@@ -18,10 +18,13 @@ import {
     startCopilotWithoutFolder,
 } from './lsp/languageServerSlice'
 import type * as LSP from 'vscode-languageserver-protocol'
-import { changeSettingsNoSideffect , changeSettings } from './settings/settingsSlice'
+import {
+    changeSettingsNoSideffect,
+    changeSettings,
+} from './settings/settingsSlice'
 import { getLanguageFromFilename } from './extensions/utils'
 
-import { API_ROOT , join } from '../utils'
+import { API_ROOT, join } from '../utils'
 import {
     State,
     FullState,

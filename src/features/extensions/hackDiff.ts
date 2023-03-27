@@ -24,10 +24,10 @@ import {
     ViewPlugin,
     ViewUpdate,
     PluginValue,
- WidgetType } from '@codemirror/view'
+    WidgetType,
+} from '@codemirror/view'
 import { presentableDiff, Change, Chunk } from '@codemirror/merge'
 import { invertedEffects } from '@codemirror/commands'
-
 
 export interface EditBoundary {
     start: number

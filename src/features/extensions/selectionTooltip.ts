@@ -1,5 +1,11 @@
-import { Tooltip, TooltipView, showTooltip , EditorView, keymap } from '@codemirror/view'
-import { StateField , EditorState , Prec } from '@codemirror/state'
+import {
+    Tooltip,
+    TooltipView,
+    showTooltip,
+    EditorView,
+    keymap,
+} from '@codemirror/view'
+import { StateField, EditorState, Prec } from '@codemirror/state'
 import { store } from '../../app/store'
 import { pressAICommand } from '../chat/chatThunks'
 

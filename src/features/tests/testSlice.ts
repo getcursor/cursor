@@ -4,7 +4,7 @@ import {
     PayloadAction,
     isFulfilled,
 } from '@reduxjs/toolkit'
-import { API_ROOT , streamSource } from '../../utils'
+import { API_ROOT, streamSource } from '../../utils'
 import { FullState, nextId, State } from '../window/state'
 import { getCurrentPane, getCurrentTab, getFileContents } from '../selectors'
 import {

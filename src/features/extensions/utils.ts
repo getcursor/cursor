@@ -1,4 +1,4 @@
-import { TreeCursor , SyntaxNode } from '@lezer/common'
+import { TreeCursor, SyntaxNode } from '@lezer/common'
 import { store } from '../../app/store'
 import {
     getCurrentTab,

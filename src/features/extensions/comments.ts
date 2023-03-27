@@ -4,7 +4,8 @@ import {
     RangeSetBuilder,
     EditorState,
     StateEffect,
- StateField } from '@codemirror/state'
+    StateField,
+} from '@codemirror/state'
 import {
     Decoration,
     DecorationSet,

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { addTransaction } from '../globalSlice'
 import { State, initialState, FullState } from '../window/state'
 import { getFilePath } from '../selectors'
-import { streamSource , API_ROOT } from '../../utils'
+import { streamSource, API_ROOT } from '../../utils'
 import { EditorView } from '@codemirror/view'
 
 const API_ENDPOINT = '/long_complete'

@@ -15,14 +15,20 @@ import {
     Extension,
     Annotation,
     AnnotationType,
- EditorState, Prec } from '@codemirror/state'
+    EditorState,
+    Prec,
+} from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
 import { vimStateField } from '../../components/codemirror-vim'
 import { getLanguageFromFilename } from './utils'
 import { LanguageServerClient } from '../lsp/stdioClient'
 import { getConnections } from '../lsp/languageServerSlice'
-import { offsetToPos, posToOffset , copilotServer, docPathFacet } from '../lsp/lspPlugin'
-
+import {
+    offsetToPos,
+    posToOffset,
+    copilotServer,
+    docPathFacet,
+} from '../lsp/lspPlugin'
 
 // Create Facet for the current docPath
 export const docPath = Facet.define<string, string>({

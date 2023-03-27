@@ -1,5 +1,5 @@
-import { StateEffect, ChangeDesc , StateField } from '@codemirror/state'
-import { Decoration, DecorationSet , EditorView } from '@codemirror/view'
+import { StateEffect, ChangeDesc, StateField } from '@codemirror/state'
+import { Decoration, DecorationSet, EditorView } from '@codemirror/view'
 import { invertedEffects } from '@codemirror/commands'
 import * as cs from '../chat/chatSlice'
 import * as gs from '../globalSlice'

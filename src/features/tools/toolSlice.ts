@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction , current } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, current } from '@reduxjs/toolkit'
 import { ToolState } from '../window/state'
 
 const initialState: ToolState = {
@@ -46,7 +46,8 @@ export const toolSlice = createSlice({
             state.commandPaletteTriggered = true
         },
         triggerAICommandPalette: (state: ToolState) => {
-            const newAICommandPaletteTriggered = !state.aiCommandPaletteTriggered
+            const newAICommandPaletteTriggered =
+                !state.aiCommandPaletteTriggered
             untriggerAll(state)
             state.aiCommandPaletteTriggered = newAICommandPaletteTriggered
         },

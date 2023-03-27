@@ -1,4 +1,4 @@
-import { StateEffect, StateField , Text , Prec } from '@codemirror/state'
+import { StateEffect, StateField, Text, Prec } from '@codemirror/state'
 import { debounce } from 'lodash'
 import {
     getCurrentFileId,

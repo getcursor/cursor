@@ -11,7 +11,8 @@ import {
     killConnection,
     runLanguageServer,
     stopLanguageServer,
- getConnections } from '../features/lsp/languageServerSlice'
+    getConnections,
+} from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 

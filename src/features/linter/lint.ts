@@ -954,12 +954,15 @@ class LintPanel implements Panel {
                                       // Trigger cmd+shift+e key event
 
                                       // Necessary to avoid circular dependencies
-                                      const event = new KeyboardEvent('keydown', {
-                                          key: 'E',
-                                          code: 'KeyE',
-                                          shiftKey: true,
-                                          metaKey: true,
-                                      })
+                                      const event = new KeyboardEvent(
+                                          'keydown',
+                                          {
+                                              key: 'E',
+                                              code: 'KeyE',
+                                              shiftKey: true,
+                                              metaKey: true,
+                                          }
+                                      )
                                       document.dispatchEvent(event)
                                   },
                               },
@@ -1339,7 +1342,8 @@ class LintGutterMarker extends GutterMarker {
         elt.className = 'cm-lint-marker cm-lint-marker-' + this.severity
 
         let diagnostics = this.diagnostics
-        const diagnosticsFilter = view.state.facet(lintGutterConfig).tooltipFilter
+        const diagnosticsFilter =
+            view.state.facet(lintGutterConfig).tooltipFilter
         if (diagnosticsFilter) diagnostics = diagnosticsFilter(diagnostics)
 
         if (diagnostics.length)

@@ -447,10 +447,7 @@ function getDepthWrapper(
     files: State['files'],
     folders: State['folders']
 ): (currentFid: number, isFile: boolean) => number {
-    function getDepthHelper(
-        currentFid: number,
-        isFile = false
-    ): number {
+    function getDepthHelper(currentFid: number, isFile = false): number {
         if (isFile) {
             if (files[currentFid].parentFolderId == null) {
                 return 0

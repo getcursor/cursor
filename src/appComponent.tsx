@@ -10,7 +10,7 @@ import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
 import { PaneHolder } from './components/pane'
-import { LeftSide , FeedbackArea } from './components/search'
+import { LeftSide, FeedbackArea } from './components/search'
 import * as gs from './features/globalSlice'
 import * as cs from './features/chat/chatSlice'
 import * as ct from './features/chat/chatThunks'

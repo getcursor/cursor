@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import * as cp from 'child_process'
 import * as path from 'path'
-import { ipcMain, IpcMainInvokeEvent , app } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, app } from 'electron'
 import { promisify } from 'util'
 import Fuse from 'fuse.js'
 

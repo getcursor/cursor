@@ -1,6 +1,9 @@
-import { createAsyncThunk , PayloadAction , createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { Text , Transaction, TransactionSpec ,
+import {
+    Text,
+    Transaction,
+    TransactionSpec,
     EditorState,
     StateField,
     Extension,

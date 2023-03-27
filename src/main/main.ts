@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { Settings , File, Folder } from '../features/window/state'
+import { Settings, File, Folder } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
@@ -18,7 +18,10 @@ import {
     session,
     systemPreferences,
     globalShortcut,
- dialog, clipboard , MenuItemConstructorOptions } from 'electron'
+    dialog,
+    clipboard,
+    MenuItemConstructorOptions,
+} from 'electron'
 
 import { API_ROOT } from '../utils'
 import * as path from 'path'
