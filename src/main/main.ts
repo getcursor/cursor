@@ -35,7 +35,7 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { setupTerminal } from './terminal'
+import { setupTerminal, updateTerminalPath } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
 
@@ -881,6 +881,9 @@ const createWindow = () => {
         log.info('Opening folder: ' + result)
         if (result && result.length > 0) {
             setFileSystem(new FileSystem())
+            // Setup new terminal path
+            store.set('projectPath', { defaultFolder: result[0] })
+            updateTerminalPath(result[0])
             return result[0]
         }
         return null

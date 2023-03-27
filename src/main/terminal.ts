@@ -3,6 +3,8 @@ import * as pty from 'node-pty'
 
 import { ipcMain } from 'electron'
 
+let ptyProcess: any = null
+
 export function setupTerminal(mainWindow: any, rootPath?: string) {
     let shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
@@ -15,7 +17,6 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
         return acc
     }, {} as { [key: string]: string })
 
-    let ptyProcess: any = null
     for (var i = 0; i < shells.length; i++) {
         const shell = shells[i]
         try {
@@ -45,4 +46,11 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
     ipcMain.handle('terminal-resize', (event, size) => {
         ptyProcess.resize(size.cols, size.rows)
     })
+}
+
+export function updateTerminalPath(rootPath: string) {
+    if (ptyProcess == null) return
+    ptyProcess.cwd = rootPath
+    ptyProcess.write(`cd "${rootPath}"\r`)
+    ptyProcess.write('clear\r')
 }
