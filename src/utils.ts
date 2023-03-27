@@ -1,6 +1,48 @@
 export const API_ROOT = 'https://aicursor.com'
 
+export class NoAuthRateLimitError extends Error {
+    constructor(
+        message: string = 'You have reached the rate limit for unauthenticated requests. Please authenticate to continue.'
+    ) {
+        super(message)
+        this.name = 'NoAuthRateLimitError'
+    }
+}
+
+export class AuthRateLimitError extends Error {
+    constructor(
+        message: string = 'You have reached the rate limit for authenticated requests. Please wait before making more requests.'
+    ) {
+        super(message)
+        this.name = 'AuthRateLimitError'
+    }
+}
+export async function fetchWithCookies(url: string, options: RequestInit = {}) {
+    const response = await fetch(url, options)
+    // Get the cookies
+    const cookies = response.headers.get('Set-Cookie')
+    if (cookies) {
+        console.log(cookies)
+        const [name, value] = cookies.split('=')
+        await connector.setCookies({
+            url: url,
+            name,
+            value,
+        })
+    }
+    return response
+}
+
 export async function* streamSource(response: Response): AsyncGenerator<any> {
+    if (response.status == 429) {
+        // Check the error text
+        if (response.statusText == 'NO_AUTH') {
+            throw new NoAuthRateLimitError()
+        } else {
+            throw new AuthRateLimitError()
+        }
+    }
+    
     // Check if the response is an event-stream
     if (
         response.headers.get('content-type') ==

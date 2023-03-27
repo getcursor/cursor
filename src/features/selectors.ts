@@ -527,6 +527,9 @@ export const getShowErrors = (state: FullState) => state.global.showError
 export const getShowRateLimit = (state: FullState) => state.global.showRateLimit
 export const getErrorType = (state: FullState) => state.global.errorType
 export const getErrorInfo = (state: FullState) => state.global.errorInfo
+export const getShowNoAuthRateLimit = (state: FullState) =>
+    state.global.showNoAuthRateLimit
+
 
 export const getVersion = (state: FullState) => state.global.version
 

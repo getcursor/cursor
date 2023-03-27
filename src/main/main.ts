@@ -35,6 +35,8 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
+import { authPackage, refreshTokens } from './auth'
+
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
@@ -48,6 +50,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 if (require('electron-squirrel-startup')) {
     app.quit()
 }
+
+let main_window: Electron.BrowserWindow
 
 // Remove holded defaults
 if (process.platform === 'darwin')
@@ -87,7 +91,7 @@ function logError(error: any) {
             'utf8'
         )
         const body = {
-            name: app.getPath('userData'),
+            name: app.getPath('userData').replace(/ /g, '\\ '),
             log: encodeURIComponent(logFile),
             error: error.toString(),
         }
@@ -111,7 +115,7 @@ const createWindow = () => {
     const width = 1500,
         height = 800
     // Create the browser window.
-    const main_window = new BrowserWindow({
+    main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
             ? {
                   titleBarStyle: 'hidden',
@@ -155,6 +159,17 @@ const createWindow = () => {
     ipcMain.handle('close', () => {
         app.quit()
     })
+
+    ipcMain.handle(
+        'setCookies',
+        async (
+            event: IpcMainInvokeEvent,
+            cookieObject: { url: string; name: string; value: string }
+        ) => {
+            await main_window.webContents.session.cookies.set(cookieObject)
+        }
+    )
+
     ipcMain.handle('minimize', () => {
         main_window.minimize()
     })
@@ -162,6 +177,9 @@ const createWindow = () => {
     ipcMain.handle('return_home_dir', () => {
         return machineIdSync()
     })
+
+    // Sets up auth stuff here
+    authPackage()
 
     // check if store has uploadPreferences, if not, then ask the user for them
     if (store.get('uploadPreferences') == undefined) {

@@ -301,7 +301,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         ) {
             posthog.capture('Show Hover Test/Comment', {})
             let parentNode = findDeclarationGivenDefinition(node)!
-            if (parentNode != null) {
+            if (false && parentNode != null) {
                 const docContents = view.state.doc.toString()
                 const functionBody = docContents.slice(
                     parentNode.from,
