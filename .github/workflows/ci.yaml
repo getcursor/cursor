@@ -3,7 +3,7 @@ name: CI
 on:
     pull_request:
         branches:
-            - '*'
+            - main
     push:
         branches:
             - main
@@ -29,7 +29,7 @@ jobs:
             - uses: actions/checkout@v3
 
             - name: Setup macOS/linux
-              if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
+              if: ${{ matrix.os != 'windows-latest' }}
               run: ./setup.sh
 
             - name: Setup windows
@@ -52,7 +52,7 @@ jobs:
               run: npm run package
               timeout-minutes: 30
 
-            - name: Upload the binary
+            - name: Upload artifacts
               uses: actions/upload-artifact@v3
               with:
                   name: ${{ matrix.os }}-binary
