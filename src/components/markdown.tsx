@@ -281,9 +281,9 @@ export function ChatPopup() {
     const commandBoxRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if(!isGenerating && commandBoxRef) {
+        if (!isGenerating && commandBoxRef) {
             setTimeout(() => {
-                commandBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+                commandBoxRef.current?.scrollIntoView({ behavior: 'smooth' })
             }, 100)
         }
     }, [isGenerating])
@@ -440,7 +440,7 @@ export function MarkdownPopup({
                             className="markdownpopup__content"
                             ref={reactMarkdownRef}
                         >
-{/*                             <Markdown
+                            {/*                             <Markdown
                                 options={{
                                     overrides: {
                                         a: {

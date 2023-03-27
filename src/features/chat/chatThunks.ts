@@ -1356,4 +1356,3 @@ export const submitCommandBar = thunkFactory(
     dummySubmitCommandBar,
     'submitCommandBar'
 )
-

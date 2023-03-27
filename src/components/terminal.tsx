@@ -25,9 +25,9 @@ export function XTermComponent({ height }: { height: number }) {
                 foreground: '#f1f1f1',
             },
         })
-        terminal.current.onResize((size: { cols: number, rows: number }) => {
+        terminal.current.onResize((size: { cols: number; rows: number }) => {
             connector.terminalResize(size)
-        });
+        })
 
         terminal.current.loadAddon(fitAddon.current)
 

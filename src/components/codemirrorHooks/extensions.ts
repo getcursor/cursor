@@ -508,14 +508,14 @@ export function useExtensions({
     }, [fileIndentUnit, editorRef.current, justCreated])
 
     useEffect(() => {
-      if (settings.tabSize != undefined) {
-          editorRef.current.view?.dispatch({
-              effects: indentCompartment.reconfigure([
-                  indentUnit.of(" ".repeat(Number(settings.tabSize))), 
-                  EditorState.tabSize.of(Number(settings.tabSize))
-              ]),
-          })
-      }
+        if (settings.tabSize != undefined) {
+            editorRef.current.view?.dispatch({
+                effects: indentCompartment.reconfigure([
+                    indentUnit.of(' '.repeat(Number(settings.tabSize))),
+                    EditorState.tabSize.of(Number(settings.tabSize)),
+                ]),
+            })
+        }
     }, [settings.tabSize, editorRef.current, justCreated])
 
     return globalExtensions
