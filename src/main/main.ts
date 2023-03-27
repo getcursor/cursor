@@ -689,12 +689,11 @@ const createWindow = () => {
 
         const win = BrowserWindow.getFocusedWindow()!
         showingDialog = true
-        dialog
-            .showMessageBox(win, options)
-            .then((choice: any) => {
-                showingDialog = false
-                if (choice.response == 0) event.sender.send('register_learn_codebase')
-            })
+        dialog.showMessageBox(win, options).then((choice: any) => {
+            showingDialog = false
+            if (choice.response == 0)
+                event.sender.send('register_learn_codebase')
+        })
     })
 
     ipcMain.handle('right_click_file', function (event: Event, arg: null) {
@@ -976,20 +975,18 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
             }
 
             const win = BrowserWindow.getFocusedWindow()!
-            dialog
-                .showMessageBox(win, options)
-                .then((choice: any) => {
-                    showingDialog = false
-                    if (choice.response == 0) {
-                        setTimeout(() => {
-                            // First we clear the lsp store
-                            lspStore(store).clear()
+            dialog.showMessageBox(win, options).then((choice: any) => {
+                showingDialog = false
+                if (choice.response == 0) {
+                    setTimeout(() => {
+                        // First we clear the lsp store
+                        lspStore(store).clear()
 
-                            // Then we quit and install
-                            todesktop.autoUpdater.restartAndInstall()
-                        }, 100)
-                    }
-                })
+                        // Then we quit and install
+                        todesktop.autoUpdater.restartAndInstall()
+                    }, 100)
+                }
+            })
         }
     }
 
