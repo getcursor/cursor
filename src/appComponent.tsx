@@ -5,12 +5,11 @@ import {
     useState,
     useCallback,
 } from 'react'
-import { faClose, faCog } from '@fortawesome/pro-regular-svg-icons'
+import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
 import { PaneHolder } from './components/pane'
-import { LeftSide, FeedbackArea } from './components/search'
 import * as gs from './features/globalSlice'
 import * as cs from './features/chat/chatSlice'
 import * as ct from './features/chat/chatThunks'
@@ -31,6 +30,7 @@ import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
+import { FeedbackArea, LeftSide } from './components/search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { WelcomeScreen } from './components/welcomeScreen'
 import { TitleBar } from './components/titlebar'

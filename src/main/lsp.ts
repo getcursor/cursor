@@ -28,6 +28,7 @@ import {
 import log from 'electron-log'
 import Store from 'electron-store'
 import fixPath from 'fix-path'
+import { fileSystem } from './fileSystem'
 
 const writeFilePromise = promisify(fs.writeFile)
 const lspDir = app.isPackaged
@@ -360,6 +361,10 @@ class LSPManager {
             case 'go':
                 const goDir = path.join(lspDir, 'go')
                 try {
+                    // Check $GOPATH, and remove $GOPATH/go.mod file
+                    const goPath = cp.execSync('echo $GOPATH').toString().trim()
+                    fs.accessSync(`${goPath}go.mod`, fs.constants.F_OK)
+                    await fileSystem.unlinkSync(`${goPath}/go.mod`)
                     await promisify(cp.exec)(
                         'go install golang.org/x/tools/gopls@latest',
                         {
