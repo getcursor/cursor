@@ -148,14 +148,8 @@ const searchUnseenFiles = async (query: string, state: FullState) => {
     const rootPath = state.global.rootPath!
     // Now we need to search the files that haven't been seen yet
 
-    let nameResultsFuture = await connector.searchFilesNameGit({
-        query,
-        rootPath,
-    })
-    let pathResultsFuture = await connector.searchFilesPathGit({
-        query,
-        rootPath,
-    })
+    let nameResultsFuture = connector.searchFilesNameGit({ query, rootPath })
+    let pathResultsFuture = connector.searchFilesPathGit({ query, rootPath })
 
     const [initialNameResults, initialPathResults] = await Promise.all([
         nameResultsFuture,
@@ -266,20 +260,19 @@ export const searchFile = (query: string) =>
                 }
             } = {}
 
-            const queryKeywords = query.toLowerCase().split(' ')
-
-            const matchesQuery = (str: string) =>
-                queryKeywords.every((keyword) =>
-                    str.toLowerCase().replace(/\s+/g, '').includes(keyword)
-                )
-
             for (let fid in files) {
                 let fileId = parseInt(fid)
                 const file = files[fid]
                 let filename = file.name
                 const path = getPathForFileId(state, fileId)
 
-                if (query === '' || matchesQuery(path)) {
+                if (
+                    query === '' ||
+                    filename
+                        .toLowerCase()
+                        .replace(/\s+/g, '')
+                        .includes(query.toLowerCase().replace(/\s+/g, ''))
+                ) {
                     resultsSet[path] = { path, filename, score: 0 }
 
                     if (Object.keys(resultsSet).length > 50) {
@@ -296,7 +289,13 @@ export const searchFile = (query: string) =>
                 const path = getPathForFileId(state, fileId)
                 const relativePath = getRelativePathForFileId(state, fileId)
 
-                if (query === '' || matchesQuery(relativePath)) {
+                if (
+                    query == '' ||
+                    relativePath
+                        .toLowerCase()
+                        .replace(/\s+/g, '')
+                        .includes(query.toLowerCase().replace(/\s+/g, ''))
+                ) {
                     if (!(path in resultsSet)) {
                         resultsSet[path] = { path, filename, score: 1 }
                     }

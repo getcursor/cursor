@@ -5,18 +5,8 @@ import * as path from 'path'
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
 import { promisify } from 'util'
 import { app } from 'electron'
-import Fuse from 'fuse.js'
 
 import { platformResourcesDir, PLATFORM_INFO, rgLoc } from './utils'
-
-// Use fuse.js for fuzzy search of files
-let cachedFuseInstance: Fuse<string> | null = null
-let cachedFuseRootPath: string = ''
-const FUSE_OPTIONS = {
-    includeScore: true,
-    threshold: 0.3,
-    distance: 50,
-}
 
 const searchRipGrep = async (
     event: IpcMainInvokeEvent,
@@ -124,14 +114,11 @@ const searchFilesName = async (
         topResults?: number
     }
 ) => {
-    const queryKeywords = query
-        .split(' ')
-        .map((k) => `*${k}*`)
-        .join('')
+    const wildcardQuery = query.split('').join('*')
     const cmd =
         process.platform === 'win32'
-            ? `${rgLoc} --iglob "${queryKeywords}" --files '' ./ | head -n ${topResults}`
-            : `find . -type f -iname "${queryKeywords}" | head -n ${topResults}`
+            ? `${rgLoc} --iglob "*${query}*" --files '' ./ | head -n ${topResults}`
+            : `find . -type f -iname "*${query}*" | head -n ${topResults}`
     const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
     return stdout
         .split('\n')
@@ -186,33 +173,17 @@ const searchFilesPathGit = async (
     }
 ) => {
     if (await doesCommandSucceed('git ls-files ffff', rootPath)) {
-        if (cachedFuseRootPath !== rootPath) {
-            const cmd = `git ls-files`
-            try {
-                const { stdout } = await promisify(cp.exec)(cmd, {
-                    cwd: rootPath,
+        const cmd = `git ls-files | grep "${query}" | head -n ${topResults}`
+        try {
+            const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
+            return stdout
+                .split('\n')
+                .map((l) => {
+                    // map / to connector.PLATFORM_DELIMITER
+                    return l.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
                 })
-                const files = stdout.split('\n').filter(Boolean)
-                cachedFuseInstance = new Fuse(files, FUSE_OPTIONS)
-                cachedFuseRootPath = rootPath
-            } catch (e) {
-                cachedFuseInstance = null
-                cachedFuseRootPath = ''
-            }
-        }
-
-        if (cachedFuseInstance) {
-            const results = cachedFuseInstance
-                .search(query)
-                .slice(0, topResults)
-            return results.map((result) => {
-                // map / to connector.PLATFORM_DELIMITER
-                return result.item.replace(
-                    /\//g,
-                    PLATFORM_INFO.PLATFORM_DELIMITER
-                )
-            })
-        }
+                .filter(Boolean)
+        } catch (e) {}
     }
     return await searchFilesPath(event, { query, rootPath, topResults })
 }
@@ -239,43 +210,21 @@ const searchFilesNameGit = async (
     }
 ) => {
     if (await doesCommandSucceed('git ls-files ffff', rootPath)) {
-        if (cachedFuseRootPath !== rootPath) {
-            const cmd = `git ls-files`
-            try {
-                const { stdout } = await promisify(cp.exec)(cmd, {
-                    cwd: rootPath,
+        const cmd = `git ls-files | grep -i "${query}[^\/]*" | grep -v "^node_modules/" | head -n ${topResults}`
+        try {
+            const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
+            return stdout
+                .split('\n')
+                .map((l) => {
+                    // map / to connector.PLATFORM_DELIMITER
+                    return l.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
                 })
-                const files = stdout.split('\n').filter(Boolean)
-                cachedFuseInstance = new Fuse(files, FUSE_OPTIONS)
-                cachedFuseRootPath = rootPath
-            } catch (e) {
-                cachedFuseInstance = null
-                cachedFuseRootPath = ''
-            }
-        }
-
-        if (cachedFuseInstance) {
-            const results = cachedFuseInstance
-                .search(query)
-                .slice(0, topResults)
-            return results
-                .map((result) => {
-                    const file = result.item
-                    const fileName = file.substring(file.lastIndexOf('/') + 1)
-                    return { file, fileName }
-                })
-                .filter(({ fileName }) =>
-                    fileName.toLowerCase().includes(query.toLowerCase())
-                )
-                .map(({ file }) =>
-                    file.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
-                )
-        }
+                .filter(Boolean)
+        } catch (e) {}
     }
     // we'll have to run it with find
     return await searchFilesName(event, { query, rootPath, topResults })
 }
-
 export const setupSearch = () => {
     ipcMain.handle('searchRipGrep', customDebounce(searchRipGrep))
     ipcMain.handle('searchFilesName', customDebounce(searchFilesName))
