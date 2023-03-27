@@ -21,6 +21,7 @@ jobs:
                 os:
                     - macos-latest
                     - ubuntu-latest
+                    - windows-latest
 
         runs-on: ${{matrix.os}}
 
@@ -43,18 +44,26 @@ jobs:
             - name: Build
               run: npm run make
 
-            - name: Publish macOS x64 artifacts
+            - name: Publish macOS artifacts
               if: matrix.os == 'macos-latest'
               uses: actions/upload-artifact@v2
               with:
-                  name: macos-x64-artifact
+                  name: macos-artifact
                   path: |
                       out/make/zip/darwin/x64/*.zip
 
-            - name: Publish Linux x64 artifacts
+            - name: Publish Linux artifacts
               if: matrix.os == 'ubuntu-latest'
               uses: actions/upload-artifact@v2
               with:
-                  name: linux-x64-artifact
+                  name: linux-artifact
                   path: |
                       out/make/deb/x64/*.deb
+
+            - name: Publish Windows artifacts
+              if: matrix.os == 'windows-latest'
+              uses: actions/upload-artifact@v2
+              with:
+                  name: windows-artifact
+                  path: |
+                      out/make/zip/windows/x64/*.zip
