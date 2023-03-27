@@ -6,7 +6,7 @@ import { setupTestIndexer } from './testIndexer'
 import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
-import _, { uniqueId } from 'lodash'
+import _ from 'lodash'
 
 import {
     app,
@@ -35,7 +35,7 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { authPackage, refreshTokens } from './auth'
+import { authPackage } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
@@ -908,6 +908,8 @@ const createWindow = () => {
     })
     setupLSPs(store)
     const projectPathObj = store.get('projectPath')
+    const settings = store.get('settings') as any
+
     if (
         typeof projectPathObj === 'object' &&
         projectPathObj !== null &&
@@ -915,12 +917,12 @@ const createWindow = () => {
     ) {
         const projectPath = projectPathObj.defaultFolder
         if (typeof projectPath === 'string') {
-            setupTerminal(main_window, projectPath)
+            setupTerminal({ mainWindow: main_window, rootPath: projectPath, command: settings.terminal })
         } else {
-            setupTerminal(main_window)
+            setupTerminal({ mainWindow: main_window, command: settings.terminal })
         }
     } else {
-        setupTerminal(main_window)
+        setupTerminal({ mainWindow: main_window, command: settings.terminal })
     }
 
     setupSearch()

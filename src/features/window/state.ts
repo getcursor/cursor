@@ -302,6 +302,7 @@ export interface Settings {
     contextType: string
     textWrapping: string
     tabSize?: string
+    terminal?: string
 }
 
 export interface SettingsState {
