@@ -184,7 +184,6 @@ export function getNamesAndBodies(cursor: TreeCursor, contents: string) {
             // get the actual body of the function using Lezer
             let functionName = null
             do {
-                // @ts-ignore
                 if (
                     [
                         'VariableDefinition',

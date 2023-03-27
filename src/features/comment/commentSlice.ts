@@ -1,12 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { findFileIdFromPath } from '../window/fileUtils'
 import { CommentFunction, CommentState, FullState } from '../window/state'
-
-import { EditorState, Text } from '@codemirror/state'
-import { LanguageSupport, syntaxTree } from '@codemirror/language'
-import { syntaxBundle } from '../../features/extensions/syntax'
 import { API_ROOT, streamSource } from '../../utils'
-import { getNamesAndBodies } from '../extensions/utils'
 
 const initialState: CommentState = {
     fileThenNames: {},
@@ -22,8 +17,8 @@ export const updateCommentsForFile = createAsyncThunk(
         const contents = global.fileCache[fileId].contents
         let cachedComments = state.commentState.fileThenNames[payload.filePath]
         if (cachedComments == null) {
-            //@ts-ignore
-            cachedComments = await connector.loadComments(payload.filePath)
+            // @ts-ignore
+            cachedComments = connector.loadComments(payload.filePath)
             dispatch(
                 updateComments({
                     filePath: payload.filePath,
@@ -81,9 +76,8 @@ export const updateCommentsForFile = createAsyncThunk(
 
 export const saveComments = createAsyncThunk(
     'comments/saveComments',
-    async (payload: { path: string }, { getState, dispatch }) => {
+    async (payload: { path: string }, { getState }) => {
         const state = getState() as FullState
-        //@ts-ignore
         connector.saveComments({
             path: payload.path,
             blob: state.commentState.fileThenNames[payload.path],
@@ -95,7 +89,7 @@ export const addCommentToDoc = createAsyncThunk(
     'comments/addCommentsToDoc',
     async (
         payload: { filePath: string; functionName: string },
-        { getState, dispatch }
+        { dispatch }
     ) => {
         dispatch(afterAddCommentToDoc(payload))
         dispatch(saveComments({ path: payload.filePath }))

@@ -1,24 +1,14 @@
-import {
-    createAsyncThunk,
-    createSlice,
-    PayloadAction,
-    ActionCreatorWithoutPayload,
-} from '@reduxjs/toolkit'
-import {
-    FullState,
-    Settings,
-    SettingsState,
-    initialSettingsState,
-} from '../window/state'
-import { current } from 'immer'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { SettingsState, initialSettingsState, FullState } from '../window/state'
 
 export const changeSettings = createAsyncThunk(
     'settings/changeSettings',
     async (newSettings: any, { getState, dispatch }) => {
         dispatch(changeSettingsNoSideffect(newSettings))
 
-        //@ts-ignore
-        connector.changeSettings(getState().settingsState.settings)
+        const state = getState() as FullState
+
+        connector.changeSettings(state.settingsState.settings)
     }
 )
 

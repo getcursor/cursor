@@ -1,35 +1,20 @@
-import { EditorView, ViewUpdate } from '@codemirror/view'
-import { TransactionSpec } from '@codemirror/state'
-import {
-    Action,
-    createAsyncThunk,
-    createSlice,
-    PayloadAction,
-    current,
-} from '@reduxjs/toolkit'
-import { clear } from 'console'
-import { historyField } from '@codemirror/commands'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
     startConnections,
     getDefinition,
     runLanguageServer,
-    installLanguageServer,
     getIdentifier,
     startCopilotWithoutFolder,
 } from './lsp/languageServerSlice'
 import type * as LSP from 'vscode-languageserver-protocol'
-import {
-    changeSettingsNoSideffect,
-    changeSettings,
-} from './settings/settingsSlice'
+import { changeSettingsNoSideffect } from './settings/settingsSlice'
 import { getLanguageFromFilename } from './extensions/utils'
 
-import { API_ROOT, join } from '../utils'
+import { join } from '../utils'
 import {
     State,
     FullState,
     HoverState,
-    ReduxTransaction,
     ReduxEditorState,
     FolderData,
     nextFolderID,
@@ -46,7 +31,6 @@ import {
     insertFirstPane,
     insertNewTab,
     setActiveTab,
-    setPaneContents,
     createCachedTabIfNotExists,
     getActiveTabId,
     doCloseTab,
@@ -82,12 +66,10 @@ import {
     abortFileRename,
 } from './window/fileUtils'
 
-import { LSPNotifyMap } from './lsp/stdioClient'
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
 import { updateCommentsForFile } from './comment/commentSlice'
 import { openFileTree } from './tools/toolSlice'
 import { updateTestsForFile } from './tests/testSlice'
-import { getPane } from './selectors'
 
 import posthog from 'posthog-js'
 import { removeEditor } from './codemirror/codemirrorSlice'
@@ -245,7 +227,7 @@ export const openFile = createAsyncThunk(
             return
         }
 
-        const { fileId, contents } = result.payload
+        const { fileId } = result.payload
         await dispatch(selectFile(fileId))
 
         const tabId = getActiveTabId((<FullState>getState()).global)!
@@ -269,7 +251,7 @@ export const openFile = createAsyncThunk(
 
 export const saveFile = createAsyncThunk(
     'global/savedFile',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         if (fileId == null) {
             fileId = getActiveFileId((<FullState>getState()).global)
             if (fileId == null) {
@@ -297,25 +279,21 @@ export const saveFile = createAsyncThunk(
             }
         }
 
-        const savedTime = (await connector.saveFile(
-            path,
-            cachedFile.contents
-        )) as number
         return { fileId }
     }
 )
 
 export const forceSaveAndClose = createAsyncThunk(
     'global/forceSaveAndClose',
-    async (args: null, { dispatch }) => {
+    async (_args: null, { dispatch }) => {
         await dispatch(saveFile(null))
-        await dispatch(forceCloseTab(null))
+        dispatch(forceCloseTab(null))
     }
 )
 
 export const deleteFolder = createAsyncThunk(
     'global/deleteFolder',
-    async (folderId: number | null, { getState, dispatch }) => {
+    async (folderId: number | null, { getState }) => {
         const state = (<FullState>getState()).global
         if (folderId == null) {
             folderId = state.rightClickId
@@ -333,14 +311,14 @@ export const deleteFolder = createAsyncThunk(
 
 export const folderWasAdded = createAsyncThunk(
     'global/folderWasAdded',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFolderWasAdded(path))
     }
 )
 
 export const folderWasDeleted = createAsyncThunk(
     'global/folderWasDeleted',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFolderWasDeleted(path))
     }
 )
@@ -389,21 +367,21 @@ export const fileWasUpdated = createAsyncThunk(
 
 export const fileWasAdded = createAsyncThunk(
     'global/fileWasAdded',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFileWasAdded(path))
     }
 )
 
 export const fileWasDeleted = createAsyncThunk(
     'global/fileWasDeleted',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFileWasDeleted(path))
     }
 )
 
 export const deleteFile = createAsyncThunk(
     'global/deleteFile',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         const state = (<FullState>getState()).global
         if (fileId == null) {
             fileId = state.rightClickId
@@ -420,7 +398,7 @@ export const deleteFile = createAsyncThunk(
 
 export const openContainingFolder = createAsyncThunk(
     'global/openContainingFolder',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         const state = (<FullState>getState()).global
         if (fileId == null) {
             fileId = state.rightClickId
@@ -438,7 +416,7 @@ export const commitRename = createAsyncThunk(
     'global/commitRename',
     async (
         { fid, isFolder = false }: { fid: number | null; isFolder?: boolean },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global as State
         if (fid == null) {
@@ -494,8 +472,8 @@ export const rightClickFolder = createAsyncThunk(
 export const loadFolder = createAsyncThunk(
     'global/loadFolder',
     async (
-        { folderId, goDeep }: { folderId: number; goDeep: boolean },
-        { getState, dispatch }
+        { folderId }: { folderId: number; goDeep: boolean },
+        { getState }
     ) => {
         const state: State = (<FullState>getState()).global
 
@@ -522,7 +500,7 @@ export const loadFolder = createAsyncThunk(
 
 export const openRemoteFolder = createAsyncThunk(
     'global/openRemoteFolder',
-    async (args: null, { dispatch, getState }) => {
+    async (_args: null, { dispatch, getState }) => {
         const state = (<FullState>getState()).global
         const res = await connector.setRemoteFileSystem({
             sshCommand: state.remoteCommand,
@@ -571,10 +549,9 @@ export const openRemoteFolder = createAsyncThunk(
 
 export const openTutorFolder = createAsyncThunk(
     'global/openTutorFolder',
-    async (args: null, { getState, dispatch }) => {
+    async (_args: null, { getState, dispatch }) => {
         posthog.capture('Opened Tutor Folder', {})
 
-        //@ts-ignore
         const path = await connector.createTutorDir()
 
         await dispatch(openFolder({ path }))
@@ -713,15 +690,15 @@ export const trulyOpenFolder = createAsyncThunk(
 
 export const setIsNotFirstTimeWithSideEffect = createAsyncThunk(
     'global/setIsNotFirstTimeWithSideEffect',
-    async (args: null, { dispatch }) => {
-        await connector.setStore('isNotFirstTime', true)
+    async (_args: null, { dispatch }) => {
+        connector.setStore('isNotFirstTime', true)
         dispatch(setIsNotFirstTime(true))
     }
 )
 
 export const initState = createAsyncThunk(
     'global/initState',
-    async (args: null, { getState, dispatch }) => {
+    async (_args: null, { dispatch }) => {
         const config = await connector.getProject()
         connector.refreshTokens()
 
@@ -755,7 +732,7 @@ export const initState = createAsyncThunk(
 
 export const syncProject = createAsyncThunk(
     'global/syncProject',
-    async (rootDir: string | null, { getState, dispatch }) => {
+    async (rootDir: string | null, { getState }) => {
         const state = (<FullState>getState()).global
         const myDir = rootDir || state.rootPath
         await connector.syncProject(myDir!)
@@ -778,7 +755,7 @@ export const newFile = createAsyncThunk(
     'global/newFile',
     async (
         { parentFolderId }: { parentFolderId: number | null },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global
         const actualParent = parentFolderId || state.rightClickId || 1
@@ -798,7 +775,7 @@ export const newFolder = createAsyncThunk(
     'global/newFolder',
     async (
         { parentFolderId }: { parentFolderId: number | null },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global
         const actualParent = parentFolderId || state.rightClickId
@@ -921,7 +898,6 @@ const globalSlice = createSlice({
                 if (action.payload == null) {
                     return
                 }
-                const fileid = action.payload as number
                 commitFileRename(state)
             })
             .addCase(rightClickFile.fulfilled, (stobj, action) => {
@@ -1025,7 +1001,10 @@ const globalSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
-        insertMultiTabAndSetActive(stobj: Object, action: PayloadAction<null>) {
+        insertMultiTabAndSetActive(
+            stobj: Object,
+            _action: PayloadAction<null>
+        ) {
             const state = <State>stobj
             const paneId = getActivePaneID(state)!
 
@@ -1048,7 +1027,7 @@ const globalSlice = createSlice({
             createCachedTabIfNotExists(state, tabid)
             setActiveTab(state, tabid)
         },
-        setMultiTabToDiff(stobj: Object, action: PayloadAction<null>) {
+        setMultiTabToDiff(stobj: Object, _action: PayloadAction<null>) {
             const state = <State>stobj
             const tabId = getActiveTabId(state)!
             const tab = state.tabs[tabId]

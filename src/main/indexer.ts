@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as cp from 'child_process'
 import log from 'electron-log'
 import { Semaphore } from 'await-semaphore'
-import { ipcMain, IpcMainInvokeEvent, session, BrowserWindow } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, BrowserWindow } from 'electron'
 import _ from 'lodash'
 import Store from 'electron-store'
 import crypto from 'crypto'
@@ -278,7 +278,7 @@ export class CodebaseIndexer {
             }
             batchNum = 1
             while (true) {
-                const gitCmd = `git submodule foreach --quiet \'git ls-files | sed "s|^|$path/|"\'`
+                const gitCmd = `git submodule foreach --quiet 'git ls-files | sed "s|^|$path/|"'`
                 const paginateCmd = `head -n ${
                     batchNum * batchSize
                 } | tail -n ${batchSize}`

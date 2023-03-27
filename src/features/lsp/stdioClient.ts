@@ -529,7 +529,6 @@ export class LanguageServerClient {
         params: LSPRequestMap[K][0]
     ): Promise<LSPRequestMap[K][1]> {
         const payload = { language: this.connectionName!, method, params }
-        // @ts-ignore
         return await connector.sendRequestLS(payload)
     }
 
@@ -538,8 +537,6 @@ export class LanguageServerClient {
         method: K,
         params: LSPNotifyMap[K]
     ): Promise<void> {
-        const payload = { language: this.connectionName!, method, params }
-        // @ts-ignore
         return await connector.sendNotificationLS({
             language: this.connectionName!,
             method,
@@ -714,13 +711,10 @@ export class LanguageServerClient {
 
     // Close the connection with the server
     close() {
-        // @ts-ignore
         connector.killLS(this.connectionName!)
 
-        // @ts-ignore
         connector.removeNotificationCallback(this.connectionName!)
 
-        // @ts-ignore
         connector.removeRequestCallback(this.connectionName!)
     }
 

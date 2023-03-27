@@ -32,17 +32,9 @@ import {
     Range,
 } from '@codemirror/state'
 import elt from 'crelt'
-import {
-    customDispatchEffect,
-    CustomTransaction,
-    textInsert,
-} from '../../components/codemirrorHooks/dispatch'
-import { autoBatchEnhancer } from '@reduxjs/toolkit'
+import { customDispatchEffect } from '../../components/codemirrorHooks/dispatch'
 // import { fixErrors } from '../fixLSP/fixLSPSlice'
-import { getViewTabId } from '../extensions/utils'
 import posthog from 'posthog-js'
-import { fixErrors } from '../fixLSP/fixLSPSlice'
-import { pressAICommand } from '../chat/chatThunks'
 
 /// Describes a problem or hint for a piece of code.
 export interface Diagnostic {

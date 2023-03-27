@@ -29,27 +29,24 @@ export const initialLanguageServerState = {
 
 export const installLanguageServer = createAsyncThunk(
     'settings/installLanguageServer',
-    async (languageServerName: string, { rejectWithValue, getState }) => {
+    async (languageServerName: string, { getState }) => {
         const rootDir = (<FullState>getState()).global.rootPath
-        // @ts-ignore
-        await connector.installLS(languageServerName, rootDir)
+        await connector.installLS(languageServerName, rootDir!)
         return languageServerName
     }
 )
 
 export const runLanguageServer = createAsyncThunk(
     'settings/runLanguageServer',
-    async (languageServerName: string, { getState, rejectWithValue }) => {
+    async (languageServerName: string, { getState }) => {
         if (clientConnections[languageServerName]) {
             // Already running
             return languageServerName
         } else {
             const rootPath = (getState() as FullState).global.rootPath!
 
-            // @ts-ignore
             await connector.installLS(languageServerName, rootPath)
 
-            // @ts-ignore
             await connector.startLS(languageServerName, rootPath)
 
             const newClient = new LanguageServerClient({
@@ -73,7 +70,6 @@ export const stopLanguageServer = createAsyncThunk(
         if (!clientConnections[languageServerName]) {
             return rejectWithValue(languageServerName)
         }
-        // @ts-ignore
         await connector.stopLS(languageServerName)
         await dispatch(killConnection(languageServerName))
         return languageServerName
@@ -82,7 +78,7 @@ export const stopLanguageServer = createAsyncThunk(
 
 export const startConnections = createAsyncThunk(
     'lsp/startConnections',
-    async (rootUri: string, { getState, dispatch }) => {
+    async (rootUri: string, { dispatch }) => {
         await dispatch(killAllConnections(null))
         // For now we just start copilot
         const copilotClient = new LanguageServerClient({
@@ -102,7 +98,6 @@ export const startConnections = createAsyncThunk(
         dispatch(copilotChangeSignin(signedIn))
 
         const maybeRun = async (languageServerName: string) => {
-            // @ts-ignore
             const savedState = await connector.getLSState(languageServerName)
             if (savedState == null) return
 
@@ -117,7 +112,7 @@ export const startConnections = createAsyncThunk(
 
 export const startCopilotWithoutFolder = createAsyncThunk(
     'lsp/startCopilotWithoutFolder',
-    async (args: null, { getState, dispatch }) => {
+    async (_args: null, { dispatch }) => {
         await dispatch(killAllConnections(null))
         // Start copilot without a folder
         const copilotClient = new LanguageServerClient({
@@ -139,12 +134,13 @@ export const startCopilotWithoutFolder = createAsyncThunk(
 
 export const killConnection = createAsyncThunk(
     'lsp/killConnection',
-    async (languageServerName: string, { getState, rejectWithValue }) => {
+    async (languageServerName: string, {}) => {
         if (clientConnections[languageServerName]) {
             // Already running
             clientConnections[languageServerName].client.close()
             delete clientConnections[languageServerName]
         }
+
         // @ts-ignore
         await connector.killLanguageServer(languageServerName)
 
@@ -154,7 +150,7 @@ export const killConnection = createAsyncThunk(
 
 export const killAllConnections = createAsyncThunk(
     'lsp/killAllConnections',
-    async (args: null, { dispatch }) => {
+    async (_args: null, { dispatch }) => {
         const futures = []
         for (const lspName in clientConnections) {
             futures.push(dispatch(killConnection(lspName)))
@@ -162,7 +158,6 @@ export const killAllConnections = createAsyncThunk(
 
         await Promise.all(futures)
 
-        // @ts-ignore
         await connector.killAllLS()
     }
 )

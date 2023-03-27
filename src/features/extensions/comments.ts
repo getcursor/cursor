@@ -219,7 +219,6 @@ export const aiComments = function () {
                             // find the location of the decoration with this function name attr
                             let pos: number | undefined
 
-                            //@ts-ignore
                             const plugin = this as TreeHighlighter
 
                             // iterate through decorations to find the position of the decoration with the matching function name

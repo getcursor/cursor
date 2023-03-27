@@ -377,7 +377,6 @@ export async function getContentsIfNeeded(state: State, fileid: number) {
         return cachedFile.contents
     } else {
         const path = getPathForFileId(state, fileid)
-        // @ts-ignore
         const contents = await connector.getFile(path)
         return contents
     }
@@ -447,11 +446,9 @@ export const loadFileIfNeeded = createAsyncThunk(
     }
 )
 async function createFile(fileName: string, data: string) {
-    // @ts-ignore
     await connector.saveFile(fileName, data)
 }
 async function checkIfFileExists(fileName: string) {
-    // @ts-ignore
     return await connector.checkFileExists(fileName)
 }
 
