@@ -693,13 +693,8 @@ const createWindow = () => {
             .showMessageBox(win, options)
             .then((choice: any) => {
                 showingDialog = false
-                if (choice.response == 0) {
-                    event.sender.send('register_learn_codebase')
-                } else if (choice.response == 1) {
-                    // do nothing
-                }
+                if (choice.response == 0) event.sender.send('register_learn_codebase')
             })
-            .catch((err: any) => {})
     })
 
     ipcMain.handle('right_click_file', function (event: Event, arg: null) {
@@ -995,7 +990,6 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
                         }, 100)
                     }
                 })
-                .catch((err: any) => {})
         }
     }
 

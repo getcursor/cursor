@@ -1,14 +1,12 @@
 import _ from 'lodash'
 
 import * as cp from 'child_process'
-import * as path from 'path'
-import { ipcMain, IpcMainInvokeEvent, app, app } from 'electron'
+import { ipcMain, IpcMainInvokeEvent } from 'electron'
 import { promisify } from 'util'
-
-import { platformResourcesDir, PLATFORM_INFO, rgLoc } from './utils'
+import { PLATFORM_INFO, rgLoc } from './utils'
 
 const searchRipGrep = async (
-    event: IpcMainInvokeEvent,
+    _event: IpcMainInvokeEvent,
     arg: {
         query: string
         rootPath: string
@@ -31,7 +29,6 @@ const searchRipGrep = async (
 
     // cmd.push(`"${arg.query}"`, arg.rootPath);
     cmd.push(arg.query, arg.rootPath)
-    const start = performance.now()
     const childProcess = cp.spawn(rgLoc, cmd)
 
     const rawData: string[] = []
@@ -189,7 +186,7 @@ const searchFilesPathGit = async (
 
 const doesCommandSucceed = async (cmd: string, rootPath: string) => {
     try {
-        const res = await promisify(cp.exec)(cmd, { cwd: rootPath })
+        await promisify(cp.exec)(cmd, { cwd: rootPath })
         return true
     } catch (e) {
         return false
