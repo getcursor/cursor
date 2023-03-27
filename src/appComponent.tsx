@@ -248,6 +248,9 @@ export function App() {
                 } else if (e.key == 'e' && e.shiftKey) {
                     dispatch(ct.pressAICommand('singleLSP'))
                     e.stopPropagation()
+                } else if (e.key == 'h') {
+                    dispatch(ct.pressAICommand('history'))
+                    e.stopPropagation()
                 }
             }
 
