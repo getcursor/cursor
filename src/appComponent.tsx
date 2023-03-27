@@ -118,7 +118,9 @@ function RateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    It seems like you're making a high rate of requests. Please slow down and try again in a minute or so. If you believe this is an error, contact us at michael@cursor.so
+                    It seems like you're making a high rate of requests. Please
+                    slow down and try again in a minute or so. If you believe
+                    this is an error, contact us at michael@cursor.so
                     <br />
                 </div>
             </div>
@@ -151,10 +153,16 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than our servers can handle right now. To avoid these limits and to purchase reserved capacity, you can upgrade to <a 
+                    We're getting more traffic than our servers can handle right
+                    now. To avoid these limits and to purchase reserved
+                    capacity, you can upgrade to{' '}
+                    <a
                         className="pay-link"
                         onClick={() => dispatch(ts.upgradeCursor(null))}
-                    >Cursor Pro</a> for $20/month.
+                    >
+                        Cursor Pro
+                    </a>{' '}
+                    for $20/month.
                 </div>
             </div>
         </Modal>
@@ -237,8 +245,8 @@ function SSHPopup() {
                         onKeyDown={(event: any) => {
                             if (event.key === 'Enter') {
                                 submit()
-                            }}
-                        }
+                            }
+                        }}
                     />
                 </div>
                 <div className="submit-button-parent">

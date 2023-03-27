@@ -413,7 +413,6 @@ const electronConnector = {
     refreshTokens() {
         ipcRenderer.invoke('refreshTokens')
     },
-
 }
 
 contextBridge.exposeInMainWorld('connector', electronConnector)

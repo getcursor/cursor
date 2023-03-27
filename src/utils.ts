@@ -42,7 +42,7 @@ export async function* streamSource(response: Response): AsyncGenerator<any> {
             throw new AuthRateLimitError()
         }
     }
-    
+
     // Check if the response is an event-stream
     if (
         response.headers.get('content-type') ==

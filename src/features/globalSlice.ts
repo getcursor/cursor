@@ -597,8 +597,7 @@ export const openFolder = createAsyncThunk(
     'global/openFolder',
     async (args: { path: string } | null, { dispatch }) => {
         posthog.capture('Opened Folder', {})
-                connector.refreshTokens()
-
+        connector.refreshTokens()
 
         const folderPath =
             (args != null ? args.path : null) || (await connector.openFolder())
@@ -1612,5 +1611,5 @@ export const {
     closeNoAuthRateLimit,
     openNoAuthRateLimit,
 } = globalSlice.actions
-    
+
 export default globalSlice.reducer

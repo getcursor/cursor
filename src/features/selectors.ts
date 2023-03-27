@@ -530,7 +530,6 @@ export const getErrorInfo = (state: FullState) => state.global.errorInfo
 export const getShowNoAuthRateLimit = (state: FullState) =>
     state.global.showNoAuthRateLimit
 
-
 export const getVersion = (state: FullState) => state.global.version
 
 export const getShowRemotePopup = (state: FullState) =>

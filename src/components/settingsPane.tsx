@@ -35,7 +35,6 @@ import {
 } from '../features/tools/toolSlice'
 import { loginStatus } from '../features/tools/toolSelectors'
 
-
 import Modal from 'react-modal'
 
 export function SettingsPopup() {
@@ -142,7 +141,7 @@ export function SettingsPopup() {
                                     value={settings.textWrapping}
                                 />
                             </div>
-                            
+
                             <div className="settings__item">
                                 <div className="settings__item_title">
                                     Tab Size
@@ -229,7 +228,6 @@ function CursorLogin() {
         </div>
     )
 }
-
 
 function CopilotPanel() {
     const dispatch = useAppDispatch()

@@ -614,7 +614,6 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
         placeholder = 'Chat about the current file/selection...'
     }
 
-
     const builder = useRef<ContextBuilder>()
 
     const getCompletions = useCallback<

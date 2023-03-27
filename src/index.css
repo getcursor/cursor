@@ -2382,8 +2382,7 @@ cm-diff-cancel > div {
     background-color: rgb(51 61 75 / var(--tw-bg-opacity));
     width: 32px;
 }
-free servers
-.disabled_command .shortcut__block {
+free servers .disabled_command .shortcut__block {
     color: #555;
     background-color: rgb(51 61 75 / 0.2);
 }
@@ -2461,7 +2460,8 @@ free servers
     justify-content: flex-end;
 }
 
-.close-button, .pay-button {
+.close-button,
+.pay-button {
     padding: 4px 8px;
     border-radius: 5px;
     font-size: 18px;
