@@ -190,7 +190,8 @@ const electronConnector = {
     },
     terminalInto: (data: any) => ipcRenderer.invoke('terminal-into', data),
     terminalResize: (data: any) => ipcRenderer.invoke('terminal-resize', data),
-
+    setTermialPath: (path: string) =>
+        ipcRenderer.invoke('set-terminal-path', path),
     registerFileWasAdded: (callback: Callback) =>
         ipcRenderer.on('fileWasAdded', callback),
     registerFileWasDeleted: (callback: Callback) =>

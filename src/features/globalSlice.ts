@@ -552,6 +552,7 @@ export const openRemoteFolder = createAsyncThunk(
         if (repoId != null) {
             dispatch(setRepoId(repoId))
             dispatch(syncProject(null))
+            dispatch(setTermialPath(folderPath))
         } else {
             dispatch(initializeIndex(null))
         }
@@ -627,6 +628,7 @@ export const openFolder = createAsyncThunk(
         if (repoId != null) {
             dispatch(setRepoId(repoId))
             dispatch(syncProject(null))
+            dispatch(setTermialPath(folderPath))
         } else {
             dispatch(initializeIndex(null))
         }
@@ -749,6 +751,13 @@ export const initState = createAsyncThunk(
             dispatch(setRemoteCommand(remote.remoteCommand))
         if (remote != null && remote.remotePath != null)
             dispatch(setRemotePath(remote.remotePath))
+    }
+)
+
+export const setTermialPath = createAsyncThunk(
+    'global/setTermialPath',
+    async (path: string, { getState, dispatch }) => {
+        await connector.setTermialPath(path)
     }
 )
 

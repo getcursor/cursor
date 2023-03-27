@@ -2,7 +2,7 @@ import os from 'os'
 import * as pty from 'node-pty'
 
 import { ipcMain } from 'electron'
-
+import log from 'electron-log'
 export function setupTerminal(mainWindow: any, rootPath?: string) {
     let shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
@@ -34,6 +34,15 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
     }
 
     if (ptyProcess == null) return
+
+    ipcMain.handle(
+        'set-terminal-path',
+        async function (event: any, path: string) {
+            ptyProcess.kill('SIGINT')
+            ptyProcess.write(`cd ${path}\n`)
+            ptyProcess.write(`clear \n`)
+        }
+    )
     ipcMain.handle('terminal-into', (event, data) => {
         ptyProcess.write(data)
     })
