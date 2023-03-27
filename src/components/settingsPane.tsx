@@ -169,13 +169,17 @@ export function SettingsPopup() {
                                 <div className="settings__item_description">
                                     Controls the terminal command
                                 </div>
-                                <input className='p-2 mt-2 w-full bg-dark-gray' defaultValue={settings.terminal} onBlur={(e) => {
+                                <input
+                                    className="p-2 mt-2 w-full bg-dark-gray"
+                                    defaultValue={settings.terminal}
+                                    onBlur={(e) => {
                                         dispatch(
                                             changeSettings({
                                                 terminal: e.target.value,
                                             })
                                         )
-                                  }}/>
+                                    }}
+                                />
                             </div>
                             <CursorLogin />
                             <CopilotPanel />

@@ -4,9 +4,9 @@ module.exports = {
     content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
     theme: {
         extend: {
-          colors: {
-            'dark-gray': "#333"
-          }
+            colors: {
+                'dark-gray': '#333',
+            },
         },
     },
     plugins: [],

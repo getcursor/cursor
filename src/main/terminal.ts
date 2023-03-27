@@ -3,13 +3,15 @@ import * as pty from 'node-pty'
 import { ipcMain } from 'electron'
 
 interface TerminalConfig {
-  command?: any
-  mainWindow: any
-  rootPath?: string
+    command?: any
+    mainWindow: any
+    rootPath?: string
 }
 
 export function setupTerminal(config: TerminalConfig) {
-    let shells = [config.command].concat(os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash'])
+    let shells = [config.command].concat(
+        os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
+    )
 
     const filteredEnv: { [key: string]: string } = Object.entries(
         process.env
@@ -25,7 +27,7 @@ export function setupTerminal(config: TerminalConfig) {
     for (var i = 0; i < shells.length; i++) {
         const shell = shells[i]
 
-        if (shell == undefined) continue;
+        if (shell == undefined) continue
 
         try {
             if (process.platform !== 'win32')

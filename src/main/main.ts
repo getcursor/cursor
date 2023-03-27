@@ -917,9 +917,16 @@ const createWindow = () => {
     ) {
         const projectPath = projectPathObj.defaultFolder
         if (typeof projectPath === 'string') {
-            setupTerminal({ mainWindow: main_window, rootPath: projectPath, command: settings.terminal })
+            setupTerminal({
+                mainWindow: main_window,
+                rootPath: projectPath,
+                command: settings.terminal,
+            })
         } else {
-            setupTerminal({ mainWindow: main_window, command: settings.terminal })
+            setupTerminal({
+                mainWindow: main_window,
+                command: settings.terminal,
+            })
         }
     } else {
         setupTerminal({ mainWindow: main_window, command: settings.terminal })
