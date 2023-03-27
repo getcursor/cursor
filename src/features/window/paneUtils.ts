@@ -247,28 +247,39 @@ export function insertFirstPane(state: State) {
     return paneId
 }
 
-export function doMoveTabToPane(state: State, tabId: number, paneId: number) {
+export function doMoveTabToPane(state: State, tabId: number, paneId: number, tabPosition?: number) {
     const oldPaneId = state.tabs[tabId].paneId
     if (oldPaneId == null) return
-
+    const newPane = state.paneState.byIds[paneId]    
     const tab = state.tabs[tabId]
 
-    const oldPane = state.paneState.byIds[oldPaneId]
+    const isNewPane = oldPaneId !== paneId;
+    const maybeTabId = newPane.tabIds.find(tabId => state.tabs[tabId].fileId === tab.fileId)
+    if ((maybeTabId != null) && isNewPane) {
+        deleteTab(state, tabId);
+        setActiveTab(state, maybeTabId);
+        return;
+    }
 
+    const oldPane = state.paneState.byIds[oldPaneId]
     if (tab.isActive && oldPane.tabIds.length > 1) {
         const index = oldPane.tabIds.indexOf(tabId)
         let newIndex = index === 0 ? 1 : index - 1
         setActiveTab(state, oldPane.tabIds[newIndex])
     }
     oldPane.tabIds.splice(oldPane.tabIds.indexOf(tabId), 1)
-
-    const newPane = state.paneState.byIds[paneId]
-    newPane.tabIds.push(tabId)
+    
+    if (tabPosition !== undefined) {
+      if (isNewPane) {
+        tabPosition += 1 // adding to new pane the tabs count increases along with the position
+      } 
+      newPane.tabIds.splice(tabPosition, 0, tabId)
+    } else {
+      newPane.tabIds.push(tabId)
+    }
 
     setPaneActive(state, paneId)
-
     state.tabs[tabId].paneId = paneId
-
     setActiveTab(state, tabId)
 
     // if old pane is empty, remove it
