@@ -189,6 +189,8 @@ const electronConnector = {
         ipcRenderer.removeListener('terminal-incData', callback)
     },
     terminalInto: (data: any) => ipcRenderer.invoke('terminal-into', data),
+    terminalClickLink: (data: any) => ipcRenderer.invoke('terminal-click-link', data),
+    terminalResize: (data: any) => ipcRenderer.invoke('terminal-resize', data),
 
     registerFileWasAdded: (callback: Callback) =>
         ipcRenderer.on('fileWasAdded', callback),
@@ -248,8 +250,10 @@ const electronConnector = {
             new_path: new_path,
         }),
     rightClickFile: () => ipcRenderer.invoke('right_click_file', null),
+    rightClickTab: () => ipcRenderer.invoke('right_click_tab', null),
     deleteFile: (path: string) => ipcRenderer.invoke('delete_file', path),
-    openContainingFolder: (path: string) => ipcRenderer.invoke('open_containing_folder', path),
+    openContainingFolder: (path: string) =>
+        ipcRenderer.invoke('open_containing_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
     rightClickFolder: (path: string, isRoot: boolean) =>
         ipcRenderer.invoke('right_click_folder', {
@@ -283,6 +287,7 @@ const electronConnector = {
         ipcRenderer.removeAllListeners('new_folder_click')
         ipcRenderer.removeAllListeners('new_chat_click')
         ipcRenderer.removeAllListeners('close_tab')
+        ipcRenderer.removeAllListeners('close_all_tabs_click')
     },
     registerRenameClick: (callback: Callback) =>
         ipcRenderer.on('rename_file_click', callback),
@@ -304,6 +309,8 @@ const electronConnector = {
     registerCloseTab: (callback: Callback) =>
         ipcRenderer.on('close_tab', callback),
 
+    registerCloseAllTabs: (callback: Callback) =>
+        ipcRenderer.on('close_all_tabs_click', callback),
     openFolder: () => ipcRenderer.invoke('open_folder', null),
     registerOpenFolder: (callback: Callback) =>
         ipcRenderer.on('open_folder_triggered', callback),
@@ -372,6 +379,40 @@ const electronConnector = {
         ipcRenderer.on('addCodeToPrompt', (event, data) => {
             callback(data)
         })
+    },
+    setCookies: async (cookieObject: {
+        url: string
+        name: string
+        value: string
+    }) => {
+        await ipcRenderer.invoke('setCookies', cookieObject)
+    },
+    loginCursor: async () => {
+        await ipcRenderer.invoke('loginCursor')
+    },
+    logoutCursor: async () => {
+        await ipcRenderer.invoke('logoutCursor')
+    },
+    getUserCreds: async () => {
+        return await ipcRenderer.invoke('getUserCreds')
+    },
+    payCursor: async () => {
+        return await ipcRenderer.invoke('payCursor')
+    },
+    registerUpdateAuthStatus(
+        callback: (payload: {
+            accessToken?: string | null
+            profile?: any | null
+            stripeProfile?: string | null
+        }) => void
+    ) {
+        ipcRenderer.on('updateAuthStatus', (event, data) => {
+            console.log('UPDATING AUTH STATUS', data)
+            callback(data)
+        })
+    },
+    refreshTokens() {
+        ipcRenderer.invoke('refreshTokens')
     },
 }
 

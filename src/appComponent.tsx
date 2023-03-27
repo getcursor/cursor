@@ -10,7 +10,6 @@ import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
 import { PaneHolder } from './components/pane'
-import { LeftSide } from './components/search'
 import * as gs from './features/globalSlice'
 import * as cs from './features/chat/chatSlice'
 import * as ct from './features/chat/chatThunks'
@@ -31,7 +30,7 @@ import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
-import { FeedbackArea } from './components/search'
+import { FeedbackArea, LeftSide } from './components/search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { WelcomeScreen } from './components/welcomeScreen'
 import { TitleBar } from './components/titlebar'
@@ -87,6 +86,82 @@ function ErrorPopup() {
                     We're getting more traffic than we can handle right now.
                     Please try again later.
                     <br />
+                </div>
+            </div>
+        </Modal>
+    )
+}
+
+function RateLimitPopup() {
+    const showError = useAppSelector(gsel.getShowRateLimit)
+    const dispatch = useAppDispatch()
+
+    return (
+        <Modal
+            isOpen={showError}
+            onRequestClose={() => {
+                dispatch(gs.closeRateLimit())
+            }}
+            style={customStyles}
+        >
+            <div className="errorPopup">
+                <div className="errorPopup__title">
+                    <div className="errorPopup__title_text">
+                        You're going a bit fast...
+                    </div>
+                    <div
+                        className="errorPopup__title_close"
+                        onClick={() => dispatch(gs.closeError(null))}
+                    >
+                        <FontAwesomeIcon icon={faClose} />
+                    </div>
+                </div>
+                <div className="errorPopup__body">
+                    It seems like you're making a high rate of requests. Please
+                    slow down and try again in a minute or so. If you believe
+                    this is an error, contact us at michael@cursor.so
+                    <br />
+                </div>
+            </div>
+        </Modal>
+    )
+}
+
+function NoAuthRateLimitPopup() {
+    const showError = useAppSelector(gsel.getShowNoAuthRateLimit)
+    const dispatch = useAppDispatch()
+
+    return (
+        <Modal
+            isOpen={showError}
+            onRequestClose={() => {
+                dispatch(gs.closeNoAuthRateLimit())
+            }}
+            style={customStyles}
+        >
+            <div className="errorPopup">
+                <div className="errorPopup__title">
+                    <div className="errorPopup__title_text">
+                        Maximum Capacity
+                    </div>
+                    <div
+                        className="errorPopup__title_close"
+                        onClick={() => dispatch(gs.closeNoAuthRateLimit())}
+                    >
+                        <FontAwesomeIcon icon={faClose} />
+                    </div>
+                </div>
+                <div className="errorPopup__body">
+                    We're getting more traffic than our servers can handle right
+                    now. To avoid these limits and to purchase reserved
+                    capacity, you can upgrade to{' '}
+                    <a
+                        className="pay-link"
+                        onClick={() => dispatch(ts.upgradeCursor(null))}
+                    >
+                        Cursor Pro
+                    </a>{' '}
+                    for $20/month.
                 </div>
             </div>
         </Modal>
@@ -248,6 +323,9 @@ export function App() {
                 } else if (e.key == 'e' && e.shiftKey) {
                     dispatch(ct.pressAICommand('singleLSP'))
                     e.stopPropagation()
+                } else if (e.key == 'h') {
+                    dispatch(ct.pressAICommand('history'))
+                    e.stopPropagation()
                 }
             }
 
@@ -361,6 +439,8 @@ export function App() {
                         </div>
                         <ChatPopup />
                         <ErrorPopup />
+                        <RateLimitPopup />
+                        <NoAuthRateLimitPopup />
                         <SettingsPopup />
                         <FeedbackArea />
                         <SSHPopup />

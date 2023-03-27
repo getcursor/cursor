@@ -19,7 +19,7 @@ const searchRipGrep = async (
 ) => {
     // Instead run ripgrep fromt the cli
     // let cmd = ['rg', '--json', '--line-number', '--with-filename']
-    let cmd = ['--json', '--line-number', '--with-filename']
+    let cmd = ['--json', '--line-number', '--with-filename', '--sort-files']
     if (arg.caseSensitive) {
         cmd.push('--case-sensitive')
     } else {

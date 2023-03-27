@@ -15,6 +15,16 @@ connector.registerRenameClick(() => {
     store.dispatch(gs.triggerRename(null))
 })
 
+connector.registerUpdateAuthStatus(
+    (data: {
+        accessToken?: string | null
+        profile?: any | null
+        stripeProfile?: string | null
+    }) => {
+        store.dispatch(ts.login(data))
+    }
+)
+
 // @ts-ignore
 connector.registerSaved(() => {
     store.dispatch(gs.saveFile(null))
@@ -48,6 +58,11 @@ connector.registerNewFolderClick(() => {
 // @ts-ignore
 connector.registerCloseTab(() => {
     store.dispatch(gt.closeTab(null))
+})
+
+// @ts-ignore
+connector.registerCloseAllTabs(() => {
+    store.dispatch(gt.closeAllTabs())
 })
 
 // @ts-ignore

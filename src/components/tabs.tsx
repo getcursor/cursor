@@ -86,6 +86,7 @@ function Tab({ tid }: { tid: number }) {
                 revertTabsChildrenEvents() // revert for new pane
             }}
             ref={tabDiv}
+            onContextMenu={() => dispatch(gs.rightClickTab(tid))}
         >
             <div
                 onMouseDown={(e) => {

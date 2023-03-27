@@ -131,6 +131,7 @@ function generateVimPlugin(callbacks: CustomVimConfig) {
                     Vim.map('<C-w>h', ':toLeftPane', 'normal')
                     Vim.map('<C-w>k', ':toTopPane', 'normal')
                     Vim.map('<C-w>j', ':toBottomPane', 'normal')
+                    Vim.map('<C-c>', '<Esc>', 'insert')
                 }
 
                 if (callbacks.exit != null)

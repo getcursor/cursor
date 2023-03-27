@@ -28,11 +28,16 @@ import {
 import log from 'electron-log'
 import Store from 'electron-store'
 import fixPath from 'fix-path'
+import { fileSystem } from './fileSystem'
 
 const writeFilePromise = promisify(fs.writeFile)
 const lspDir = app.isPackaged
     ? path.join(process.resourcesPath, 'lsp')
     : path.join(__dirname, '..', '..', 'lsp')
+
+if (!fs.existsSync(lspDir)) {
+    fs.mkdirSync(lspDir)
+}
 
 // Get the architecture and osType from electron
 // architecture can take the values of 'arm', 'arm64', 'ia32', or 'x64'
@@ -356,6 +361,10 @@ class LSPManager {
             case 'go':
                 const goDir = path.join(lspDir, 'go')
                 try {
+                    // Check $GOPATH, and remove $GOPATH/go.mod file
+                    const goPath = cp.execSync('echo $GOPATH').toString().trim()
+                    fs.accessSync(`${goPath}go.mod`, fs.constants.F_OK)
+                    await fileSystem.unlinkSync(`${goPath}/go.mod`)
                     await promisify(cp.exec)(
                         'go install golang.org/x/tools/gopls@latest',
                         {
@@ -419,7 +428,7 @@ class LSPManager {
 
             case 'c':
                 let cVersion = await getLatestVersion(
-                    'https://api.github.com/clangd/clangd/releases/latest'
+                    'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
                 if (osType === 'Darwin') {
                     remoteUrl = `https://github.com/clangd/clangd/releases/download/${cVersion}/clangd-mac-${cVersion}.zip`
@@ -434,7 +443,6 @@ class LSPManager {
                 if (!fs.existsSync(cDir)) {
                     fs.mkdirSync(cDir)
                 }
-
                 // fetch and download it
                 downloadPath = path.join(lspDir, 'c', 'clangd.zip')
                 await downloadFile(remoteUrl, downloadPath)

@@ -84,6 +84,7 @@ import { LSPNotifyMap } from './lsp/stdioClient'
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
 import { changeSettings } from './settings/settingsSlice'
 import { updateCommentsForFile } from './comment/commentSlice'
+import { openFileTree } from './tools/toolSlice'
 import { updateTestsForFile } from './tests/testSlice'
 import { getPane } from './selectors'
 
@@ -470,6 +471,14 @@ export const rightClickFile = createAsyncThunk(
     }
 )
 
+export const rightClickTab = createAsyncThunk(
+    'global/rightClickTab',
+    async (tabId: number) => {
+        await connector.rightClickTab()
+        return tabId
+    }
+)
+
 export const rightClickFolder = createAsyncThunk(
     'global/rightClickFolder',
     async (folderId: number, { getState }) => {
@@ -588,6 +597,7 @@ export const openFolder = createAsyncThunk(
     'global/openFolder',
     async (args: { path: string } | null, { dispatch }) => {
         posthog.capture('Opened Folder', {})
+        connector.refreshTokens()
 
         const folderPath =
             (args != null ? args.path : null) || (await connector.openFolder())
@@ -603,6 +613,9 @@ export const openFolder = createAsyncThunk(
         const folderData = await connector.getFolder(folderPath)
 
         dispatch(overwriteFolder({ folderPath, folderData }))
+
+        // Show the new folder in the FileTree view
+        dispatch(openFileTree())
 
         // Now we are going to setup the lsp server
         await dispatch(startConnections(folderPath))
@@ -709,6 +722,7 @@ export const initState = createAsyncThunk(
     'global/initState',
     async (args: null, { getState, dispatch }) => {
         const config = await connector.getProject()
+        connector.refreshTokens()
 
         // if (config == null) {
         //     return
@@ -1380,11 +1394,17 @@ const globalSlice = createSlice({
         updateRepoProgress(state: State, action: PayloadAction<RepoProgress>) {
             state.repoProgress = action.payload
         },
-        closeRateLimit(state: State, action: PayloadAction<null>) {
+        closeRateLimit(state: State) {
             state.showRateLimit = false
         },
-        openRateLimit(state: State, action: PayloadAction<null>) {
+        openRateLimit(state: State) {
             state.showRateLimit = true
+        },
+        closeNoAuthRateLimit(state: State) {
+            state.showNoAuthRateLimit = false
+        },
+        openNoAuthRateLimit(state: State) {
+            state.showNoAuthRateLimit = true
         },
         closeError(state: State, action: PayloadAction<null>) {
             state.showError = false
@@ -1587,5 +1607,9 @@ export const {
     openTerminal,
     toggleTerminal,
     closeRateLimit,
+    openRateLimit,
+    closeNoAuthRateLimit,
+    openNoAuthRateLimit,
 } = globalSlice.actions
+
 export default globalSlice.reducer

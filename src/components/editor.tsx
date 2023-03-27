@@ -308,6 +308,13 @@ export default function Editor({ tabId }: { tabId: number }) {
                                     }
                                 ),
                             })
+                        } else {
+                            view.dispatch({
+                                effects: EditorView.scrollIntoView(0, {
+                                    y: 'start',
+                                    yMargin: 0,
+                                }),
+                            })
                         }
                         transactionDispatcher(view, transactions)
                         view.scrollDOM.addEventListener(
@@ -352,6 +359,8 @@ export default function Editor({ tabId }: { tabId: number }) {
                         100
                     )}
                     value={cachedContent}
+                    fileName={fileName}
+                    filePath={filePath}
                     extensions={extensions}
                     initialState={initialState}
                 />

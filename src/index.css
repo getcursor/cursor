@@ -128,6 +128,10 @@ body {
     min-width: 140ch;
 }
 
+.display_text_wrapping {
+    width: 100%;
+}
+
 .display_text_wrapping .cm_content {
     min-width: 100%;
 }
@@ -540,6 +544,10 @@ li.rta__item--selected mark {
     position: relative;
     flex-grow: 1;
     overflow-y: auto;
+}
+
+.cover-bar {
+    pointer-events: none;
 }
 
 .window__editorcontainer .cover-bar {
@@ -2229,7 +2237,7 @@ cm-diff-cancel > div {
     padding: 8px 12px;
     cursor: pointer;
     display: flex;
-    justify-content: center;
+    /*     justify-content: center; */
     align-items: center;
 }
 
@@ -2357,6 +2365,7 @@ cm-diff-cancel > div {
 }
 
 .command_line:hover {
+    background-color: var(--left-pane-hover);
 }
 
 .command_line_selected {
@@ -2373,8 +2382,7 @@ cm-diff-cancel > div {
     background-color: rgb(51 61 75 / var(--tw-bg-opacity));
     width: 32px;
 }
-
-.disabled_command .shortcut__block {
+free servers .disabled_command .shortcut__block {
     color: #555;
     background-color: rgb(51 61 75 / 0.2);
 }
@@ -2443,4 +2451,33 @@ cm-diff-cancel > div {
     padding: 0.25rem 0.5rem;
     cursor: pointer;
     font-size: 12px;
+}
+
+.pay-button-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.close-button,
+.pay-button {
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 18px;
+    margin-left: 8px;
+}
+
+.close-button {
+    background-color: #555;
+}
+
+.pay-button {
+    background-color: var(--vscode-blue);
+}
+
+.pay-link {
+    color: #6697cc;
+    cursor: pointer;
+    text-decoration: underline;
 }

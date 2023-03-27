@@ -3,7 +3,7 @@ import { Settings } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
-import { setupLSPs } from './lsp'
+import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
 import _, { uniqueId } from 'lodash'
@@ -35,6 +35,8 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
+import { authPackage, refreshTokens } from './auth'
+
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
@@ -48,6 +50,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 if (require('electron-squirrel-startup')) {
     app.quit()
 }
+
+let main_window: Electron.BrowserWindow
 
 // Remove holded defaults
 if (process.platform === 'darwin')
@@ -87,7 +91,7 @@ function logError(error: any) {
             'utf8'
         )
         const body = {
-            name: app.getPath('userData'),
+            name: app.getPath('userData').replace(/ /g, '\\ '),
             log: encodeURIComponent(logFile),
             error: error.toString(),
         }
@@ -108,8 +112,10 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
+    const width = 1500,
+        height = 800
     // Create the browser window.
-    const main_window = new BrowserWindow({
+    main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
             ? {
                   titleBarStyle: 'hidden',
@@ -117,8 +123,10 @@ const createWindow = () => {
                   trafficLightPosition: { x: 10, y: 10 },
               }
             : { frame: false }),
-        width: 1500,
-        height: 800,
+        width: width,
+        height: height,
+        minWidth: width / 2,
+        minHeight: height / 2,
         title: 'Cursor',
         webPreferences: {
             // @ts-ignore
@@ -151,6 +159,17 @@ const createWindow = () => {
     ipcMain.handle('close', () => {
         app.quit()
     })
+
+    ipcMain.handle(
+        'setCookies',
+        async (
+            event: IpcMainInvokeEvent,
+            cookieObject: { url: string; name: string; value: string }
+        ) => {
+            await main_window.webContents.session.cookies.set(cookieObject)
+        }
+    )
+
     ipcMain.handle('minimize', () => {
         main_window.minimize()
     })
@@ -158,6 +177,9 @@ const createWindow = () => {
     ipcMain.handle('return_home_dir', () => {
         return machineIdSync()
     })
+
+    // Sets up auth stuff here
+    authPackage()
 
     // check if store has uploadPreferences, if not, then ask the user for them
     if (store.get('uploadPreferences') == undefined) {
@@ -246,7 +268,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: 'Shift+Cmd+Z',
+                    accelerator: META_KEY + '+Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -272,7 +294,6 @@ const createWindow = () => {
                 },
             ],
         } as MenuItemConstructorOptions,
-        // add a zoom
         {
             label: 'View',
             submenu: [
@@ -281,7 +302,14 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+plus',
+                    accelerator: META_KEY + '+Plus',
+                },
+                {
+                    label: 'Zoom In',
+                    click: () => {
+                        main_window.webContents.send('zoom_in')
+                    },
+                    accelerator: META_KEY + '+=',
                 },
                 {
                     label: 'Zoom Out',
@@ -302,27 +330,39 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('search')
                     },
-                    accelerator: META_KEY + '+shift+f',
+                    accelerator: META_KEY + '+Shift+F',
                 },
                 {
                     label: 'File Search',
                     click: () => {
                         main_window.webContents.send('fileSearch')
                     },
-                    accelerator: META_KEY + '+p',
+                    accelerator: META_KEY + '+P',
                 },
                 {
                     label: 'Command Palette',
                     click: () => {
                         main_window.webContents.send('commandPalette')
                     },
-                    accelerator: META_KEY + '+shift+p',
+                    accelerator: META_KEY + '+Shift+P',
                 },
             ],
         },
     ])
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
+
+    globalShortcut.register(META_KEY + '+M', () => {
+        main_window.minimize()
+    })
+
+    globalShortcut.register(META_KEY + '+Shift+M', () => {
+        if (main_window.isMaximized()) {
+            main_window.restore()
+        } else {
+            main_window.maximize()
+        }
+    })
 
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
         log.info('STORING SETTINGS')
@@ -507,10 +547,17 @@ const createWindow = () => {
 
     log.info('setting up handle get_file')
     ipcMain.handle('get_file', async function (event: Event, filePath: string) {
-        // read the file and return the contents
-        var data = ''
+        // Check if the file is an image
+        const extension = filePath.split('.').pop()?.toLowerCase()
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(
+            extension || ''
+        )
+
+        // Read the file using the binary encoding if it's an image
+        const encoding = isImage ? 'binary' : 'utf8'
+        let data = ''
         try {
-            data = await fileSystem.readFileSync(filePath, 'utf8')
+            data = await fileSystem.readFileSync(filePath, encoding)
         } catch {
             data = ''
         }
@@ -674,8 +721,21 @@ const createWindow = () => {
                 label: 'Open Containing Folder',
                 click: () => {
                     event.sender.send('open_containing_folder_click')
-                }
-            }
+                },
+            },
+        ]
+        const menu = Menu.buildFromTemplate(template)
+        menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
+    })
+
+    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
+        const template: MenuItemConstructorOptions[] = [
+            {
+                label: 'Close All',
+                click: () => {
+                    event.sender.send('close_all_tabs_click')
+                },
+            },
         ]
         const menu = Menu.buildFromTemplate(template)
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
@@ -795,12 +855,15 @@ const createWindow = () => {
         return true
     })
 
-    ipcMain.handle('open_containing_folder', async function (event: Event, path: string) {
-        // open the folder in the file explorer
-        shell.showItemInFolder(path)
-        return true
-    })
-    
+    ipcMain.handle(
+        'open_containing_folder',
+        async function (event: Event, path: string) {
+            // open the folder in the file explorer
+            shell.showItemInFolder(path)
+            return true
+        }
+    )
+
     ipcMain.handle(
         'delete_folder',
         async function (event: Event, path: string) {
@@ -843,8 +906,29 @@ const createWindow = () => {
         }
         return null
     })
+
+    // click on the terminal link
+    ipcMain.handle('terminal-click-link', (event, data) => {
+        shell.openExternal(data);
+    })
+
     setupLSPs(store)
-    setupTerminal(main_window)
+    const projectPathObj = store.get('projectPath')
+    if (
+        typeof projectPathObj === 'object' &&
+        projectPathObj !== null &&
+        'defaultFolder' in projectPathObj
+    ) {
+        const projectPath = projectPathObj.defaultFolder
+        if (typeof projectPath === 'string') {
+            setupTerminal(main_window, projectPath)
+        } else {
+            setupTerminal(main_window)
+        }
+    } else {
+        setupTerminal(main_window)
+    }
+
     setupSearch()
     log.info('setting up index')
     setupCommentIndexer()
@@ -864,7 +948,7 @@ const modifyHeaders = () => {
                     {
                         ...details.responseHeaders,
                         'Content-Security-Policy': [
-                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
+                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: file: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
                         ],
                     },
                     details.responseHeaders
@@ -873,6 +957,60 @@ const modifyHeaders = () => {
         }
     )
 }
+
+todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
+    function check() {
+        if (showingDialog) {
+            setTimeout(check, 1000)
+        } else {
+            showingDialog = true
+            // ask the user if they want to update
+            const iconPath = path.join(
+                __dirname,
+                'assets',
+                'icon',
+                'icon128.png'
+            )
+            var options = {
+                type: 'question',
+                buttons: ['&Accept', '&Cancel'],
+                message: `Accept update?`,
+                icon: iconPath,
+                normalizeAccessKeys: true,
+                detail: `New update available for Cursor! New features and bug fixes (only takes 10-20 seconds)`,
+            }
+
+            const win = BrowserWindow.getFocusedWindow()!
+            dialog
+                .showMessageBox(win, options)
+                .then((choice: any) => {
+                    showingDialog = false
+                    if (choice.response == 0) {
+                        setTimeout(() => {
+                            // First we clear the lsp store
+                            lspStore(store).clear()
+
+                            // Then we quit and install
+                            todesktop.autoUpdater.restartAndInstall()
+                        }, 100)
+                    }
+                })
+                .catch((err: any) => {})
+        }
+    }
+
+    check()
+})
+app.on('ready', function () {
+    if (isAppInApplicationsFolder) {
+        if (app.isPackaged) {
+            todesktop.autoUpdater.checkForUpdates()
+            setInterval(() => {
+                todesktop.autoUpdater.checkForUpdates()
+            }, 1000 * 60 * 15)
+        }
+    }
+})
 
 app.on('ready', modifyHeaders)
 app.on('ready', createWindow)

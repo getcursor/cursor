@@ -28,6 +28,13 @@ import {
 } from '../features/lsp/languageServerSelector'
 import { State } from '../features/window/state'
 
+import {
+    signInCursor,
+    signOutCursor,
+    upgradeCursor,
+} from '../features/tools/toolSlice'
+import { loginStatus } from '../features/tools/toolSelectors'
+
 import Modal from 'react-modal'
 
 export function SettingsPopup() {
@@ -117,26 +124,6 @@ export function SettingsPopup() {
 
                             <div className="settings__item">
                                 <div className="settings__item_title">
-                                    Tab Size
-                                </div>
-                                <div className="settings__item_description">
-                                    Controls the tab size
-                                </div>
-                                <Dropdown
-                                    options={['2', '4', '8']}
-                                    onChange={(e) => {
-                                        dispatch(
-                                            changeSettings({
-                                                tabSize: e.value,
-                                            })
-                                        )
-                                    }}
-                                    value={settings.tabSize}
-                                />
-                            </div>
-
-                            <div className="settings__item">
-                                <div className="settings__item_title">
                                     Text Wrapping
                                 </div>
                                 <div className="settings__item_description">
@@ -155,6 +142,26 @@ export function SettingsPopup() {
                                 />
                             </div>
 
+                            <div className="settings__item">
+                                <div className="settings__item_title">
+                                    Tab Size
+                                </div>
+                                <div className="settings__item_description">
+                                    Controls the tab size
+                                </div>
+                                <Dropdown
+                                    options={['2', '4', '8']}
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                tabSize: e.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.tabSize}
+                                />
+                            </div>
+                            <CursorLogin />
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
@@ -170,6 +177,55 @@ export function SettingsPopup() {
                 </div>
             </Modal>
         </>
+    )
+}
+
+function CursorLogin() {
+    const dispatch = useAppDispatch()
+
+    const { signedIn, proVersion } = useAppSelector(loginStatus)
+
+    const signIn = useCallback(() => {
+        dispatch(signInCursor(null))
+    }, [])
+    const signOut = useCallback(() => {
+        dispatch(signOutCursor(null))
+    }, [])
+
+    const upgrade = useCallback(() => {
+        dispatch(upgradeCursor(null))
+    }, [])
+
+    let currentPanel
+    if (!signedIn) {
+        currentPanel = (
+            <div className="copilot__signin">
+                <button onClick={signIn}>Sign in</button>
+                <button onClick={signIn}>Sign up</button>
+            </div>
+        )
+    } else {
+        if (proVersion) {
+            currentPanel = (
+                <div className="copilot__signin">
+                    <button onClick={signOut}>Log out</button>
+                </div>
+            )
+        } else {
+            currentPanel = (
+                <div className="copilot__signin">
+                    <button onClick={upgrade}>Upgrade to Pro</button>
+                    <button onClick={signOut}>Log out</button>
+                </div>
+            )
+        }
+    }
+
+    return (
+        <div className="settings__item">
+            <div className="settings__item_title">Cursor Pro</div>
+            {currentPanel}
+        </div>
     )
 }
 

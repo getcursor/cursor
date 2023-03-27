@@ -278,9 +278,19 @@ export function ChatPopup() {
     const messages = useAppSelector(csel.getCurrentConversationMessages())
     const filePath = useAppSelector(getCurrentFilePath)
 
+    const commandBoxRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!isGenerating && commandBoxRef) {
+            setTimeout(() => {
+                commandBoxRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }, 100)
+        }
+    }, [isGenerating])
+
     const onApply = () => {
         dispatch(ct.pressAICommand('k'))
-        dispatch(cs.setCurrentDraftMessage('Make the chanage'))
+        dispatch(cs.setCurrentDraftMessage('Make the change'))
         dispatch(ct.submitCommandBar(null))
     }
     // get index for last bot message
@@ -350,6 +360,7 @@ export function ChatPopup() {
                                 'opacity-100': !isGenerating,
                                 'opacity-0': isGenerating,
                             })}
+                            ref={commandBoxRef}
                         >
                             {!isGenerating && (
                                 <CommandBar parentCaller={'chat'} />
@@ -429,6 +440,23 @@ export function MarkdownPopup({
                             className="markdownpopup__content"
                             ref={reactMarkdownRef}
                         >
+                            {/*                             <Markdown
+                                options={{
+                                    overrides: {
+                                        a: {
+                                            component: CustomLink,
+                                        },
+                                        pre: {
+                                            component: PreBlock,
+                                        },
+                                        code: {
+                                            component: CodeBlock,
+                                        } 
+                                    }
+                                }}
+                            >
+                                {formattedMessage}
+                            </Markdown> */}
                             <ReactMarkdown
                                 components={{
                                     pre: PreBlock,
@@ -581,6 +609,9 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
         placeholder = 'Instructions for code to generate...'
     } else if (getMsgType == 'chat_edit') {
         placeholder = 'Instructions for editing the current file...'
+    } else {
+        // TODO - this case should not exist
+        placeholder = 'Chat about the current file/selection...'
     }
 
     const builder = useRef<ContextBuilder>()

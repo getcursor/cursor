@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
+import { WebLinksAddon } from 'xterm-addon-web-links';
 import 'xterm/css/xterm.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { FullState } from '../features/window/state'
@@ -13,6 +14,12 @@ export function XTermComponent({ height }: { height: number }) {
     const terminalRef = useRef<HTMLDivElement>(null)
     const terminal = useRef<Terminal | null>(null)
     const fitAddon = useRef<FitAddon>(new FitAddon())
+    const webLinksAddon = useRef<WebLinksAddon>(new WebLinksAddon(
+        (event: MouseEvent, url: string) => {
+            event.preventDefault()
+            connector.terminalClickLink(url)
+        },
+    ))
 
     const handleIncomingData = (e: any, data: any) => {
         terminal.current!.write(data)
@@ -25,7 +32,12 @@ export function XTermComponent({ height }: { height: number }) {
                 foreground: '#f1f1f1',
             },
         })
+        terminal.current.onResize((size: { cols: number; rows: number }) => {
+            connector.terminalResize(size)
+        })
+
         terminal.current.loadAddon(fitAddon.current)
+        terminal.current.loadAddon(webLinksAddon.current)
 
         if (terminalRef.current) {
             terminal.current.open(terminalRef.current)
@@ -36,6 +48,11 @@ export function XTermComponent({ height }: { height: number }) {
         terminal.current.onData((e) => {
             connector.terminalInto(e)
         })
+
+        terminal.current.onData((e) => {
+            connector.terminalInto(e)
+        })
+    
 
         connector.registerIncData(handleIncomingData)
 
@@ -51,6 +68,7 @@ export function XTermComponent({ height }: { height: number }) {
     useEffect(() => {
         if (terminal.current != null) {
             terminal.current.loadAddon(fitAddon.current)
+            terminal.current.loadAddon(webLinksAddon.current)
             fitAddon.current.fit()
         }
     }, [height, terminal, fitAddon])
