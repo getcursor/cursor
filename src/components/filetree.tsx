@@ -220,7 +220,10 @@ function File({ fid }: { fid: number }) {
                 posthog.capture('Selected File From File Tree', {})
                 dispatch(gs.selectFile(fid))
             }}
-            onContextMenu={() => dispatch(gs.rightClickFile(fid))}
+            onContextMenu={(e) => {
+                e.stopPropagation()
+                dispatch(gs.rightClickFile(fid))
+            }}
         >
             <div className="file__icon">{iconElement}</div>
             {file.renameName != null ? (
@@ -298,7 +301,8 @@ function Folder({ fid }: { fid: number }) {
                 className="folder__line"
                 style={{ paddingLeft: offset(folderDepth) }}
                 onClick={toggleOpen}
-                onContextMenu={() => {
+                onContextMenu={(e) => {
+                    e.stopPropagation()
                     dispatch(gs.setFolderOpen({ folderId: fid, isOpen: true }))
                     dispatch(gs.rightClickFolder(fid))
                 }}
@@ -357,10 +361,14 @@ function Folder({ fid }: { fid: number }) {
 }
 
 export function FileTree() {
+    const dispatch = useAppDispatch()
     const rootFolderId = 1
     return (
         // Check size of folders
-        <div className="window__leftpane colortheme">
+        <div className="window__leftpane colortheme" onContextMenu={() => {
+            dispatch(gs.setFolderOpen({ folderId: rootFolderId, isOpen: true }))
+            dispatch(gs.rightClickFolder(rootFolderId))
+        }}>
             <Folder fid={rootFolderId} />
         </div>
     )

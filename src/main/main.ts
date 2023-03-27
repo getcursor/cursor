@@ -715,19 +715,6 @@ const createWindow = () => {
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
     })
 
-    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
-        const template: MenuItemConstructorOptions[] = [
-            {
-                label: 'Close All',
-                click: () => {
-                    event.sender.send('close_all_tabs_click')
-                },
-            },
-        ]
-        const menu = Menu.buildFromTemplate(template)
-        menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
-    })
-
     ipcMain.handle(
         'right_click_folder',
         function (event: Event, arg: { isRoot: boolean; path: string }) {
@@ -793,6 +780,19 @@ const createWindow = () => {
             menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
         }
     )
+
+    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
+        const template: MenuItemConstructorOptions[] = [
+            {
+                label: 'Close All',
+                click: () => {
+                    event.sender.send('close_all_tabs_click')
+                },
+            },
+        ]
+        const menu = Menu.buildFromTemplate(template)
+        menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
+    })
 
     ipcMain.handle(
         'rightMenuAtToken',
