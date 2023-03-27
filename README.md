@@ -52,3 +52,11 @@ Finally, to run the client:
 ```
 npm start
 ```
+
+To enable debugging on the command line, run the client 
+
+```
+npm run debug
+```
+
+This will allow you to open `chrome://inspect` in Google Chrome and attach a debugger to the main process of your app.

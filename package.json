@@ -19,6 +19,7 @@
         "precommit": "pretty-quick --staged",
         "prepare": "cd .. && husky install .husky",
         "start": "electron-forge start",
+        "debug": "electron-forge start --inspect-electron",
         "test": "jest",
         "todesktop:beforeInstall": "./scripts/beforeInstall.js"
     },
