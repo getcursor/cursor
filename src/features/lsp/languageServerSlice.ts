@@ -1,17 +1,14 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk , PayloadAction , createSlice } from '@reduxjs/toolkit'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { LanguageServerClient, Language } from './stdioClient'
+import { LanguageServerClient, Language , LSLanguages } from './stdioClient'
 import { Text } from '@codemirror/state'
-import { PayloadAction } from '@reduxjs/toolkit'
-import { LSLanguages } from './stdioClient'
 
 import { posToOffset, offsetToPos } from './lspPlugin'
 import { getContentsIfNeeded, loadFileIfNeeded } from '../window/fileUtils'
 import { FullState, LanguageServerState } from '../window/state'
 import { URI } from 'vscode-uri'
-import { createSlice } from '@reduxjs/toolkit'
 
-var clientConnections: {
+const clientConnections: {
     [key: string]: { lspName: string; client: LanguageServerClient }
 } = {}
 
@@ -55,7 +52,7 @@ export const runLanguageServer = createAsyncThunk(
             // @ts-ignore
             await connector.startLS(languageServerName, rootPath)
 
-            let newClient = new LanguageServerClient({
+            const newClient = new LanguageServerClient({
                 language: languageServerName,
                 rootUri: URI.file(rootPath).toString(),
                 workspaceFolders: null,
@@ -104,9 +101,9 @@ export const startConnections = createAsyncThunk(
         const signedIn = await copilotClient.signedIn()
         dispatch(copilotChangeSignin(signedIn))
 
-        let maybeRun = async (languageServerName: string) => {
+        const maybeRun = async (languageServerName: string) => {
             // @ts-ignore
-            let savedState = await connector.getLSState(languageServerName)
+            const savedState = await connector.getLSState(languageServerName)
             if (savedState == null) return
 
             if (savedState.installed && savedState.running) {
@@ -158,8 +155,8 @@ export const killConnection = createAsyncThunk(
 export const killAllConnections = createAsyncThunk(
     'lsp/killAllConnections',
     async (args: null, { dispatch }) => {
-        let futures = []
-        for (let lspName in clientConnections) {
+        const futures = []
+        for (const lspName in clientConnections) {
             futures.push(dispatch(killConnection(lspName)))
         }
 
@@ -176,11 +173,11 @@ export const getDefinition = createAsyncThunk(
         payload: { fid: number; path: string; offset: number },
         { getState, dispatch }
     ) => {
-        let languageId = getLanguageFromFilename(payload.path)
+        const languageId = getLanguageFromFilename(payload.path)
         if (languageId === null) {
             return null
         }
-        let lspName = getIdentifier(languageId)
+        const lspName = getIdentifier(languageId)
         if (lspName === null) {
             return null
         }
@@ -190,7 +187,7 @@ export const getDefinition = createAsyncThunk(
         )
         const origDoc = Text.of(origContents.split('\n'))
 
-        let client = clientConnections[lspName].client
+        const client = clientConnections[lspName].client
 
         const gotoResult = await client.getDefinition({
             path: payload.path,
@@ -282,7 +279,7 @@ export const languageServerSlice = createSlice({
         builder.addCase(
             installLanguageServer.fulfilled,
             (state: LanguageServerState, action) => {
-                let languageName = action.payload
+                const languageName = action.payload
                 if (state.languageServers[languageName]) {
                     state.languageServers[languageName].installed = true
                 } else {
@@ -298,7 +295,7 @@ export const languageServerSlice = createSlice({
         builder.addCase(
             runLanguageServer.fulfilled,
             (state: LanguageServerState, action) => {
-                let languageName = action.payload
+                const languageName = action.payload
                 if (state.languageServers[languageName]) {
                     state.languageServers[languageName].running = true
                     state.languageServers[languageName].installed = true
@@ -315,7 +312,7 @@ export const languageServerSlice = createSlice({
         builder.addCase(
             stopLanguageServer.fulfilled,
             (state: LanguageServerState, action) => {
-                let languageName = action.payload
+                const languageName = action.payload
                 if (state.languageServers[languageName]) {
                     state.languageServers[languageName].running = false
                 } else {

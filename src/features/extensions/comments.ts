@@ -4,7 +4,7 @@ import {
     RangeSetBuilder,
     EditorState,
     StateEffect,
-} from '@codemirror/state'
+ StateField } from '@codemirror/state'
 import {
     Decoration,
     DecorationSet,
@@ -68,14 +68,14 @@ class CommentWidget extends WidgetType {
     }
 
     toDOM() {
-        let wrap = document.createElement('div')
+        const wrap = document.createElement('div')
         wrap.setAttribute('aria-hidden', 'true')
         wrap.className = 'cm-ai-comment-container'
 
         const lines = this.line.split('\n')
-        for (let line in lines) {
-            let outerDiv = document.createElement('div')
-            let acceptDiv = document.createElement('div')
+        for (const line in lines) {
+            const outerDiv = document.createElement('div')
+            const acceptDiv = document.createElement('div')
             acceptDiv.classList.add('cm-ai-comment')
             if (this.changed) acceptDiv.classList.add('cm-ai-comment-changed')
             acceptDiv.textContent = this.lineIndentation + lines[line]
@@ -102,7 +102,6 @@ class CommentWidget extends WidgetType {
         return false
     }
 }
-import { StateField } from '@codemirror/state'
 import { selectHasTests } from '../tests/testSelectors'
 
 // codemirror state effect for updating comments
@@ -124,7 +123,7 @@ class TreeHighlighter {
             tr.effects.some((e) => e.is(updateCommentsEffect))
         )
         if (update.viewportChanged || isUpdateComment || this.first) {
-            let tree = syntaxTree(update.state)
+            const tree = syntaxTree(update.state)
             if (tree != this.tree || isUpdateComment) {
                 this.tree = tree
                 this.decorations = this.buildDeco(update.view)
@@ -148,12 +147,12 @@ class TreeHighlighter {
             comments = state.commentState.fileThenNames[filePath] || {}
         }
 
-        let builder = new RangeSetBuilder<Decoration>()
+        const builder = new RangeSetBuilder<Decoration>()
         const results = getNamesAndBodies(
             this.tree.cursor(),
             view.state.doc.toString()
         )
-        for (let result of results) {
+        for (const result of results) {
             const { name, body, from } = result
 
             const line = view.state.doc.lineAt(from)

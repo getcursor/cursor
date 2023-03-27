@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react'
-import { EditorState, StateEffect, Transaction } from '@codemirror/state'
+import { EditorState, StateEffect, Transaction , Prec } from '@codemirror/state'
 import { indentWithTab } from '@codemirror/commands'
 import { EditorView, keymap, ViewUpdate, placeholder } from '@codemirror/view'
 import { basicSetup } from './setup'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { getStatistics } from './utils'
-import { Prec } from '@codemirror/state'
 import { ReactCodeMirrorProps } from '.'
 import {
     diagnosticsField,

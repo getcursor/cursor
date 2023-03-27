@@ -530,7 +530,7 @@ export function InnerCommandPalette({
                                         index: number
                                     ) => {
                                         const command = allCommands[obj.id]
-                                        let toret = null
+                                        const toret = null
                                         if (obj.clickable === null) {
                                             return (
                                                 <CommandResult

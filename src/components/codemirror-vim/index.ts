@@ -63,14 +63,14 @@ export const vimStateField = StateField.define<RelevantVimState>({
     },
     update(value: RelevantVimState, tr) {
         //
-        let newValue = { ...value }
+        const newValue = { ...value }
         //
 
         // NOTE not sure what this is being used for
         // but it could be out of sync sometimes with vim insert mode
         // as a result of the hacky fix to make escape work
         //
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(updateVimState)) {
                 newValue.insertMode = effect.value.insertMode
             }
@@ -206,14 +206,14 @@ function generateVimPlugin(callbacks: CustomVimConfig) {
                     this.cm.onBeforeEndOperation()
                 }
                 if (update.transactions) {
-                    for (let tr of update.transactions) {
-                        for (let effect of tr.effects) {
+                    for (const tr of update.transactions) {
+                        for (const effect of tr.effects) {
                             if (effect.is(setSearchQuery)) {
-                                let forVim = (effect.value as any)?.forVim
+                                const forVim = (effect.value as any)?.forVim
                                 if (!forVim) {
                                     this.highlight(null)
                                 } else {
-                                    let query = (effect.value as any).create()
+                                    const query = (effect.value as any).create()
                                     this.highlight(query)
                                 }
                             }
@@ -232,10 +232,10 @@ function generateVimPlugin(callbacks: CustomVimConfig) {
                 else this.view.scrollDOM.classList.add('cm-vimMode')
             }
             updateStatus() {
-                let dom = this.cm.state.statusbar
-                let vim = this.cm.state.vim
+                const dom = this.cm.state.statusbar
+                const vim = this.cm.state.vim
                 if (!dom || !vim) return
-                let dialog = this.cm.state.dialog
+                const dialog = this.cm.state.dialog
                 if (dialog) {
                     if (dialog.parentElement != dom) {
                         dom.textContent = ''
@@ -264,8 +264,8 @@ function generateVimPlugin(callbacks: CustomVimConfig) {
             highlight(query: any) {
                 this.query = query
                 if (!query) return (this.decorations = Decoration.none)
-                let { view } = this
-                let builder = new RangeSetBuilder<Decoration>()
+                const { view } = this
+                const builder = new RangeSetBuilder<Decoration>()
                 for (
                     let i = 0, ranges = view.visibleRanges, l = ranges.length;
                     i < l;
@@ -371,7 +371,7 @@ const showVimPanel = StateEffect.define<boolean>()
 const vimPanelState = StateField.define<boolean>({
     create: () => false,
     update(value, tr) {
-        for (let e of tr.effects) if (e.is(showVimPanel)) value = e.value
+        for (const e of tr.effects) if (e.is(showVimPanel)) value = e.value
         return value
     },
     provide: (f) => {
@@ -380,9 +380,9 @@ const vimPanelState = StateField.define<boolean>({
 })
 
 function createVimPanel(view: EditorView) {
-    let dom = document.createElement('div')
+    const dom = document.createElement('div')
     dom.className = 'cm-vim-panel'
-    let cm = (view as EditorViewExtended).cm
+    const cm = (view as EditorViewExtended).cm
     if (cm.state.dialog) {
         dom.appendChild(cm.state.dialog)
     }
@@ -390,9 +390,9 @@ function createVimPanel(view: EditorView) {
 }
 
 function statusPanel(view: EditorView): Panel {
-    let dom = document.createElement('div')
+    const dom = document.createElement('div')
     dom.className = 'cm-vim-panel'
-    let cm = (view as EditorViewExtended).cm
+    const cm = (view as EditorViewExtended).cm
     cm.state.statusbar = dom
     cm.state.vimPlugin.updateStatus()
     return { dom }

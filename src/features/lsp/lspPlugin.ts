@@ -1,5 +1,5 @@
 import { URI } from 'vscode-uri'
-import { autocompletion } from '@codemirror/autocomplete'
+import { autocompletion , pickedCompletion } from '@codemirror/autocomplete'
 import posthog from 'posthog-js'
 import {
     LanguageServerClient,
@@ -19,9 +19,9 @@ import {
     Action,
     replace,
 } from '../linter/lint'
-import { EditorView, ViewPlugin, Tooltip, hoverTooltip } from '@codemirror/view'
+import { EditorView, ViewPlugin, Tooltip, hoverTooltip , Decoration, DecorationSet } from '@codemirror/view'
 import type { ViewUpdate } from '@codemirror/view'
-import { Facet, Text, Range } from '@codemirror/state'
+import { Facet, Text, Range , StateField, StateEffect , Extension } from '@codemirror/state'
 
 import {
     findDeclarationGivenDefinition,
@@ -37,7 +37,6 @@ import type {
     CompletionContext,
     CompletionResult,
 } from '@codemirror/autocomplete'
-import { pickedCompletion } from '@codemirror/autocomplete'
 import md from 'markdown-it'
 import {
     DiagnosticSeverity,
@@ -51,10 +50,7 @@ import { LanguageSupport, syntaxTree } from '@codemirror/language'
 import { languages } from '@codemirror/language-data'
 
 import { vscodeDarkInit } from '../../vscodeTheme'
-import { Decoration, DecorationSet } from '@codemirror/view'
 
-import { StateField, StateEffect } from '@codemirror/state'
-import { Extension } from '@codemirror/state'
 import { store } from '../../app/store'
 
 interface SemanticToken {
@@ -91,7 +87,7 @@ export const semanticTokenField = StateField.define<DecorationSet>({
             })
         }
 
-        for (let e of tr.effects)
+        for (const e of tr.effects)
             if (e.is(addToken)) {
                 const modifierClasses = e.value.modifiers
                     .map((m: string) => `cm-semantic-${e.value.type}-${m}`)
@@ -272,13 +268,13 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         const { contents, range } = result
 
         // Convert the position and range to offsets
-        let pos = posToOffset(view.state.doc, { line, character })!
+        const pos = posToOffset(view.state.doc, { line, character })!
 
         // get the end position in the syntax tree
         const nodeWithEnd = syntaxTree(view.state).resolve(pos, 0).node
 
-        let start = nodeWithEnd.from
-        let end = nodeWithEnd.to
+        const start = nodeWithEnd.from
+        const end = nodeWithEnd.to
 
         if (pos === null) return null
 
@@ -290,8 +286,8 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         upperDom.classList.add('cm-popup-tooltip-upper')
 
         // perhaps add button
-        let node = syntaxTree(view.state).resolve(pos, -1).node
-        let valueInNodeRange = view.state.doc.sliceString(node.from, node.to)!
+        const node = syntaxTree(view.state).resolve(pos, -1).node
+        const valueInNodeRange = view.state.doc.sliceString(node.from, node.to)!
         if (
             [
                 'VariableDefinition',
@@ -300,7 +296,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
             ].includes(node.type.name)
         ) {
             posthog.capture('Show Hover Test/Comment', {})
-            let parentNode = findDeclarationGivenDefinition(node)!
+            const parentNode = findDeclarationGivenDefinition(node)!
             if (parentNode != null) {
                 const docContents = view.state.doc.toString()
                 const functionBody = docContents.slice(
@@ -311,7 +307,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
                 // Get the node's parent
                 const startLine = view.state.doc.lineAt(node.from).number - 1
                 let comments = getCachedComments()
-                let tests = getCachedTests()
+                const tests = getCachedTests()
                 // const hasTests = getHasTestFile();
 
                 // create a div to house all buttons
@@ -321,12 +317,12 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
                 buttonDiv.classList.add('cm-popup-tooltip-button-container')
 
                 // comment button
-                let commentButton = document.createElement('button')
+                const commentButton = document.createElement('button')
                 commentButton.classList.add('cm-popup-tooltip-comment-button')
                 const magicSpan = document.createElement('span')
                 magicSpan.classList.add('cm-AI-magic')
                 commentButton.appendChild(magicSpan)
-                let docstringButton = document.createElement('button')
+                const docstringButton = document.createElement('button')
                 const docstringSpan = document.createElement('span')
                 docstringSpan.innerText = 'Add Docstring'
                 commentButton.appendChild(docstringSpan)
@@ -392,7 +388,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
 
                 // test button
 
-                let testButton = document.createElement('button')
+                const testButton = document.createElement('button')
                 testButton.classList.add('cm-popup-tooltip-comment-button')
                 const magicSpanTest = document.createElement('span')
                 magicSpanTest.classList.add('cm-AI-magic')
@@ -526,7 +522,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         this.previousSemanticTokenResultId = resultId
         this.previousSemanticTokens = this.parseSemanticTokens(view, data)
 
-        let effects: StateEffect<SemanticToken | Extension>[] =
+        const effects: StateEffect<SemanticToken | Extension>[] =
             this.previousSemanticTokens.map((tokenRange: any) =>
                 addToken.of(tokenRange)
             )
@@ -554,7 +550,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         if (!this.client.ready || !this.client.capabilities!.completionProvider)
             return null
 
-        let path = this.getDocPath()
+        const path = this.getDocPath()
         // let previousWord = context.tokenBefore([])!.text
         let result
 
@@ -819,7 +815,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
 
         // Add a boost to each result
         let boost = 99
-        let boostDecr = 150 / options.length
+        const boostDecr = 150 / options.length
         options = options.map((item) => {
             item.boost = boost
             boost -= boostDecr
@@ -926,7 +922,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
                 const actionTransactions: ActionTransaction[] = []
                 if ('edit' in action) {
                     if (action?.edit?.changes != null) {
-                        for (let key in action.edit.changes) {
+                        for (const key in action.edit.changes) {
                             if (key == params.uri) {
                                 actionTransactions.push(
                                     ...processEdits(action.edit.changes[key])
@@ -961,7 +957,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
                 }
             }
 
-            let start = performance.now()
+            const start = performance.now()
             const diagnostics = await Promise.all(
                 diagnosticsWithActionParams.map(
                     async ({ diagnostic, codeActionParams }) => {
@@ -1059,7 +1055,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         // Update the view with the diagnostics
         // Get existing diagnostics
         let aiDiagnostics: Diagnostic[]
-        let lintField = this.view.state.field(lintState, false)
+        const lintField = this.view.state.field(lintState, false)
         if (!lintField) {
             this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
             return
@@ -1243,7 +1239,7 @@ function prefixMatch(options: any[]) {
     const rest = new Set<string>()
 
     for (const { pickText } of options) {
-        let stringApply = pickText as string
+        const stringApply = pickText as string
         const initial = stringApply[0]
         const restStr = stringApply.slice(1)
 

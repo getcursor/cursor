@@ -12,8 +12,7 @@ logic to work when we make edits to the diff and expand/close them. Though in hi
 it seems like that feature is never used.
 */
 import * as JSDiff from 'diff'
-import { RangeSet } from '@codemirror/state'
-import {
+import { RangeSet ,
     StateField,
     StateEffect,
     Extension,
@@ -83,8 +82,8 @@ function getDiffTooltip(
         return { loading: false, tooltip: undefined }
     }
 
-    let state = store.getState()
-    let isLoading = !csel.getLastBotMessageFinished(state)
+    const state = store.getState()
+    const isLoading = !csel.getLastBotMessageFinished(state)
 
     // Then we check the diff state to make sure it makes sense to even update
     if (oldTooltip != undefined) {
@@ -108,10 +107,10 @@ function getDiffTooltip(
             strictSide: false,
             arrow: true,
             create: (view: EditorView) => {
-                let state = store.getState()
-                let isLoading = !csel.getLastBotMessageFinished(state)
-                let hitTokenLimit = csel.getLastBotMessageHitTokenLimit(state)
-                let interrupted = csel.getLastBotMessageInterrupted(state)
+                const state = store.getState()
+                const isLoading = !csel.getLastBotMessageFinished(state)
+                const hitTokenLimit = csel.getLastBotMessageHitTokenLimit(state)
+                const interrupted = csel.getLastBotMessageInterrupted(state)
 
                 let dom: HTMLElement
                 if (isLoading) {
@@ -131,11 +130,11 @@ function getDiffTooltip(
 
                 const update = (update: ViewUpdate) => {
                     if (update.docChanged) {
-                        let state = store.getState()
-                        let isLoading = !csel.getLastBotMessageFinished(state)
-                        let hitTokenLimit =
+                        const state = store.getState()
+                        const isLoading = !csel.getLastBotMessageFinished(state)
+                        const hitTokenLimit =
                             csel.getLastBotMessageHitTokenLimit(state)
-                        let interrupted =
+                        const interrupted =
                             csel.getLastBotMessageInterrupted(state)
 
                         if (
@@ -225,16 +224,16 @@ function chunkLocationToTooltip({
         strictSide: false,
         arrow: false,
         create: (view: EditorView) => {
-            let wrap = document.createElement('div')
+            const wrap = document.createElement('div')
 
             wrap.setAttribute('aria-hidden', 'true')
             wrap.className = 'cm-accept-reject-subdiff'
 
-            let acceptDiv = document.createElement('div')
+            const acceptDiv = document.createElement('div')
             acceptDiv.classList.add('cm-subdiff-accept', 'cm__sub_accept_div')
-            let acceptSpan = document.createElement('div')
+            const acceptSpan = document.createElement('div')
             acceptSpan.textContent = 'Accept'
-            let acceptShortcutSpan = document.createElement('span')
+            const acceptShortcutSpan = document.createElement('span')
             acceptShortcutSpan.innerHTML =
                 `<span class="${
                     connector.IS_WINDOWS
@@ -249,11 +248,11 @@ function chunkLocationToTooltip({
                 acceptSubDiff(diffId, startLine, endLine)(view)
             }
 
-            let rejectDiv = document.createElement('div')
+            const rejectDiv = document.createElement('div')
             rejectDiv.classList.add('cm-subdiff-reject', 'cm__sub_reject_div')
-            let rejectSpan = document.createElement('div')
+            const rejectSpan = document.createElement('div')
             rejectSpan.textContent = 'Reject'
-            let rejectShortcutSpan = document.createElement('span')
+            const rejectShortcutSpan = document.createElement('span')
             rejectShortcutSpan.innerHTML =
                 `<span class="${
                     connector.IS_WINDOWS
@@ -271,7 +270,7 @@ function chunkLocationToTooltip({
             wrap.appendChild(acceptDiv)
             wrap.appendChild(rejectDiv)
 
-            let dom = wrap
+            const dom = wrap
 
             const getCoords = (pos: number) => {
                 const editor = view.dom as HTMLElement
@@ -310,19 +309,19 @@ function getSubDiffTooltips(
         return { subDiffTooltips: [], chunks: [] }
     }
 
-    let state = store.getState()
-    let isLoading = !csel.getLastBotMessageFinished(state)
+    const state = store.getState()
+    const isLoading = !csel.getLastBotMessageFinished(state)
 
     // Then we check the diff state to make sure it makes sense to even update
     if (isLoading) {
         return { subDiffTooltips: [], chunks: [] }
     }
 
-    let currentDeco = diffValue.visibleDeco.iter()
+    const currentDeco = diffValue.visibleDeco.iter()
     let prevLine: number | null = null
     let firstLine: number | null = null
 
-    let subdiffAcceptRejectLocations: { startLine: number; endLine: number }[] =
+    const subdiffAcceptRejectLocations: { startLine: number; endLine: number }[] =
         []
 
     while (currentDeco.value != null) {
@@ -375,11 +374,11 @@ class SubdiffAcceptRejectWidget extends WidgetType {
         super()
     }
     toDOM(view: EditorView): HTMLElement {
-        let element = document.createElement('span')
-        let acceptChild = document.createElement('button')
+        const element = document.createElement('span')
+        const acceptChild = document.createElement('button')
         acceptChild.innerText = 'accept'
 
-        let rejectChild = document.createElement('button')
+        const rejectChild = document.createElement('button')
         rejectChild.innerText = 'reject'
 
         acceptChild.onclick = () => {
@@ -461,7 +460,7 @@ export const diffField = StateField.define<DiffState>({
                 store.dispatch(cs.undoRejectMessage(lastEffect.value.diffId))
             }
 
-            let {
+            const {
                 parts: newParts,
                 origLine: newOrigLine,
                 diffId: newDiffId,
@@ -494,19 +493,19 @@ export const diffField = StateField.define<DiffState>({
                 let lineOffset = 0
                 for (let i = 0; i < parts.length; i++) {
                     const part = parts[i]
-                    let className = part.added
+                    const className = part.added
                         ? 'cm-diff-added'
                         : part.removed
                         ? 'cm-diff-removed'
                         : null
                     if (className) {
-                        let from = tr.state.doc.line(origLine + lineOffset).from
-                        let to = from + part.value.length
+                        const from = tr.state.doc.line(origLine + lineOffset).from
+                        const to = from + part.value.length
                         // Iterate through the lines in the part
                         let offset = 0
-                        let seenLines = new Set()
-                        for (let line of tr.state.doc.iterRange(from, to)) {
-                            let lineNumber = tr.state.doc.lineAt(from + offset)
+                        const seenLines = new Set()
+                        for (const line of tr.state.doc.iterRange(from, to)) {
+                            const lineNumber = tr.state.doc.lineAt(from + offset)
                             if (seenLines.has(lineNumber)) continue
 
                             seenLines.add(lineNumber)
@@ -530,8 +529,8 @@ export const diffField = StateField.define<DiffState>({
                 visibleDeco = Decoration.set(newDecorations, true)
             } else {
                 // Determine which decorations to remove from visibleDeco and which ones to add/keep
-                let toRemovePartIndices: number[] = []
-                let toAdd: Range<Decoration>[] = []
+                const toRemovePartIndices: number[] = []
+                const toAdd: Range<Decoration>[] = []
 
                 // Iterate through old and new parts until they differ
                 let i = 0
@@ -557,21 +556,21 @@ export const diffField = StateField.define<DiffState>({
                 // Add all the line decorations starting from j to the end of newParts
                 for (let j = i; j < newParts.length; j++) {
                     const part = newParts[j]
-                    let className = part.added
+                    const className = part.added
                         ? 'cm-diff-added'
                         : part.removed
                         ? 'cm-diff-removed'
                         : null
                     if (className) {
-                        let from = tr.state.doc.line(
+                        const from = tr.state.doc.line(
                             origLine + newLineOffset
                         ).from
-                        let to = from + part.value.length
+                        const to = from + part.value.length
                         // Iterate through the lines in the part
                         let offset = 0
-                        let seenLines = new Set()
-                        for (let line of tr.state.doc.iterRange(from, to)) {
-                            let lineNumber = tr.state.doc.lineAt(from + offset)
+                        const seenLines = new Set()
+                        for (const line of tr.state.doc.iterRange(from, to)) {
+                            const lineNumber = tr.state.doc.lineAt(from + offset)
                             if (seenLines.has(lineNumber)) continue
 
                             seenLines.add(lineNumber)
@@ -608,14 +607,14 @@ export const diffField = StateField.define<DiffState>({
             }
         } else {
             // First do the acceptRejectSubDiffEffects before mapping the changes
-            for (let effect of tr.effects) {
+            for (const effect of tr.effects) {
                 if (effect.is(acceptRejectSubDiffEffect)) {
                     // We remove the decorations on the relevant range
-                    let { startLine, endLine } = effect.value
+                    const { startLine, endLine } = effect.value
 
                     visibleDeco = visibleDeco.update({
                         filter: (from, to, value) => {
-                            let line = tr.startState.doc.lineAt(from).number
+                            const line = tr.startState.doc.lineAt(from).number
                             return line < startLine || line > endLine
                         },
                     })
@@ -627,7 +626,7 @@ export const diffField = StateField.define<DiffState>({
                 visibleDeco = visibleDeco.map(tr.changes)
             }
 
-            for (let effect of tr.effects) {
+            for (const effect of tr.effects) {
                 if (effect.is(removeDiff)) {
                     isChanged = true
                     // Reset all values here
@@ -700,8 +699,8 @@ export const diffField = StateField.define<DiffState>({
                 return value.visibleDeco
             }),
             showTooltip.computeN([field], (state) => {
-                let tooltip = state.field(field).tooltip
-                let subDiffTooltips = state.field(field).subDiffTooltips
+                const tooltip = state.field(field).tooltip
+                const subDiffTooltips = state.field(field).subDiffTooltips
                 if (tooltip) {
                     return [tooltip, ...subDiffTooltips]
                 } else {
@@ -713,10 +712,10 @@ export const diffField = StateField.define<DiffState>({
 })
 
 function changeDiffFocus(view: EditorView, direction: 'up' | 'down') {
-    let diff = view.state.field(diffField)
+    const diff = view.state.field(diffField)
     if (diff.chunks.length == 0) return false
     // Get current line number
-    let lineNumber = view.state.doc.lineAt(
+    const lineNumber = view.state.doc.lineAt(
         view.state.selection.main.head
     ).number
     // Iterate through diff.chunks to find the newChunkIndex and position
@@ -745,8 +744,8 @@ function changeDiffFocus(view: EditorView, direction: 'up' | 'down') {
         }
     }
 
-    let chunk = diff.chunks[newChunkIndex ?? 0]
-    let fromPos = view.state.doc.line(chunk.startLine).from
+    const chunk = diff.chunks[newChunkIndex ?? 0]
+    const fromPos = view.state.doc.line(chunk.startLine).from
 
     // Scroll to the new position
     view.dispatch({
@@ -757,17 +756,17 @@ function changeDiffFocus(view: EditorView, direction: 'up' | 'down') {
 }
 
 function loadingDom(view: EditorView, diffId: string) {
-    let wrap = document.createElement('div')
+    const wrap = document.createElement('div')
     wrap.setAttribute('aria-hidden', 'true')
     wrap.className = 'cm-diff-loading'
     wrap.setAttribute('data-diff-id', diffId)
 
-    let cancelButton = document.createElement('div')
+    const cancelButton = document.createElement('div')
     cancelButton.classList.add('cm-diff-cancel')
 
-    let cancelText = document.createElement('div')
+    const cancelText = document.createElement('div')
     cancelText.textContent = 'Cancel'
-    let cancelShortcutSpan = document.createElement('span')
+    const cancelShortcutSpan = document.createElement('span')
     cancelShortcutSpan.innerHTML =
         `<span class="${
             connector.IS_WINDOWS
@@ -781,9 +780,9 @@ function loadingDom(view: EditorView, diffId: string) {
         store.dispatch(cs.interruptGeneration(diffId))
     }
 
-    let loadingSpinner = document.createElement('div')
+    const loadingSpinner = document.createElement('div')
     loadingSpinner.classList.add('cm-diff-loading-spinner')
-    let spinnerIcon = document.createElement('i')
+    const spinnerIcon = document.createElement('i')
     spinnerIcon.classList.add('fas', 'fa-spinner', 'fa-spin')
     loadingSpinner.appendChild(spinnerIcon)
 
@@ -794,13 +793,13 @@ function loadingDom(view: EditorView, diffId: string) {
 }
 
 function nothingDom() {
-    let wrap = document.createElement('div')
+    const wrap = document.createElement('div')
     wrap.setAttribute('aria-hidden', 'true')
     wrap.className = 'cm-accept-reject'
 
-    let nothingDiv = document.createElement('div')
+    const nothingDiv = document.createElement('div')
     nothingDiv.classList.add('cm-diff-continue', 'cm__continue_div')
-    let acceptSpan = document.createElement('div')
+    const acceptSpan = document.createElement('div')
     acceptSpan.textContent = 'No changes proposed!'
     nothingDiv.appendChild(acceptSpan)
     wrap.appendChild(nothingDiv)
@@ -813,15 +812,15 @@ function acceptRejectDom(
     interrupted: boolean,
     hitTokenLimit: boolean
 ) {
-    let wrap = document.createElement('div')
+    const wrap = document.createElement('div')
     wrap.setAttribute('aria-hidden', 'true')
     wrap.className = 'cm-accept-reject'
 
-    let acceptDiv = document.createElement('div')
+    const acceptDiv = document.createElement('div')
     acceptDiv.classList.add('cm-diff-accept', 'cm__accept_div')
-    let acceptSpan = document.createElement('div')
+    const acceptSpan = document.createElement('div')
     acceptSpan.textContent = 'Accept All'
-    let acceptShortcutSpan = document.createElement('span')
+    const acceptShortcutSpan = document.createElement('span')
     acceptShortcutSpan.innerHTML =
         `<span class="${
             connector.IS_WINDOWS
@@ -836,11 +835,11 @@ function acceptRejectDom(
         acceptDiff(diffId)(view)
     }
 
-    let rejectDiv = document.createElement('div')
+    const rejectDiv = document.createElement('div')
     rejectDiv.classList.add('cm-diff-reject', 'cm__reject_div')
-    let rejectSpan = document.createElement('div')
+    const rejectSpan = document.createElement('div')
     rejectSpan.textContent = 'Reject All'
-    let rejectShortcutSpan = document.createElement('span')
+    const rejectShortcutSpan = document.createElement('span')
     rejectShortcutSpan.innerHTML =
         `<span class="${
             connector.IS_WINDOWS
@@ -923,10 +922,10 @@ const diffCurrentLine = new (class extends GutterMarker {
 })()
 
 const gutterDiffHighlighter = gutterLineClass.compute([diffField], (state) => {
-    let marks = [],
+    const marks = [],
         last = -1
-    let diff = state.field(diffField)
-    let diffIter = diff.visibleDeco.iter()
+    const diff = state.field(diffField)
+    const diffIter = diff.visibleDeco.iter()
     while (diffIter.value) {
         // This gets just the added removed line decos
         if (diffIter.value.spec.widget != null) {
@@ -1018,7 +1017,7 @@ export const setDiff =
         }
 
         // Now we can try using the new diff algo
-        let chunks = JSDiff.diffLines(origTextString, newTextString, {
+        const chunks = JSDiff.diffLines(origTextString, newTextString, {
             ignoreWhitespace: false,
         })
 
@@ -1047,8 +1046,8 @@ export const setDiff =
                     chunks[chunks.length - 1].added = false
                 } else if (chunks.length >= 2) {
                     // Otherwise, is it of the form: removed a bunch then added 1 line
-                    let secondLastChunk = chunks[chunks.length - 2]
-                    let lastChunk = chunks[chunks.length - 1]
+                    const secondLastChunk = chunks[chunks.length - 2]
+                    const lastChunk = chunks[chunks.length - 1]
                     if (
                         secondLastChunk.removed &&
                         lastChunk.added &&
@@ -1069,9 +1068,9 @@ export const setDiff =
         }
 
         // Merge contiguous chunks of the same type
-        let mergedChunks = []
+        const mergedChunks = []
         for (let i = 0; i < chunks.length; i++) {
-            let currentChunk = chunks[i]
+            const currentChunk = chunks[i]
             // Note that !! converts truthy/falsy val to boolean
             while (
                 i + 1 < chunks.length &&
@@ -1086,27 +1085,27 @@ export const setDiff =
             mergedChunks.push(currentChunk)
         }
 
-        let parts = mergedChunks
+        const parts = mergedChunks
 
         const useHistory = isFinished || isInterrupted
 
         // Convert the list of parts into chunks of contiguous parts of the same type
-        let diff = view.state.field(diffField)
+        const diff = view.state.field(diffField)
         if (diff.visibleDeco.size > 0) {
             //
 
             // Compute a diff between the current state and the new state
             // We also know that the old startLine will be the same as the current
-            let { parts: oldParts } = diff
+            const { parts: oldParts } = diff
 
-            let oldPartsText = oldParts
+            const oldPartsText = oldParts
                 .map((part) =>
                     part.value.endsWith('\n') ? part.value : part.value + '\n'
                 )
                 .join('')
             // Naively, we can replace all text covered by the old parts with the new parts
 
-            let insertionText = parts
+            const insertionText = parts
                 .map((part) =>
                     part.value.endsWith('\n') ? part.value : part.value + '\n'
                 )
@@ -1198,8 +1197,8 @@ export const setDiff =
 
             // Now we look at the last chunk
             if (oldParts.length > 1 && parts.length > 1) {
-                let lastOldChunk = oldParts[oldParts.length - 1]
-                let lastNewChunk = parts[parts.length - 1]
+                const lastOldChunk = oldParts[oldParts.length - 1]
+                const lastNewChunk = parts[parts.length - 1]
                 if (
                     !lastOldChunk.added &&
                     !lastOldChunk.removed &&
@@ -1218,8 +1217,8 @@ export const setDiff =
                         newLineStart += parts[i].count ?? 0
                     }
 
-                    let oldLines = lastOldChunk.value.split('\n')
-                    let newLines = lastNewChunk.value.split('\n')
+                    const oldLines = lastOldChunk.value.split('\n')
+                    const newLines = lastNewChunk.value.split('\n')
                     let i
 
                     let finishedHere = false
@@ -1228,8 +1227,8 @@ export const setDiff =
                         i < Math.min(oldLines.length, newLines.length);
                         i++
                     ) {
-                        let newLineIdx = newLines.length - 1 - i
-                        let oldLineIdx = oldLines.length - 1 - i
+                        const newLineIdx = newLines.length - 1 - i
+                        const oldLineIdx = oldLines.length - 1 - i
                         //
                         //
                         //
@@ -1247,8 +1246,8 @@ export const setDiff =
                         // We reached the end
                     }
                     if (!finishedHere) {
-                        let newLineIdx = newLines.length - 1 - (i - 1)
-                        let oldLineIdx = oldLines.length - 1 - (i - 1)
+                        const newLineIdx = newLines.length - 1 - (i - 1)
+                        const oldLineIdx = oldLines.length - 1 - (i - 1)
 
                         endPartIndex = newLineStart + newLineIdx
                         endLineNumber = oldLineIdx + oldLineStart + origLine
@@ -1258,8 +1257,8 @@ export const setDiff =
             }
 
             // Ok, now we know that the difference lies between lineNumber and endLineNumber
-            let from = view.state.doc.line(lineNumber).from
-            let to = bounded(
+            const from = view.state.doc.line(lineNumber).from
+            const to = bounded(
                 endLineNumber
                     ? view.state.doc.line(endLineNumber).from
                     : view.state.doc.line(origLine).from + oldPartsText.length
@@ -1308,20 +1307,20 @@ export const setDiff =
                 to,
                 insert: newInsertionText,
             }
-            let endPos = from + oldPartsText.length + insertionText.length
+            const endPos = from + oldPartsText.length + insertionText.length
 
             // In the case of isFinished or isInterrupted, we must first set to orig Text, then dispatch the final change
             // to make history work
             if (useHistory) {
                 // debugger
                 let oldText = ''
-                for (let part of parts) {
+                for (const part of parts) {
                     if (!part.added) {
                         oldText += part.value
                     }
                 }
-                let from = view.state.doc.line(origLine).from
-                let to = bounded(from + oldPartsText.length)
+                const from = view.state.doc.line(origLine).from
+                const to = bounded(from + oldPartsText.length)
 
                 view.dispatch({
                     changes: {
@@ -1371,10 +1370,10 @@ export const setDiff =
             }
         } else {
             // We first add all of the green chunks
-            let changes: { from: number; to: number; insert: string }[] = []
+            const changes: { from: number; to: number; insert: string }[] = []
 
             // Iterate through parts and create changes for added text
-            let lineNumber = origLine
+            const lineNumber = origLine
             let greenLines = 0
             let lineOffset = 0
 
@@ -1383,7 +1382,7 @@ export const setDiff =
 
             parts.forEach((part) => {
                 if (part.added) {
-                    let insertLineNumber =
+                    const insertLineNumber =
                         lineNumber + (lineOffset - greenLines)
                     changes.push({
                         from: view.state.doc.line(insertLineNumber).from,
@@ -1422,18 +1421,18 @@ export const setDiff =
 const maybeAcceptRejectSubDiff =
     ({ typeRemoved }: { typeRemoved: DiffType }) =>
     (view: EditorView) => {
-        let diff = view.state.field(diffField)
+        const diff = view.state.field(diffField)
         if (!diff.diffId || diff.chunks.length == 0) {
             return false
         }
 
-        let currentLineNumber = view.state.doc.lineAt(
+        const currentLineNumber = view.state.doc.lineAt(
             view.state.selection.main.head
         ).number
         // Iterate through diff.chunks to check if currentLineNumber is within any range
-        for (let chunk of diff.chunks) {
-            let startLine = chunk.startLine
-            let endLine = chunk.endLine
+        for (const chunk of diff.chunks) {
+            const startLine = chunk.startLine
+            const endLine = chunk.endLine
 
             // If currentLineNumber is within the range, call acceptRejectSubDiff for that chunk
             if (
@@ -1459,16 +1458,16 @@ const acceptRejectSubDiff =
             posthog.capture('Accepted Diff')
         }
 
-        let diff = view.state.field(diffField)
+        const diff = view.state.field(diffField)
         if (!diff.diffId) {
             return
         }
 
-        let lineDeco = diff.visibleDeco.update({
+        const lineDeco = diff.visibleDeco.update({
             filter: (from, to, value) => value.spec.type != null,
         })
-        let lineIter = lineDeco.iter()
-        let changes: ChangeSpec[] = []
+        const lineIter = lineDeco.iter()
+        const changes: ChangeSpec[] = []
 
         let uncountedLines = 0
 
@@ -1522,22 +1521,22 @@ const acceptRejectDiff =
         if (typeRemoved == 'removed') {
             posthog.capture('Accepted Diff')
         }
-        let diff = view.state.field(diffField)
+        const diff = view.state.field(diffField)
         if (!diff.diffId) {
             return
         }
 
-        let lineDeco = diff.visibleDeco.update({
+        const lineDeco = diff.visibleDeco.update({
             filter: (from, to, value) => value.spec.type != null,
         })
-        let lineIter = lineDeco.iter()
-        let changes: ChangeSpec[] = []
-        let notRemovedDiffs: Range<Decoration>[] = []
+        const lineIter = lineDeco.iter()
+        const changes: ChangeSpec[] = []
+        const notRemovedDiffs: Range<Decoration>[] = []
 
         // Then we apply the stored diff to the selection and save this in history if appropriate
         while (lineIter.value != null) {
             if (lineIter.value.spec.diffId === diffId) {
-                let currentRange = lineIter.value.range(lineIter.from)
+                const currentRange = lineIter.value.range(lineIter.from)
                 notRemovedDiffs.push(currentRange)
                 if (lineIter.value.spec.type === typeRemoved) {
                     changes.push({
@@ -1574,9 +1573,9 @@ export const rejectSubDiff = acceptRejectSubDiff({ typeRemoved: 'added' })
  */
 const invertDiff = invertedEffects.of((tr) => {
     // Goal here is to undo the decorations effects of diffs I am adding comments because this is very dense
-    let found = []
+    const found = []
     if (tr.annotation(Transaction.addToHistory)) {
-        for (let e of tr.effects) {
+        for (const e of tr.effects) {
             // If we have just added a diff decoration, undoing it is removing it
             if (e.is(modifiedDiffEffect)) {
                 found.push(removeDiff.of(e.value))
@@ -1600,11 +1599,11 @@ const invertDiff = invertedEffects.of((tr) => {
             else if (e.is(undoAcceptRejectSubDiffEffect))
                 found.push(acceptRejectSubDiffEffect.of(e.value))
         }
-        let ranges = tr.startState.field(diffField).visibleDeco.update({
+        const ranges = tr.startState.field(diffField).visibleDeco.update({
             filter: (_, __, value) => value.spec.type != null,
         })
     } else {
-        for (let e of tr.effects) {
+        for (const e of tr.effects) {
             if (e.is(removeDiff)) {
                 found.push(modifiedDiffEffect.of(e.value))
             }
@@ -1627,7 +1626,7 @@ export const diffExtension = [
                 run: (view) => {
                     const state = view.state
                     // is active diff
-                    let diff = state.field(diffField)
+                    const diff = state.field(diffField)
                     if (diff.diffId) {
                         //accept diff
                         acceptDiff(diff.diffId)(view)
@@ -1641,7 +1640,7 @@ export const diffExtension = [
                 key: connector.PLATFORM_CM_KEY + '-Backspace',
                 run: (view) => {
                     const state = view.state
-                    let diff = state.field(diffField)
+                    const diff = state.field(diffField)
                     if (diff.diffId) {
                         const diffId = diff.diffId
                         // is active diff
@@ -1688,7 +1687,7 @@ export const diffExtension = [
                 run: (view) => {
                     const state = view.state
                     // is active diff
-                    let diff = state.field(diffField)
+                    const diff = state.field(diffField)
                     if (diff.diffId) {
                         const reduxState = store.getState()
                         const diffId = diff.diffId

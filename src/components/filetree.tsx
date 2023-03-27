@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect } from 'react'
 
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -26,7 +26,6 @@ import {
     getFolders,
     getNotDeletedFiles,
 } from '../features/selectors'
-import { useEffect } from 'react'
 import {
     faFileCirclePlus,
     faFolderPlus,
@@ -139,10 +138,10 @@ export function getIconElement(fname: string) {
     const isMatch = (exts: string[]) => {
         return exts.some((ext) => fname.endsWith('.' + ext))
     }
-    var iconTextValue = null
+    let iconTextValue = null
 
-    var iconClassValue = null
-    var iconElement = null
+    let iconClassValue = null
+    let iconElement = null
     if (isMatch(['js'])) {
         iconTextValue = 'js'
         iconClassValue = 'js'
@@ -181,7 +180,7 @@ export function getIconElement(fname: string) {
     }
 
     if (iconElement == null) {
-        var icon = faFile
+        let icon = faFile
 
         if (isMatch(CONFIG_EXTENSIONS)) {
             icon = faGear

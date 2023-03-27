@@ -239,7 +239,7 @@ export const chatSlice = createSlice({
             chatState: ChatState,
             action: PayloadAction<{ currentFile?: string; message?: string }>
         ) {
-            let newConversationId = uuidv4()
+            const newConversationId = uuidv4()
             const { currentFile, message } = action.payload
             chatState.currentConversationId = newConversationId
             chatState.draftMessages[newConversationId] = blankDraftMessage(
@@ -404,7 +404,7 @@ export const chatSlice = createSlice({
             chatState.msgType = action.payload.messageType || 'freeform'
 
             const newUserMessage: UserMessage = {
-                sender: 'user' as 'user',
+                sender: 'user' as const,
                 sentAt: Date.now(),
                 message: action.payload.userMessage,
                 conversationId: newConversationId,

@@ -165,9 +165,9 @@ export function SearchResult({
 
     // Now paths are relative to the root path
 
-    let splitFilePath = path.split(connector.PLATFORM_DELIMITER)
-    let fileName = splitFilePath.pop()!
-    let precedingPath = splitFilePath
+    const splitFilePath = path.split(connector.PLATFORM_DELIMITER)
+    const fileName = splitFilePath.pop()!
+    const precedingPath = splitFilePath
         .join(connector.PLATFORM_DELIMITER)
         .slice(rootPath!.length + 1)
 

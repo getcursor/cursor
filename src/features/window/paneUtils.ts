@@ -151,7 +151,7 @@ export function insertNewPaneExceptSplit(state: State) {
 }
 
 type Atom = number
-interface NestedArray extends Array<NestedArray | Atom> {}
+type NestedArray = Array<NestedArray | Atom>
 //type AtomOrArray = Atom | NestedArray;
 
 export function findSplitOfPane(state: State, paneId: number) {
@@ -257,7 +257,7 @@ export function doMoveTabToPane(state: State, tabId: number, paneId: number) {
 
     if (tab.isActive && oldPane.tabIds.length > 1) {
         const index = oldPane.tabIds.indexOf(tabId)
-        let newIndex = index === 0 ? 1 : index - 1
+        const newIndex = index === 0 ? 1 : index - 1
         setActiveTab(state, oldPane.tabIds[newIndex])
     }
     oldPane.tabIds.splice(oldPane.tabIds.indexOf(tabId), 1)
@@ -413,7 +413,7 @@ export function doMoveToAdjacentPane(state: State, paneDirection: string) {
 
             if (newIndex >= 0 && newIndex < parentSplits.length) {
                 // get the new splits array
-                let potentialIndex = parentSplits[newIndex]
+                const potentialIndex = parentSplits[newIndex]
                 if (Array.isArray(potentialIndex)) {
                     const roughIndex =
                         (index / splits.length) * potentialIndex.length
@@ -445,7 +445,7 @@ function getParentFolderIds(
     globalState: State,
     folderId: number | null
 ): number[] {
-    let parentFolderIds: number[] = []
+    const parentFolderIds: number[] = []
     let currentFolderId = folderId
     while (currentFolderId !== null) {
         parentFolderIds.push(currentFolderId)
@@ -476,7 +476,7 @@ export function doSelectFile(state: State, fileid: number) {
         function computeFirstIndents(candidateIndents: string[]) {
             // convert all preceding tabs to spaces
             const indentLengths = candidateIndents.map((line) => {
-                let indent = line.match(/^\s*/)
+                const indent = line.match(/^\s*/)
                 if (indent != null) {
                     return indent[0]
                 } else {

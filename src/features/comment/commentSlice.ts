@@ -47,12 +47,12 @@ export const updateCommentsForFile = createAsyncThunk(
             }),
         })
         const getNextToken = async () => {
-            let rawResult = await generator.next()
+            const rawResult = await generator.next()
             if (rawResult.done) return null
             return rawResult.value
         }
 
-        let generator = streamSource(response)
+        const generator = streamSource(response)
         let line = await getNextToken()
         while (line != null) {
             const {

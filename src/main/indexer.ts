@@ -3,9 +3,8 @@ import * as path from 'path'
 import * as cp from 'child_process'
 import log from 'electron-log'
 import { Semaphore } from 'await-semaphore'
-import { ipcMain, IpcMainInvokeEvent, session } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, session , BrowserWindow } from 'electron'
 import _ from 'lodash'
-import { BrowserWindow } from 'electron'
 import Store from 'electron-store'
 import crypto from 'crypto'
 // import gi from 'gitignore';
@@ -89,12 +88,12 @@ export class CodebaseIndexer {
         endpoint: string
         supportedExtensions: Set<string>
     }
-    private numFiles: number = 0
-    private numFilesToDelete: number = 0
-    private filesUploaded: number = 0
+    private numFiles = 0
+    private numFilesToDelete = 0
+    private filesUploaded = 0
     private semaphore: Semaphore = new Semaphore(20)
-    public finishedUpload: boolean = false
-    private haveStartedWatcher: boolean = false
+    public finishedUpload = false
+    private haveStartedWatcher = false
 
     constructor(
         public rootDir: string,
@@ -363,7 +362,7 @@ export class CodebaseIndexer {
         this.repoId = repoId
         this.numFiles = files.length
         const uploadFilesBatch = async (files: string[]) => {
-            let allData = await Promise.all(files.map(getContents))
+            const allData = await Promise.all(files.map(getContents))
             const filteredData = allData.filter((data) => data != null) as {
                 relativeFilePath: string
                 fileContents: string
@@ -459,7 +458,7 @@ export class CodebaseIndexer {
             // Semaphore context
             const release = await this.semaphore.acquire()
 
-            let startTime = performance.now()
+            const startTime = performance.now()
 
             if (!fileSystem.isRemote && store.get('uploadPreferences')) {
                 await fetch(
@@ -544,7 +543,7 @@ export class CodebaseIndexer {
             this.filesUploaded += 1
             release()
         }
-        let futures: Promise<void>[] = []
+        const futures: Promise<void>[] = []
         for (const file of files) {
             futures.push(uploadFile(file))
         }
@@ -581,7 +580,7 @@ export class CodebaseIndexer {
         apiRoot: string,
         files: string[],
         repoId: string,
-        onStart: boolean = false
+        onStart = false
     ) {
         // //
         // if (onStart) {

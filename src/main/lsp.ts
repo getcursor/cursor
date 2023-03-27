@@ -101,7 +101,7 @@ interface DownloadedLanguage {
 }
 
 async function findViableVersion(lang: DownloadedLanguage) {
-    let fallbacks = [
+    const fallbacks = [
         {
             ...lang,
             fallbacks: undefined,
@@ -113,8 +113,8 @@ async function findViableVersion(lang: DownloadedLanguage) {
 
     for (let i = 0; i < fallbacks.length; i++) {
         // Try running the command for 1 second, and see if it works
-        let command = fallbacks[i].command
-        let args = fallbacks[i].args
+        const command = fallbacks[i].command
+        const args = fallbacks[i].args
         //let isNode = fallbacks[i].isNode || false;
 
         let childProcess: cp.ChildProcess
@@ -142,14 +142,14 @@ async function findViableVersion(lang: DownloadedLanguage) {
             continue
         }
 
-        let timeout = new Promise((resolve, reject) => {
+        const timeout = new Promise((resolve, reject) => {
             setTimeout(() => {
                 log.info('SUCESS for', command, args)
                 resolve('DONE')
             }, 3000)
         })
 
-        let fullOut = await Promise.race([timeout, result])
+        const fullOut = await Promise.race([timeout, result])
         if (fullOut == 'DONE') {
             log.info('MARKED BEST', command, args)
             bestFallbackIndex = i
@@ -161,7 +161,7 @@ async function findViableVersion(lang: DownloadedLanguage) {
         }
     }
     const bestFallback = fallbacks[bestFallbackIndex]
-    let newFallbacks = fallbacks.splice(bestFallbackIndex, 1)
+    const newFallbacks = fallbacks.splice(bestFallbackIndex, 1)
     return {
         ...bestFallback,
         fallbacks: newFallbacks,
@@ -198,7 +198,7 @@ class LSPManager {
     }
 
     stopLS(language: Language) {
-        let oldStore = this.store.get(language)
+        const oldStore = this.store.get(language)
         if (oldStore) {
             this.store.set(language, {
                 ...oldStore,
@@ -212,7 +212,7 @@ class LSPManager {
         language: Language
     ): { installed: boolean; running: boolean } | null {
         if (this.store.has(language)) {
-            let info = this.store.get(language)
+            const info = this.store.get(language)
             return {
                 installed: info.downloadedInfo != null,
                 running: info.running,
@@ -222,7 +222,7 @@ class LSPManager {
     }
     async maybeInstallLanguage(language: Language, rootDir: string) {
         if (this.store.has(language)) {
-            let languageInfo = this.store.get(language) as LanguageInfo
+            const languageInfo = this.store.get(language) as LanguageInfo
             log.info('Store has language', language, languageInfo)
             if (languageInfo.downloadedInfo != null) {
                 return languageInfo.downloadedInfo
@@ -293,7 +293,7 @@ class LSPManager {
                         log.error('error installing python', e)
                     }
                 }
-                let candidateLang = {
+                const candidateLang = {
                     command: 'python',
                     args: ['-m', 'pylsp'],
                     fallbacks: [
@@ -386,7 +386,7 @@ class LSPManager {
                 remoteUrl =
                     'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz'
                 // Make dir if not exists path.join(lspPlugin, 'java')
-                let javaDir = path.join(lspDir, 'java')
+                const javaDir = path.join(lspDir, 'java')
                 try {
                     await fs.promises.access(javaDir)
                 } catch (e) {
@@ -422,7 +422,7 @@ class LSPManager {
                 }
 
             case 'c':
-                let cVersion = await getLatestVersion(
+                const cVersion = await getLatestVersion(
                     'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
                 if (osType === 'Darwin') {
@@ -434,7 +434,7 @@ class LSPManager {
                 } else {
                     throw new Error('Unsupported OS - ' + osType)
                 }
-                let cDir = path.join(lspDir, 'c')
+                const cDir = path.join(lspDir, 'c')
                 if (!fs.existsSync(cDir)) {
                     fs.mkdirSync(cDir)
                 }
@@ -509,7 +509,7 @@ class LSPManager {
                 }
 
                 // Make rust dir
-                let rustDir = path.join(lspDir, 'rust')
+                const rustDir = path.join(lspDir, 'rust')
                 if (!fs.existsSync(rustDir)) {
                     fs.mkdirSync(rustDir)
                 }
@@ -523,7 +523,7 @@ class LSPManager {
                 const file = await promisify(fs.readFile)(downloadPath)
 
                 // Extract the file
-                let rawFile = await ungzip(file)
+                const rawFile = await ungzip(file)
 
                 const rustBinaryName =
                     process.platform === 'win32'
@@ -596,7 +596,7 @@ class LSPManager {
                 csharpName += '-net6.0'
 
                 // Make csharp dir
-                let csDir = path.join(lspDir, 'csharp')
+                const csDir = path.join(lspDir, 'csharp')
                 if (!fs.existsSync(csDir)) {
                     fs.mkdirSync(csDir)
                 }
@@ -677,13 +677,13 @@ class LSPManager {
                 stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
                 env: process.env,
             })
-            let fallbacks = installedLanguage.fallbacks
+            const fallbacks = installedLanguage.fallbacks
             if (fallbacks != null) {
-                let fallBackIndex = 0
+                const fallBackIndex = 0
                 // Bind exit event listener
                 childProcess.on('exit', (code, signal) => {
                     if (fallbacks != null && fallBackIndex < fallbacks.length) {
-                        let { command, args } = fallbacks[fallBackIndex]
+                        const { command, args } = fallbacks[fallBackIndex]
                         childProcess = cp.fork(command, args, {
                             stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
                         })
@@ -753,14 +753,14 @@ class LSPManager {
             let requestMethod: keyof LSRequestMap
             try {
                 requestMethod = method as keyof LSRequestMap
-                let tmpIdentifier = uuidv4()
+                const tmpIdentifier = uuidv4()
                 event.sender.send('requestCallbackLS', {
                     language,
                     data: { method: requestMethod, params },
                     identifier: tmpIdentifier,
                 })
                 //
-                let future = new Promise((resolve, reject) => {
+                const future = new Promise((resolve, reject) => {
                     // TODO - get rid of the response callback later bc it may hurt performance
                     ipcMain.handle(
                         'responseCallbackLS' + tmpIdentifier,
@@ -770,7 +770,7 @@ class LSPManager {
                     )
                 })
 
-                let timedOut = new Promise((resolve) => {
+                const timedOut = new Promise((resolve) => {
                     setTimeout(() => {
                         // Resolve to a response error
                         resolve({
@@ -832,7 +832,7 @@ class LSPManager {
         const { connection } = this.runningClients[language]
 
         if (method == 'initialize') {
-            let out = await connection.sendRequest<LSPRequestMap[K][1]>(
+            const out = await connection.sendRequest<LSPRequestMap[K][1]>(
                 method,
                 params as LSPRequestMap[K][0]
             )
@@ -840,18 +840,18 @@ class LSPManager {
 
             return out
         } else if (method == 'textDocument/hover') {
-            let out = await connection.sendRequest<LSPRequestMap[K][1]>(
+            const out = await connection.sendRequest<LSPRequestMap[K][1]>(
                 method,
                 params as LSPRequestMap[K][0]
             )
             return out
         } else if (method == 'textDocument/completion') {
             // Pop off 'wordBefore' from params
-            let { wordBefore, ...otherParams } =
+            const { wordBefore, ...otherParams } =
                 params as LSPCustomCompletionParams
             const wordBeforeLower = wordBefore.toLowerCase()
             let start = performance.now()
-            let out = await connection.sendRequest<LSPRequestMap[K][1]>(
+            const out = await connection.sendRequest<LSPRequestMap[K][1]>(
                 method,
                 otherParams
             )

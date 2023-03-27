@@ -21,19 +21,19 @@ export class ContextBuilder {
         if (this.repoId == null) {
             return []
         }
-        let resp = await fetch(
+        const resp = await fetch(
             API_ROOT + '/repos/private/all_symbols/' + this.repoId,
             {
                 method: 'GET',
             }
         )
 
-        let result = await resp.json()
+        const result = await resp.json()
 
         return result
     }
 
-    async quickGetSymbols(timeout: number = 5) {
+    async quickGetSymbols(timeout = 5) {
         if (this.previousSymbols) {
             return this.previousSymbols
         }
@@ -62,19 +62,19 @@ export class ContextBuilder {
             })
         }
 
-        let symbols = await this.quickGetSymbols(1000)
-        let start = performance.now()
-        let finalSymbols = [
+        const symbols = await this.quickGetSymbols(1000)
+        const start = performance.now()
+        const finalSymbols = [
             ...symbols
                 .filter((symbol) =>
                     symbol[0].toLowerCase().includes(currentText.toLowerCase())
                 )
                 .map(([name, block_type, summary, fname]) => {
-                    let startIndex = name
+                    const startIndex = name
                         .toLowerCase()
                         .indexOf(currentText.toLowerCase())
 
-                    let endIndex = startIndex + currentText.length
+                    const endIndex = startIndex + currentText.length
                     return {
                         type: block_type,
                         path: fname,
@@ -85,10 +85,10 @@ export class ContextBuilder {
                     }
                 })
                 .sort((a, b) => {
-                    let startsA = a.name
+                    const startsA = a.name
                         .toLowerCase()
                         .startsWith(currentText.toLowerCase())
-                    let startsB = b.name
+                    const startsB = b.name
                         .toLowerCase()
                         .startsWith(currentText.toLowerCase())
 
@@ -102,14 +102,14 @@ export class ContextBuilder {
                         } else if (a.name.length > b.name.length) {
                             return 1
                         } else {
-                            let type_orderings = [
+                            const type_orderings = [
                                 'class',
                                 'function',
                                 'variable',
                                 'import',
                             ]
-                            let aOrder = type_orderings.indexOf(a.type)
-                            let bOrder = type_orderings.indexOf(b.type)
+                            const aOrder = type_orderings.indexOf(a.type)
+                            const bOrder = type_orderings.indexOf(b.type)
                             return aOrder - bOrder
                         }
                     }

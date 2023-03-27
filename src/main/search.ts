@@ -2,16 +2,15 @@ import _ from 'lodash'
 
 import * as cp from 'child_process'
 import * as path from 'path'
-import { ipcMain, IpcMainInvokeEvent } from 'electron'
+import { ipcMain, IpcMainInvokeEvent , app } from 'electron'
 import { promisify } from 'util'
-import { app } from 'electron'
 import Fuse from 'fuse.js'
 
 import { platformResourcesDir, PLATFORM_INFO, rgLoc } from './utils'
 
 // Use fuse.js for fuzzy search of files
 let cachedFuseInstance: Fuse<string> | null = null
-let cachedFuseRootPath: string = ''
+let cachedFuseRootPath = ''
 const FUSE_OPTIONS = {
     includeScore: true,
     threshold: 0.3,
@@ -29,25 +28,25 @@ const searchRipGrep = async (
 ) => {
     // Instead run ripgrep fromt the cli
     // let cmd = ['rg', '--json', '--line-number', '--with-filename']
-    let cmd = ['--json', '--line-number', '--with-filename', '--sort-files']
+    const cmd = ['--json', '--line-number', '--with-filename', '--sort-files']
     if (arg.caseSensitive) {
         cmd.push('--case-sensitive')
     } else {
         cmd.push('-i')
     }
 
-    for (let badPath of arg.badPaths) {
+    for (const badPath of arg.badPaths) {
         cmd.push('--ignore-file', badPath)
     }
 
     // cmd.push(`"${arg.query}"`, arg.rootPath);
     cmd.push(arg.query, arg.rootPath)
-    let start = performance.now()
-    let childProcess = cp.spawn(rgLoc, cmd)
+    const start = performance.now()
+    const childProcess = cp.spawn(rgLoc, cmd)
 
-    let rawData: string[] = []
+    const rawData: string[] = []
     let errored = false
-    var overflowBuffer = ''
+    let overflowBuffer = ''
 
     const trimLines = (lines: string) => {
         lines = overflowBuffer + lines
@@ -58,7 +57,7 @@ const searchRipGrep = async (
             .split('\n')
             .filter((match) => {
                 try {
-                    let data = JSON.parse(match)
+                    const data = JSON.parse(match)
                     if (data.type === 'match') {
                         return match
                     }
@@ -90,7 +89,7 @@ const searchRipGrep = async (
     return rawData
 }
 
-const customDebounce = (func: any, wait: number = 0) => {
+const customDebounce = (func: any, wait = 0) => {
     let timeout: any
     let lastCall = 0
 
@@ -101,7 +100,7 @@ const customDebounce = (func: any, wait: number = 0) => {
             return new Promise((resolve, reject) => {
                 timeout = setTimeout(() => {
                     lastCall = now
-                    let out = func(...args)
+                    const out = func(...args)
                     return resolve(out)
                 }, wait)
             })

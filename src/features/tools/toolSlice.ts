@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction , current } from '@reduxjs/toolkit'
 import { ToolState } from '../window/state'
-import { current } from '@reduxjs/toolkit'
 
 const initialState: ToolState = {
     openLeftTab: 'filetree',
@@ -47,7 +46,7 @@ export const toolSlice = createSlice({
             state.commandPaletteTriggered = true
         },
         triggerAICommandPalette: (state: ToolState) => {
-            let newAICommandPaletteTriggered = !state.aiCommandPaletteTriggered
+            const newAICommandPaletteTriggered = !state.aiCommandPaletteTriggered
             untriggerAll(state)
             state.aiCommandPaletteTriggered = newAICommandPaletteTriggered
         },

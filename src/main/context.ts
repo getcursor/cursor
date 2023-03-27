@@ -5,7 +5,7 @@ import * as rpc from 'vscode-jsonrpc/node'
 import { IpcMainInvokeEvent } from 'electron'
 
 export async function startServer(repoId: string) {
-    let resp = await fetch('http://localhost:4000/jsonrpc', {
+    const resp = await fetch('http://localhost:4000/jsonrpc', {
         method: 'POST',
         body: JSON.stringify({
             jsonrpc: '2.0',

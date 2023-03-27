@@ -183,15 +183,15 @@ export function getDiagnostics(
     value: LintState,
     state: EditorState
 ): Diagnostic[] {
-    let diagIter = value.diagnostics.iter()
-    let diagnostics: Diagnostic[] = []
+    const diagIter = value.diagnostics.iter()
+    const diagnostics: Diagnostic[] = []
     while (diagIter.value != null) {
-        let { from, to, value } = diagIter
-        let line = state.doc.lineAt(from).number
-        let col = from - state.doc.line(line).from
+        const { from, to, value } = diagIter
+        const line = state.doc.lineAt(from).number
+        const col = from - state.doc.line(line).from
 
-        let diagnostic = value.spec.diagnostic
-        let newDiagnostic = {
+        const diagnostic = value.spec.diagnostic
+        const newDiagnostic = {
             ...diagnostic,
             line,
             col,
@@ -229,11 +229,11 @@ class LintState {
     ) {
         // Filter the list of diagnostics for which to create markers
         let markedDiagnostics = diagnostics
-        let diagnosticFilter = state.facet(lintConfig).markerFilter
+        const diagnosticFilter = state.facet(lintConfig).markerFilter
         if (diagnosticFilter)
             markedDiagnostics = diagnosticFilter(markedDiagnostics)
 
-        let ranges = Decoration.set(
+        const ranges = Decoration.set(
             markedDiagnostics.map((d: Diagnostic) => {
                 // For zero-length ranges or ranges covering only a line break, create a widget
                 return d.from == d.to ||
@@ -287,7 +287,7 @@ function maybeEnableLint(
               StateEffect.appendConfig.of([
                   lintState,
                   EditorView.decorations.compute([lintState], (state) => {
-                      let { selected, panel } = state.field(lintState)
+                      const { selected, panel } = state.field(lintState)
                       return !selected || !panel || selected.from == selected.to
                           ? Decoration.none
                           : Decoration.set([
@@ -322,13 +322,13 @@ const movePanelSelection = StateEffect.define<SelectedDiagnostic>()
 
 export const diagnosticsField = StateField.define<Diagnostic[]>({
     create() {
-        let out: Diagnostic[] = []
+        const out: Diagnostic[] = []
         return out
     },
     toJSON: (value, state) => {
-        let lintStateField = state.field(lintState, false)
+        const lintStateField = state.field(lintState, false)
         if (!lintStateField) return []
-        let diagnostics = getDiagnostics(lintStateField, state)
+        const diagnostics = getDiagnostics(lintStateField, state)
         return diagnostics
     },
     fromJSON: (value, state) => {
@@ -345,10 +345,10 @@ export const lintState = StateField.define<LintState>({
     },
     update(value, tr) {
         if (tr.docChanged) {
-            let mapped = value.diagnostics.map(tr.changes)
+            const mapped = value.diagnostics.map(tr.changes)
             let selected: SelectedDiagnostic | null = null
             if (value.selected) {
-                let selPos = tr.changes.mapPos(value.selected.from, 1)
+                const selPos = tr.changes.mapPos(value.selected.from, 1)
                 selected =
                     findDiagnostic(mapped, value.selected.diagnostic, selPos) ||
                     findDiagnostic(mapped, null, selPos)
@@ -356,7 +356,7 @@ export const lintState = StateField.define<LintState>({
             value = new LintState(mapped, value.panel, selected)
         }
 
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(setDiagnosticsEffect)) {
                 value = LintState.init(effect.value, value.panel, tr.state)
             } else if (effect.is(togglePanel)) {
@@ -392,7 +392,7 @@ export const lintState = StateField.define<LintState>({
 
 /// Returns the number of active lint diagnostics in the given state.
 export function diagnosticCount(state: EditorState) {
-    let lint = state.field(lintState, false)
+    const lint = state.field(lintState, false)
     return lint ? lint.diagnostics.size : 0
 }
 
@@ -416,7 +416,7 @@ export const activeLintField = StateField.define<{
             return null
         }
 
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(setActiveLint)) {
                 return effect.value
             }
@@ -427,7 +427,7 @@ export const activeLintField = StateField.define<{
 })
 
 function lintTooltip(view: EditorView, pos: number, side: -1 | 1) {
-    let { diagnostics } = view.state.field(lintState)
+    const { diagnostics } = view.state.field(lintState)
 
     let found: Diagnostic[] = [],
         stackStart = 2e8,
@@ -450,7 +450,7 @@ function lintTooltip(view: EditorView, pos: number, side: -1 | 1) {
         }
     )
 
-    let diagnosticFilter = view.state.facet(lintConfig).tooltipFilter
+    const diagnosticFilter = view.state.facet(lintConfig).tooltipFilter
     if (diagnosticFilter) found = diagnosticFilter(found)
 
     if (!found.length) return null
@@ -471,7 +471,7 @@ function diagnosticsTooltip(
     diagnostics: readonly Diagnostic[]
 ) {
     // Check for severe diagnostics
-    let severeDiagnostics = diagnostics.filter((d) => d.severity === 'error')
+    const severeDiagnostics = diagnostics.filter((d) => d.severity === 'error')
     const isSerious = severeDiagnostics.length > 0
     const button = elt(
         'div',
@@ -487,7 +487,7 @@ function diagnosticsTooltip(
                     // Trigger cmd+shift+enter key event
 
                     // Necessary to avoid circular dependencies
-                    let event = new KeyboardEvent('keydown', {
+                    const event = new KeyboardEvent('keydown', {
                         key: 'Enter',
                         code: 'Enter',
                         shiftKey: true,
@@ -526,7 +526,7 @@ function diagnosticsTooltip(
                 onclick: () => {
                     // Trigger cmd+shift+enter key event
                     if (isSerious) {
-                        let diagnostic = severeDiagnostics[0]
+                        const diagnostic = severeDiagnostics[0]
                         view.dispatch({
                             effects: setActiveLint.of({
                                 line: diagnostic.line + 1,
@@ -534,7 +534,7 @@ function diagnosticsTooltip(
                             }),
                         })
                         // Necessary to avoid circular dependencies
-                        let event = new KeyboardEvent('keydown', {
+                        const event = new KeyboardEvent('keydown', {
                             key: 'e',
                             shiftKey: true,
                             metaKey: true,
@@ -572,12 +572,12 @@ function diagnosticsTooltip(
 
 /// Command to open and focus the lint panel.
 export const openLintPanel: Command = (view: EditorView) => {
-    let field = view.state.field(lintState, false)
+    const field = view.state.field(lintState, false)
     if (!field || !field.panel)
         view.dispatch({
             effects: maybeEnableLint(view.state, [togglePanel.of(true)]),
         })
-    let panel = getPanel(view, LintPanel.open)
+    const panel = getPanel(view, LintPanel.open)
     if (panel)
         (panel.dom.querySelector('.cm-panel-lint ul') as HTMLElement).focus()
     return true
@@ -585,7 +585,7 @@ export const openLintPanel: Command = (view: EditorView) => {
 
 /// Command to close the lint panel, when open.
 export const closeLintPanel: Command = (view: EditorView) => {
-    let field = view.state.field(lintState, false)
+    const field = view.state.field(lintState, false)
     if (!field || !field.panel) return false
     view.dispatch({ effects: togglePanel.of(false) })
     return true
@@ -593,7 +593,7 @@ export const closeLintPanel: Command = (view: EditorView) => {
 
 /// Move the selection to the next diagnostic.
 export const nextDiagnostic: Command = (view: EditorView) => {
-    let field = view.state.field(lintState, false)
+    const field = view.state.field(lintState, false)
     if (!field) return false
     let sel = view.state.selection.main,
         next = field.diagnostics.iter(sel.to + 1)
@@ -630,25 +630,25 @@ const lintPlugin = ViewPlugin.fromClass(
         set = true
 
         constructor(readonly view: EditorView) {
-            let { delay } = view.state.facet(lintConfig)
+            const { delay } = view.state.facet(lintConfig)
             this.lintTime = Date.now() + delay
             this.run = this.run.bind(this)
             this.timeout = setTimeout(this.run, delay)
         }
 
         run() {
-            let now = Date.now()
+            const now = Date.now()
             if (now < this.lintTime - 10) {
                 setTimeout(this.run, this.lintTime - now)
             } else {
                 this.set = false
-                let { state } = this.view,
+                const { state } = this.view,
                     { sources } = state.facet(lintConfig)
                 Promise.all(
                     sources.map((source) => Promise.resolve(source(this.view)))
                 ).then(
                     (annotations) => {
-                        let all = annotations.reduce((a, b) => a.concat(b))
+                        const all = annotations.reduce((a, b) => a.concat(b))
                         if (this.view.state.doc == state.doc)
                             this.view.dispatch(
                                 setDiagnostics(this.view.state, all)
@@ -662,7 +662,7 @@ const lintPlugin = ViewPlugin.fromClass(
         }
 
         update(update: ViewUpdate) {
-            let config = update.state.facet(lintConfig)
+            const config = update.state.facet(lintConfig)
             if (
                 update.docChanged ||
                 config != update.startState.facet(lintConfig)
@@ -718,16 +718,16 @@ export function linter(source: LintSource, config: LintConfig = {}): Extension {
 /// Forces any linters [configured](#lint.linter) to run when the
 /// editor is idle to run right away.
 export function forceLinting(view: EditorView) {
-    let plugin = view.plugin(lintPlugin)
+    const plugin = view.plugin(lintPlugin)
     if (plugin) plugin.force()
 }
 
 function assignKeys(actions: readonly Action[] | undefined) {
-    let assigned: string[] = []
+    const assigned: string[] = []
     if (actions)
-        actions: for (let { name } of actions) {
+        actions: for (const { name } of actions) {
             for (let i = 0; i < name.length; i++) {
-                let ch = name[i]
+                const ch = name[i]
                 if (
                     /[a-zA-Z]/.test(ch) &&
                     !assigned.some((c) => c.toLowerCase() == ch.toLowerCase())
@@ -746,7 +746,7 @@ function renderDiagnostic(
     diagnostic: Diagnostic,
     inPanel: boolean
 ) {
-    let keys = inPanel ? assignKeys(diagnostic.actions) : []
+    const keys = inPanel ? assignKeys(diagnostic.actions) : []
 
     return elt(
         'li',
@@ -781,9 +781,9 @@ function renderDiagnostic(
                 'div',
                 { class: 'cm-diagnostic-action' },
                 diagnostic.actions?.map((action, i) => {
-                    let click = (e: Event) => {
+                    const click = (e: Event) => {
                         e.preventDefault()
-                        let found = findDiagnostic(
+                        const found = findDiagnostic(
                             view.state.field(lintState).diagnostics,
                             diagnostic
                         )
@@ -798,9 +798,9 @@ function renderDiagnostic(
                         }
                         //action.apply(view, found.from, found.to)
                     }
-                    let { name }: { name: string } = action
-                    let keyIndex = keys[i] ? name.indexOf(keys[i]) : -1
-                    let nameElt =
+                    const { name }: { name: string } = action
+                    const keyIndex = keys[i] ? name.indexOf(keys[i]) : -1
+                    const nameElt =
                         keyIndex < 0
                             ? name
                             : [
@@ -863,7 +863,7 @@ class LintPanel implements Panel {
     list: HTMLElement
 
     constructor(readonly view: EditorView) {
-        let onkeydown = (event: KeyboardEvent) => {
+        const onkeydown = (event: KeyboardEvent) => {
             if (event.keyCode == 27) {
                 // Escape
                 closeLintPanel(this.view)
@@ -892,11 +892,11 @@ class LintPanel implements Panel {
                 this.selectedIndex >= 0
             ) {
                 // A-Z
-                let { diagnostic } = this.items[this.selectedIndex],
+                const { diagnostic } = this.items[this.selectedIndex],
                     keys = assignKeys(diagnostic.actions)
                 for (let i = 0; i < keys.length; i++)
                     if (keys[i].toUpperCase().charCodeAt(0) == event.keyCode) {
-                        let found = findDiagnostic(
+                        const found = findDiagnostic(
                             this.view.state.field(lintState).diagnostics,
                             diagnostic
                         )
@@ -913,13 +913,13 @@ class LintPanel implements Panel {
             }
             event.preventDefault()
         }
-        let onclick = (event: MouseEvent) => {
+        const onclick = (event: MouseEvent) => {
             for (let i = 0; i < this.items.length; i++) {
                 if (this.items[i].dom.contains(event.target as HTMLElement))
                     this.moveSelection(i)
             }
         }
-        let severeDiagnostics = getDiagnostics(
+        const severeDiagnostics = getDiagnostics(
             view.state.field(lintState),
             view.state
         ).filter((d) => d.severity === 'error')
@@ -954,7 +954,7 @@ class LintPanel implements Panel {
                                       // Trigger cmd+shift+e key event
 
                                       // Necessary to avoid circular dependencies
-                                      let event = new KeyboardEvent('keydown', {
+                                      const event = new KeyboardEvent('keydown', {
                                           key: 'E',
                                           code: 'KeyE',
                                           shiftKey: true,
@@ -1004,7 +1004,7 @@ class LintPanel implements Panel {
     }
 
     get selectedIndex() {
-        let selected = this.view.state.field(lintState).selected
+        const selected = this.view.state.field(lintState).selected
         if (!selected) return -1
         for (let i = 0; i < this.items.length; i++)
             if (this.items[i].diagnostic == selected.diagnostic) return i
@@ -1012,7 +1012,7 @@ class LintPanel implements Panel {
     }
 
     update() {
-        let { diagnostics, selected } = this.view.state.field(lintState)
+        const { diagnostics, selected } = this.view.state.field(lintState)
         let i = 0,
             needsSync = false,
             newSelectedItem: PanelItem | null = null
@@ -1093,12 +1093,12 @@ class LintPanel implements Panel {
     sync() {
         let domPos: ChildNode | null = this.list.firstChild
         function rm() {
-            let prev = domPos!
+            const prev = domPos!
             domPos = prev.nextSibling
             prev.remove()
         }
 
-        for (let item of this.items) {
+        for (const item of this.items) {
             if (item.dom.parentNode == this.list) {
                 while (domPos != item.dom) rm()
                 domPos = item.dom.nextSibling
@@ -1111,8 +1111,8 @@ class LintPanel implements Panel {
 
     moveSelection(selectedIndex: number) {
         if (this.selectedIndex < 0) return
-        let field = this.view.state.field(lintState)
-        let selection = findDiagnostic(
+        const field = this.view.state.field(lintState)
+        const selection = findDiagnostic(
             field.diagnostics,
             this.items[selectedIndex].diagnostic
         )
@@ -1319,13 +1319,13 @@ const baseTheme = EditorView.baseTheme({
     },
 })
 
-let a = Transaction
+const a = Transaction
 class LintGutterMarker extends GutterMarker {
     severity: 'info' | 'warning' | 'error' | 'aiwarning' | 'none'
     constructor(readonly diagnostics: readonly Diagnostic[]) {
         super()
         this.severity = diagnostics.reduce((max, d) => {
-            let s = d.severity
+            const s = d.severity
             return s == 'error' ||
                 s == 'warning' ||
                 (s == 'aiwarning' && max == 'info')
@@ -1335,11 +1335,11 @@ class LintGutterMarker extends GutterMarker {
     }
 
     toDOM(view: EditorView) {
-        let elt = document.createElement('div')
+        const elt = document.createElement('div')
         elt.className = 'cm-lint-marker cm-lint-marker-' + this.severity
 
         let diagnostics = this.diagnostics
-        let diagnosticsFilter = view.state.facet(lintGutterConfig).tooltipFilter
+        const diagnosticsFilter = view.state.facet(lintGutterConfig).tooltipFilter
         if (diagnosticsFilter) diagnostics = diagnosticsFilter(diagnostics)
 
         if (diagnostics.length)
@@ -1356,8 +1356,8 @@ const enum Hover {
 }
 
 function trackHoverOn(view: EditorView, marker: HTMLElement) {
-    let mousemove = (event: MouseEvent) => {
-        let rect = marker.getBoundingClientRect()
+    const mousemove = (event: MouseEvent) => {
+        const rect = marker.getBoundingClientRect()
         if (
             event.clientX > rect.left - Hover.Margin &&
             event.clientX < rect.right + Hover.Margin &&
@@ -1389,7 +1389,7 @@ function gutterMarkerMouseOver(
     diagnostics: readonly Diagnostic[]
 ) {
     function hovered() {
-        let line = view.elementAtHeight(
+        const line = view.elementAtHeight(
             marker.getBoundingClientRect().top + 5 - view.documentTop
         )
         const linePos = view.coordsAtPos(line.from)
@@ -1411,7 +1411,7 @@ function gutterMarkerMouseOver(
         trackHoverOn(view, marker)
     }
 
-    let { hoverTime } = view.state.facet(lintGutterConfig)
+    const { hoverTime } = view.state.facet(lintGutterConfig)
 
     let hoverTimeout = setTimeout(hovered, hoverTime)
     marker.onmouseout = () => {
@@ -1425,13 +1425,13 @@ function gutterMarkerMouseOver(
 }
 
 function markersForDiagnostics(doc: Text, diagnostics: readonly Diagnostic[]) {
-    let byLine: { [line: number]: Diagnostic[] } = Object.create(null)
-    for (let diagnostic of diagnostics) {
-        let line = doc.lineAt(diagnostic.from)
+    const byLine: { [line: number]: Diagnostic[] } = Object.create(null)
+    for (const diagnostic of diagnostics) {
+        const line = doc.lineAt(diagnostic.from)
         ;(byLine[line.from] || (byLine[line.from] = [])).push(diagnostic)
     }
-    let markers: Range<GutterMarker>[] = []
-    for (let line in byLine) {
+    const markers: Range<GutterMarker>[] = []
+    for (const line in byLine) {
         markers.push(new LintGutterMarker(byLine[line]).range(+line))
     }
     return RangeSet.of(markers, true)
@@ -1448,8 +1448,8 @@ const lintGutterMarkers = StateField.define<RangeSet<GutterMarker>>({
     },
     update(markers, tr) {
         markers = markers.map(tr.changes)
-        let diagnosticFilter = tr.state.facet(lintGutterConfig).markerFilter
-        for (let effect of tr.effects) {
+        const diagnosticFilter = tr.state.facet(lintGutterConfig).markerFilter
+        for (const effect of tr.effects) {
             if (effect.is(setDiagnosticsEffect)) {
                 let diagnostics = effect.value
                 //
@@ -1557,7 +1557,7 @@ export function forEachDiagnostic(
     state: EditorState,
     f: (d: Diagnostic, from: number, to: number) => void
 ) {
-    let lState = state.field(lintState, false)
+    const lState = state.field(lintState, false)
     if (lState && lState.diagnostics.size)
         for (
             let iter = RangeSet.iter([lState.diagnostics]);

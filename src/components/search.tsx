@@ -228,27 +228,27 @@ const handleSearch = async (query: string, setResults: any, rootPath: any) => {
                 setResults([])
                 return
             }
-            let newResults: RawResult[] = [
+            const newResults: RawResult[] = [
                 ...out.map((result: string) => JSON.parse(result)),
             ]
 
-            let fileLevelResultsMap = new Map<string, FileLevelResult>()
+            const fileLevelResultsMap = new Map<string, FileLevelResult>()
 
-            for (let result of newResults) {
-                let filePath = result.data.path.text
+            for (const result of newResults) {
+                const filePath = result.data.path.text
                 if (!fileLevelResultsMap.has(filePath)) {
                     fileLevelResultsMap.set(filePath, { filePath, results: [] })
                 }
 
-                let fileLevelResult = fileLevelResultsMap.get(filePath)
+                const fileLevelResult = fileLevelResultsMap.get(filePath)
                 fileLevelResult!.results.push(result)
             }
-            let newestResults = [...fileLevelResultsMap.values()]
+            const newestResults = [...fileLevelResultsMap.values()]
             setResults(newestResults)
             if (newestResults.length != 0) {
-                let firstResult = newestResults[0].results[0]
-                let start = firstResult.data.submatches[0].start
-                let end = firstResult.data.submatches[0].end
+                const firstResult = newestResults[0].results[0]
+                const start = firstResult.data.submatches[0].start
+                const end = firstResult.data.submatches[0].end
             }
         })
 }
@@ -379,9 +379,9 @@ function FileResultComponent({ result }: { result: FileLevelResult }) {
 
     const rootPath = useAppSelector((state) => state.global.rootPath)
 
-    let splitFilePath = result.filePath.split(connector.PLATFORM_DELIMITER)
-    let fileName = splitFilePath.pop()!
-    let precedingPath = splitFilePath
+    const splitFilePath = result.filePath.split(connector.PLATFORM_DELIMITER)
+    const fileName = splitFilePath.pop()!
+    const precedingPath = splitFilePath
         .join(connector.PLATFORM_DELIMITER)
         .slice(rootPath.length + 1)
 
@@ -420,9 +420,9 @@ function FileResultComponent({ result }: { result: FileLevelResult }) {
 }
 
 function LineResultComponent({ result }: { result: RawResult }) {
-    let line = result.data.lines.text
-    let start = result.data.submatches[0].start
-    let end = result.data.submatches[0].end
+    const line = result.data.lines.text
+    const start = result.data.submatches[0].start
+    const end = result.data.submatches[0].end
 
     const dispatch = useAppDispatch()
 
