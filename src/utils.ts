@@ -2,7 +2,7 @@ export const API_ROOT = 'https://aicursor.com'
 
 export class NoAuthRateLimitError extends Error {
     constructor(
-        message: string = 'You have reached the rate limit for unauthenticated requests. Please authenticate to continue.'
+        message = 'You have reached the rate limit for unauthenticated requests. Please authenticate to continue.'
     ) {
         super(message)
         this.name = 'NoAuthRateLimitError'
@@ -11,7 +11,7 @@ export class NoAuthRateLimitError extends Error {
 
 export class AuthRateLimitError extends Error {
     constructor(
-        message: string = 'You have reached the rate limit for authenticated requests. Please wait before making more requests.'
+        message = 'You have reached the rate limit for authenticated requests. Please wait before making more requests.'
     ) {
         super(message)
         this.name = 'AuthRateLimitError'
