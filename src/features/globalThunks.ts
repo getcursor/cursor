@@ -33,11 +33,11 @@ export const closeTab = createAsyncThunk(
 export const closeAllTabs = createAsyncThunk(
     'global/closeAllTabs',
     async (_, { getState, dispatch }) => {
-      const state = (<FullState>getState()).global
-      const tabIds = Object.keys(state.tabs);
-  
-      for (const tabId of tabIds) {
-        await dispatch(closeTab(parseInt(tabId, 10)));
-      }
+        const state = (<FullState>getState()).global
+        const tabIds = Object.keys(state.tabs)
+
+        for (const tabId of tabIds) {
+            await dispatch(closeTab(parseInt(tabId, 10)))
+        }
     }
-  );
+)

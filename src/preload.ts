@@ -271,7 +271,8 @@ const electronConnector = {
     }) => ipcRenderer.invoke('rightMenuAtToken', payload),
 
     deleteFile: (path: string) => ipcRenderer.invoke('delete_file', path),
-    openContainingFolder: (path: string) => ipcRenderer.invoke('open_containing_folder', path),
+    openContainingFolder: (path: string) =>
+        ipcRenderer.invoke('open_containing_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
     
     getVersion: () => ipcRenderer.invoke('get_version', null),

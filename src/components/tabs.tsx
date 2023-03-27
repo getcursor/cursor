@@ -52,14 +52,15 @@ function Tab({ tid }: { tid: number }) {
             }}
             onContextMenu={() => dispatch(gs.rightClickTab(tid))}
         >
-           <div onMouseDown={
-                (e) => {
-                    if(e.button == 1) { // middle click
+            <div
+                onMouseDown={(e) => {
+                    if (e.button == 1) {
+                        // middle click
                         e.stopPropagation()
                         dispatch(gt.closeTab(tid))
                     }
-                }
-            }>
+                }}
+            >
                 <div className="tab__icon">{getIconElement(file.name)}</div>
                 <div className="tab__name">{name}</div>
                 <div
