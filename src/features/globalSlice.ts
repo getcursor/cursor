@@ -84,6 +84,7 @@ import { LSPNotifyMap } from './lsp/stdioClient'
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
 import { changeSettings } from './settings/settingsSlice'
 import { updateCommentsForFile } from './comment/commentSlice'
+import { openFileTree } from './tools/toolSlice'
 import { updateTestsForFile } from './tests/testSlice'
 import { getPane } from './selectors'
 
@@ -611,6 +612,9 @@ export const openFolder = createAsyncThunk(
         const folderData = await connector.getFolder(folderPath)
 
         dispatch(overwriteFolder({ folderPath, folderData }))
+
+        // Show the new folder in the FileTree view
+        dispatch(openFileTree())
 
         // Now we are going to setup the lsp server
         await dispatch(startConnections(folderPath))
