@@ -33,6 +33,7 @@ jobs:
               run: ./setup.sh
 
             - name: Setup windows
+              if: ${{ matrix.os == 'windows-latest' }}
               shell: pwsh
               run: ./setup.ps1
 
