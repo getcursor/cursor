@@ -128,6 +128,7 @@ export interface State {
 
     showError: boolean
     showRateLimit: boolean
+    showNoAuthRateLimit: boolean
     errorType: string
     errorInfo: string
 
@@ -341,6 +342,11 @@ export interface ToolState {
     commandPaletteTriggered: boolean
     aiCommandPaletteTriggered: boolean
     leftSideExpanded: boolean
+    cursorLogin: {
+        accessToken?: string
+        profile?: string
+        stripeId?: string
+    }
 }
 
 export interface LoggingState {
@@ -440,6 +446,7 @@ export const initialState = {
     },
 
     showError: false,
+    showNoAuthRateLimit: false,
     showRateLimit: false,
     errorType: 'server',
     errorInfo: '404, request bad',

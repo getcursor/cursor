@@ -4,7 +4,12 @@ import {
     createAsyncThunk,
     ThunkDispatch,
 } from '@reduxjs/toolkit'
-import { API_ROOT, streamSource } from '../../utils'
+import {
+    API_ROOT,
+    AuthRateLimitError,
+    NoAuthRateLimitError,
+    streamSource,
+} from '../../utils'
 import { getViewId } from '../codemirror/codemirrorSelectors'
 import {
     FullCodeMirrorState,
@@ -41,7 +46,13 @@ import {
     updateLastUserMessageMsgType,
 } from './chatSlice'
 import { Text } from '@codemirror/state'
-import { addTransaction, openError, openFile } from '../globalSlice'
+import {
+    addTransaction,
+    openError,
+    openFile,
+    openNoAuthRateLimit,
+    openRateLimit,
+} from '../globalSlice'
 import { findFileIdFromPath, getPathForFileId } from '../window/fileUtils'
 import {
     getPrecedingLines,
@@ -61,6 +72,18 @@ import {
     lintState,
     setActiveLint,
 } from '../linter/lint'
+
+const getBearerTokenHeader = (getState: () => unknown) => {
+    const accessToken = (getState() as FullState).toolState.cursorLogin
+        .accessToken
+    if (accessToken) {
+        return {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    } else {
+        return null
+    }
+}
 
 function getMatchingLines(doc: Text, ...lines: string[]): number[][] {
     // Iterate through the lines in the document and find matching line numbers
@@ -345,14 +368,29 @@ export const continueGeneration = createAsyncThunk(
             // Hit the diffs endpoint
             const server = `${API_ROOT}/continue/`
 
-            const response = await fetch(server, {
+            let response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getBearerTokenHeader(getState),
                     // Cookie: `repo_path=${state.global.rootPath}`,
                 },
                 //credentials: 'include',
                 body: JSON.stringify(data),
+            }).then(async (resp) => {
+                console.log('CAUGHT e', resp)
+                if (resp.status === 429) {
+                    const text = await resp.json()
+                    console.log('message', text)
+                    if (text.detail.includes('NO_AUTH')) {
+                        console.log('THROWING THIS ERROR')
+                        throw new NoAuthRateLimitError()
+                    } else if (text.detail === 'AUTH') {
+                        console.log('THROWING THIS OTHER ERROR')
+                        throw new AuthRateLimitError()
+                    }
+                }
+                return resp
             })
 
             dispatch(resumeGeneration(conversationId))
@@ -466,7 +504,13 @@ export const continueGeneration = createAsyncThunk(
             }
         } catch (e) {
             dispatch(setGenerating(false))
-            if (!(e instanceof PromptCancelledError)) {
+            if (e instanceof NoAuthRateLimitError) {
+                dispatch(openNoAuthRateLimit())
+                dispatch(interruptGeneration(null))
+            } else if (e instanceof AuthRateLimitError) {
+                dispatch(openRateLimit())
+                dispatch(interruptGeneration(null))
+            } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
             }
@@ -538,16 +582,32 @@ export const streamResponse = createAsyncThunk(
                     throw new PromptCancelledError()
                 }
             }
+
             const server = `${API_ROOT}/conversation`
 
-            const response = await fetch(server, {
+            let response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getBearerTokenHeader(getState),
                     // Cookie: `repo_path=${state.global.rootPath}`,
                 },
                 //credentials: 'include',
                 body: JSON.stringify(data),
+            }).then(async (resp) => {
+                console.log('CAUGHT e', resp)
+                if (resp.status === 429) {
+                    const text = await resp.json()
+                    console.log('message', text)
+                    if (text.detail.includes('NO_AUTH')) {
+                        console.log('THROWING THIS ERROR')
+                        throw new NoAuthRateLimitError()
+                    } else if (text.detail === 'AUTH') {
+                        console.log('THROWING THIS OTHER ERROR')
+                        throw new AuthRateLimitError()
+                    }
+                }
+                return resp
             })
 
             let generator = streamSource(response)
@@ -846,10 +906,14 @@ export const streamResponse = createAsyncThunk(
             }
             dispatch(finishResponse())
         } catch (e) {
-            //
-            //
             dispatch(setGenerating(false))
-            if (!(e instanceof PromptCancelledError)) {
+            if (e instanceof NoAuthRateLimitError) {
+                dispatch(openNoAuthRateLimit())
+                dispatch(interruptGeneration(null))
+            } else if (e instanceof AuthRateLimitError) {
+                dispatch(openRateLimit())
+                dispatch(interruptGeneration(null))
+            } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
             }
@@ -877,7 +941,15 @@ export const continueUntilEnd = createAsyncThunk(
             dispatch(finishResponse())
         } catch (e) {
             dispatch(setGenerating(false))
-            if (!(e instanceof PromptCancelledError)) {
+            if (e instanceof NoAuthRateLimitError) {
+                dispatch(openNoAuthRateLimit())
+                dispatch(interruptGeneration(null))
+                dispatch(finishResponse())
+            } else if (e instanceof AuthRateLimitError) {
+                dispatch(openRateLimit())
+                dispatch(interruptGeneration(null))
+                dispatch(finishResponse())
+            } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
@@ -943,16 +1015,30 @@ export const diffResponse = createAsyncThunk(
             // data.userRequest.message =
             //     'create a new Modal component, importing from headlessui'
 
-            const response = await fetch(server, {
+            let response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getBearerTokenHeader(getState),
                     // Cookie: `repo_path=${state.global.rootPath}`,
                 },
                 //credentials: 'include',
                 body: JSON.stringify(data),
+            }).then(async (resp) => {
+                console.log('CAUGHT e', resp)
+                if (resp.status === 429) {
+                    const text = await resp.json()
+                    console.log('message', text)
+                    if (text.detail.includes('NO_AUTH')) {
+                        console.log('THROWING THIS ERROR')
+                        throw new NoAuthRateLimitError()
+                    } else if (text.detail === 'AUTH') {
+                        console.log('THROWING THIS OTHER ERROR')
+                        throw new AuthRateLimitError()
+                    }
+                }
+                return resp
             })
-
             // There must exist this view
             const editorViewId = getViewId(currentTab)(
                 getState() as FullCodeMirrorState
