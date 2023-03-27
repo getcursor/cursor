@@ -254,9 +254,9 @@ const electronConnector = {
             path: path,
             isRoot: isRoot,
         }),
-    
+
     rightClickTab: () => ipcRenderer.invoke('right_click_tab', null),
-    
+
     rightMenuAtToken: (payload: {
         includeAddToPrompt: boolean
         codeBlock: {
@@ -274,7 +274,7 @@ const electronConnector = {
     openContainingFolder: (path: string) =>
         ipcRenderer.invoke('open_containing_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
-    
+
     getVersion: () => ipcRenderer.invoke('get_version', null),
     checkLearnCodebase: () => ipcRenderer.invoke('check_learn_codebase', null),
     registerLearnCodebase: (callback: Callback) =>

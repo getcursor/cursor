@@ -365,10 +365,15 @@ export function FileTree() {
     const rootFolderId = 1
     return (
         // Check size of folders
-        <div className="window__leftpane colortheme" onContextMenu={() => {
-            dispatch(gs.setFolderOpen({ folderId: rootFolderId, isOpen: true }))
-            dispatch(gs.rightClickFolder(rootFolderId))
-        }}>
+        <div
+            className="window__leftpane colortheme"
+            onContextMenu={() => {
+                dispatch(
+                    gs.setFolderOpen({ folderId: rootFolderId, isOpen: true })
+                )
+                dispatch(gs.rightClickFolder(rootFolderId))
+            }}
+        >
             <Folder fid={rootFolderId} />
         </div>
     )
