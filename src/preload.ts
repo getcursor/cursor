@@ -379,6 +379,40 @@ const electronConnector = {
             callback(data)
         })
     },
+    setCookies: async (cookieObject: {
+        url: string
+        name: string
+        value: string
+    }) => {
+        await ipcRenderer.invoke('setCookies', cookieObject)
+    },
+    loginCursor: async () => {
+        await ipcRenderer.invoke('loginCursor')
+    },
+    logoutCursor: async () => {
+        await ipcRenderer.invoke('logoutCursor')
+    },
+    getUserCreds: async () => {
+        return await ipcRenderer.invoke('getUserCreds')
+    },
+    payCursor: async () => {
+        return await ipcRenderer.invoke('payCursor')
+    },
+    registerUpdateAuthStatus(
+        callback: (payload: {
+            accessToken?: string | null
+            profile?: any | null
+            stripeProfile?: string | null
+        }) => void
+    ) {
+        ipcRenderer.on('updateAuthStatus', (event, data) => {
+            console.log('UPDATING AUTH STATUS', data)
+            callback(data)
+        })
+    },
+    refreshTokens() {
+        ipcRenderer.invoke('refreshTokens')
+    },
 }
 
 contextBridge.exposeInMainWorld('connector', electronConnector)

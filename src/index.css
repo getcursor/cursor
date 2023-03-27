@@ -2382,8 +2382,7 @@ cm-diff-cancel > div {
     background-color: rgb(51 61 75 / var(--tw-bg-opacity));
     width: 32px;
 }
-
-.disabled_command .shortcut__block {
+free servers .disabled_command .shortcut__block {
     color: #555;
     background-color: rgb(51 61 75 / 0.2);
 }
@@ -2452,4 +2451,33 @@ cm-diff-cancel > div {
     padding: 0.25rem 0.5rem;
     cursor: pointer;
     font-size: 12px;
+}
+
+.pay-button-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.close-button,
+.pay-button {
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 18px;
+    margin-left: 8px;
+}
+
+.close-button {
+    background-color: #555;
+}
+
+.pay-button {
+    background-color: var(--vscode-blue);
+}
+
+.pay-link {
+    color: #6697cc;
+    cursor: pointer;
+    text-decoration: underline;
 }
