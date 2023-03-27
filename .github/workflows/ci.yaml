@@ -43,22 +43,6 @@ jobs:
             - name: Build
               run: npm run make
 
-            - name: Publish Linux x64 artifacts
-              if: matrix.os == 'ubuntu-latest'
-              uses: actions/upload-artifact@v2
-              with:
-                  name: linux-x64-artifact
-                  path: |
-                      out/make/deb/x64/*.deb
-
-            - name: Publish Linux arm64 artifacts
-              if: matrix.os == 'ubuntu-latest'
-              uses: actions/upload-artifact@v2
-              with:
-                  name: linux-x64-artifact
-                  path: |
-                      out/make/deb/arm64/*.deb
-
             - name: Publish macOS x64 artifacts
               if: matrix.os == 'macos-latest'
               uses: actions/upload-artifact@v2
@@ -67,10 +51,10 @@ jobs:
                   path: |
                       out/make/zip/darwin/x64/*.zip
 
-            - name: Publish macOS arm64 artifacts
-              if: matrix.os == 'macos-latest'
+            - name: Publish Linux x64 artifacts
+              if: matrix.os == 'ubuntu-latest'
               uses: actions/upload-artifact@v2
               with:
-                  name: macos-arm64-artifact
+                  name: linux-x64-artifact
                   path: |
-                      out/make/zip/darwin/arm64/*.zip
+                      out/make/deb/x64/*.deb
