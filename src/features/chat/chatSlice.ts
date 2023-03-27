@@ -108,7 +108,7 @@ export const chatSlice = createSlice({
                 useDiagnostics?: boolean | number
             }>
         ) {
-            chatState.chatIsOpen = true
+//             chatState.chatIsOpen = true
 
             const lastUserMessage = chatState.userMessages.at(-1)!
             const type = action.payload.type
