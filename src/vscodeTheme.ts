@@ -3,16 +3,13 @@
  */
 import { tags as t } from '@lezer/highlight'
 import { EditorView } from '@codemirror/view'
-import { Extension } from '@codemirror/state'
 import {
     HighlightStyle,
-    TagStyle,
     syntaxHighlighting,
 } from '@codemirror/language'
 import { StyleSpec } from 'style-mod'
 
 export const createTheme = ({
-    theme,
     settings,
     styles,
 }: CreateThemeOptions): any => {
@@ -76,8 +73,6 @@ export const createTheme = ({
     const extension = [syntaxHighlighting(highlightStyle)]
 
     return { themeOptions, extension }
-
-    return extension
 }
 
 interface CreateThemeOptions {
