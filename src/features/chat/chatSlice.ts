@@ -104,8 +104,8 @@ export const chatSlice = createSlice({
         newResponse(
             chatState: ChatState,
             action: PayloadAction<{
-                type: BotMessageType,
-                useDiagnostics?: boolean | number,
+                type: BotMessageType
+                useDiagnostics?: boolean | number
             }>
         ) {
             if (action.payload.type === 'markdown') {

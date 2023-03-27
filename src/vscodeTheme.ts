@@ -3,16 +3,10 @@
  */
 import { tags as t } from '@lezer/highlight'
 import { EditorView } from '@codemirror/view'
-import {
-    HighlightStyle,
-    syntaxHighlighting,
-} from '@codemirror/language'
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { StyleSpec } from 'style-mod'
 
-export const createTheme = ({
-    settings,
-    styles,
-}: CreateThemeOptions): any => {
+export const createTheme = ({ settings, styles }: CreateThemeOptions): any => {
     const themeOptions: Record<string, StyleSpec> = {
         '&': {
             backgroundColor: settings.background,
