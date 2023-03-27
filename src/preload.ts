@@ -251,7 +251,8 @@ const electronConnector = {
     rightClickFile: () => ipcRenderer.invoke('right_click_file', null),
     rightClickTab: () => ipcRenderer.invoke('right_click_tab', null),
     deleteFile: (path: string) => ipcRenderer.invoke('delete_file', path),
-    openContainingFolder: (path: string) => ipcRenderer.invoke('open_containing_folder', path),
+    openContainingFolder: (path: string) =>
+        ipcRenderer.invoke('open_containing_folder', path),
     deleteFolder: (path: string) => ipcRenderer.invoke('delete_folder', path),
     rightClickFolder: (path: string, isRoot: boolean) =>
         ipcRenderer.invoke('right_click_folder', {

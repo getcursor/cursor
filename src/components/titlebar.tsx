@@ -102,7 +102,7 @@ function MenuBar() {
                         () => {
                             dispatch(gs.openRemotePopup(null))
                         },
-                        ''
+                        '',
                     ],
                     [
                         'Save File',
