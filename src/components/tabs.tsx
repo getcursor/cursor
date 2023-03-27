@@ -113,6 +113,7 @@ function Tab({ tid }: { tid: number }) {
     )
 }
 
+
 function TabPath({ tid }: { tid: number }) {
     const tab = useAppSelector(getTab(tid))
     const filePath = useAppSelector(getRelativeFilePath(tab.fileId))
@@ -140,6 +141,50 @@ function TabPath({ tid }: { tid: number }) {
                 </div>
             )}
         </>
+    )
+}
+
+function TabRemainder({children}: {children: React.ReactNode}) {
+    const containerDiv = useRef<HTMLDivElement>(null)
+    function revertTabsChildrenEvents() {
+        if (containerDiv.current) {
+            containerDiv.current.style.background = ''
+            const tabs = containerDiv.current.parentElement?.getElementsByClassName('tab')
+            for (const tab of tabs || []) {
+                tab.childNodes.forEach((child) => {
+                    const childElement = child as HTMLElement
+                    childElement.style.pointerEvents = ''
+                })
+            }
+        }
+    }
+    return (
+        <div 
+            className='w-full'
+            ref={containerDiv}
+            onDragOver={(event) => {
+                event.preventDefault()
+                if (containerDiv.current) {
+                    containerDiv.current.style.background = 'rgba(255, 255, 255, 0.3)'
+                    containerDiv.current.childNodes.forEach((child) => {
+                        const childElement = child as HTMLElement
+                        childElement.style.pointerEvents = 'none' // we don't want onDragLeave event for tab children while reordering
+                    })
+                }
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault()
+                if (containerDiv.current) {
+                    containerDiv.current.style.background = ''
+                }
+            }}
+            onDrop={(event) => {
+                event.preventDefault()
+                revertTabsChildrenEvents() // revert for new pane
+            }}
+            >
+            {children}
+        </div>
     )
 }
 
@@ -177,7 +222,7 @@ export function TabBar({
     return (
         <div className="window__tabbarcontainer">
             <div className="tabbar" ref={tabBarRef}>
-                <div className="tabs-container flex" ref={tabBarRef}>
+                <div className="w-full flex" ref={tabBarRef}>
                     {!leftSideExpanded && (
                         <div className=" h-full flex items-center justify-center">
                             <button
@@ -194,40 +239,42 @@ export function TabBar({
                     {tabIds.map((tabId) => (
                         <Tab key={tabId} tid={tabId} />
                     ))}
+                    <TabRemainder>
+                        {currentPane != null && currentTab != null && (
+                            <div className="tabbar__hoverbuttons">
+                                <div
+                                    className="tabbar__hoverbutton"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        dispatch(
+                                            gs.splitPaneAndOpenFile({
+                                                paneId: currentPane,
+                                                hoverState: HoverState.Right,
+                                            })
+                                        )
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTableColumns} />
+                                </div>
+                                <div
+                                    className="tabbar__hoverbutton"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        dispatch(
+                                            gs.splitPaneAndOpenFile({
+                                                paneId: currentPane,
+                                                hoverState: HoverState.Bottom,
+                                            })
+                                        )
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTableRows} />
+                                </div>
+                            </div>
+                        )}
+                    </TabRemainder>
                 </div>
 
-                {currentPane != null && currentTab != null && (
-                    <div className="tabbar__hoverbuttons">
-                        <div
-                            className="tabbar__hoverbutton"
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                dispatch(
-                                    gs.splitPaneAndOpenFile({
-                                        paneId: currentPane,
-                                        hoverState: HoverState.Right,
-                                    })
-                                )
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faTableColumns} />
-                        </div>
-                        <div
-                            className="tabbar__hoverbutton"
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                dispatch(
-                                    gs.splitPaneAndOpenFile({
-                                        paneId: currentPane,
-                                        hoverState: HoverState.Bottom,
-                                    })
-                                )
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faTableRows} />
-                        </div>
-                    </div>
-                )}
             </div>
 
             {activeTabId != null ? <TabPath tid={activeTabId} /> : null}
