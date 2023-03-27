@@ -104,11 +104,13 @@ export const chatSlice = createSlice({
         newResponse(
             chatState: ChatState,
             action: PayloadAction<{
-                type: string
-                useDiagnostics?: boolean | number
+                type: BotMessageType,
+                useDiagnostics?: boolean | number,
             }>
         ) {
-//             chatState.chatIsOpen = true
+            if (action.payload.type === 'markdown') {
+                chatState.chatIsOpen = true
+            }
 
             const lastUserMessage = chatState.userMessages.at(-1)!
             const type = action.payload.type
