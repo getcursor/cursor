@@ -36,6 +36,7 @@ import {
     setCurrentDraftMessage,
     setGenerating,
     startNewMessage,
+    toggleChatHistory,
     tokenLimitInterrupt,
     updateLastUserMessageMsgType,
 } from './chatSlice'
@@ -1111,7 +1112,8 @@ export const pressAICommand = createAsyncThunk(
             | 'l'
             | 'Enter'
             | 'Backspace'
-            | 'singleLSP',
+            | 'singleLSP'
+            | 'history',
         { getState, dispatch }
     ) => {
         // If currently responding to a chat, make this a chat_edit response
@@ -1134,6 +1136,9 @@ export const pressAICommand = createAsyncThunk(
             return
         }
         switch (keypress) {
+            case 'history':
+                dispatch(toggleChatHistory())
+                return
             case 'Enter':
                 // Need to be in diff state or diff accept state
                 if (
@@ -1228,19 +1233,11 @@ export const pressAICommand = createAsyncThunk(
             case 'k':
                 if (chatState.chatIsOpen && lastBotMessage?.finished) {
                     if (editorView) {
-                        // Check if editorView in focus
-                        if (!editorView.hasFocus) {
-                            // When there is an editorView not in focus, we dispatch this
-                            dispatch(changeMsgType('chat_edit'))
-                            dispatch(changeDraftMsgType('chat_edit'))
-                            return
-                        }
+                        // When there is an editorView, we dispatch something
+                        dispatch(changeMsgType('chat_edit'))
+                        dispatch(changeDraftMsgType('chat_edit'))
                     }
-                    // Close the chat if the chat is open then
-                    dispatch(setChatOpen(false))
-                }
-
-                if (editorView) {
+                } else if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({
