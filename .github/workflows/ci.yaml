@@ -28,8 +28,13 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
-            - name: Setup
+            - name: Setup macOS/linux
+              if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
               run: ./setup.sh
+
+            - name: Setup windows
+              shell: pwsh
+              run: ./setup.ps1
 
             - name: Install required linux packages
               if: ${{ matrix.os == 'ubuntu-latest' }}
