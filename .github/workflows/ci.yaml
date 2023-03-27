@@ -45,7 +45,7 @@ jobs:
               run: npm ci
 
             - name: Check formatting
-              if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
+              if: ${{ matrix.os != 'windows-latest' }}
               run: npm run format-check
 
             - name: Package
