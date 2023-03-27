@@ -26,7 +26,7 @@ jobs:
         runs-on: ${{matrix.os}}
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
 
             - name: Setup macOS/linux
               if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
@@ -53,7 +53,7 @@ jobs:
 
             - name: Publish macOS artifacts
               if: matrix.os == 'macos-latest'
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: macos-artifact
                   path: |
@@ -61,7 +61,7 @@ jobs:
 
             - name: Publish Linux artifacts
               if: matrix.os == 'ubuntu-latest'
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: linux-artifact
                   path: |
@@ -69,8 +69,8 @@ jobs:
 
             - name: Publish Windows artifacts
               if: matrix.os == 'windows-latest'
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: windows-artifact
                   path: |
-                      out/make/zip/windows/x64/*.zip
+                      out/make/zip/*.zip
