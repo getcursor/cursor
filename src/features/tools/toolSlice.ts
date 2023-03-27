@@ -1,4 +1,9 @@
-import { createAsyncThunk, createSlice, PayloadAction , current } from '@reduxjs/toolkit'
+import {
+    createAsyncThunk,
+    createSlice,
+    PayloadAction,
+    current,
+} from '@reduxjs/toolkit'
 import { FullState, ToolState } from '../window/state'
 import { API_ROOT } from '../../utils'
 
