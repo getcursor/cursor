@@ -906,6 +906,12 @@ const createWindow = () => {
         }
         return null
     })
+
+    // click on the terminal link
+    ipcMain.handle('terminal-click-link', (event, data) => {
+        shell.openExternal(data);
+    })
+
     setupLSPs(store)
     const projectPathObj = store.get('projectPath')
     if (
