@@ -31,9 +31,23 @@ function Tab({ tid }: { tid: number }) {
     const dispatch = useAppDispatch()
     const tab = useAppSelector(getTab(tid))
     const file = useAppSelector(getFile(tab.fileId))
+    const tabDiv = React.useRef<HTMLDivElement>(null)
 
     let name = tab.isMulti ? 'multifile' : file.name
     if (!tab.isMulti && !file.saved) name += ' *'
+
+    function revertTabsChildrenEvents() {
+        if (tabDiv.current) {
+            tabDiv.current.style.background = ''
+            const tabs = tabDiv.current.parentElement?.getElementsByClassName('tab')
+            for (const tab of tabs || []) {
+                tab.childNodes.forEach((child) => {
+                    const childElement = child as HTMLElement
+                    childElement.style.pointerEvents = ''
+                })
+            }
+        }
+    }
 
     return (
         <div
@@ -42,6 +56,7 @@ function Tab({ tid }: { tid: number }) {
                 dispatch(setDraggingTab(tid))
             }}
             onDragEnd={(e) => {
+                revertTabsChildrenEvents() // revert for current pane
                 dispatch(stopDraggingTab(null))
             }}
             className={`tab ${tab.isActive ? 'tab__is_active' : ''} ${
@@ -50,15 +65,37 @@ function Tab({ tid }: { tid: number }) {
             onClick={() => {
                 dispatch(gs.selectTab(tid))
             }}
+            onDragOver={(event) => {
+                event.preventDefault()
+                if (tabDiv.current) {
+                    tabDiv.current.style.background = 'rgba(255, 255, 255, 0.3)'
+                    tabDiv.current.childNodes.forEach((child) => {
+                        const childElement = child as HTMLElement
+                        childElement.style.pointerEvents = 'none' // we don't want onDragLeave event for tab children while reordering
+                    })
+                }
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault()
+                if (tabDiv.current) {
+                    tabDiv.current.style.background = ''
+                }
+            }}
+            onDrop={(event) => {
+                event.preventDefault()
+                revertTabsChildrenEvents() // revert for new pane
+            }}
+            ref={tabDiv}
         >
-            <div onMouseDown={
-                (e) => {
-                    if(e.button == 1) { // middle click
+            <div
+                onMouseDown={(e) => {
+                    if (e.button == 1) {
+                        // middle click
                         e.stopPropagation()
                         dispatch(gt.closeTab(tid))
                     }
-                }
-            }>
+                }}
+            >
                 <div className="tab__icon">{getIconElement(file.name)}</div>
                 <div className="tab__name">{name}</div>
                 <div

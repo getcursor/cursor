@@ -65,13 +65,16 @@ export function Pane({ paneId }: { paneId: number }) {
     function xyToPaneHoverState(x: number, y: number) {
         if (!paneDiv.current) return HoverState.None
         let rect = paneDiv.current!.getBoundingClientRect()
+
         let horizMargin = rect.width / 4
         let vertMargin = rect.height / 4
         let xInDiv = x - rect.left
         let yInDiv = y - rect.top
+
         // take into account the title-bar height and the position of the mouse when start dragging the tab
-        const titleBarHeightPx = 47;
-        const yCalculated = (y - (initialSelectPaneMousePosition?.y as number) - titleBarHeightPx)        
+        const titleBarHeightPx = 47
+        const yCalculated =
+            y - (initialSelectPaneMousePosition?.y as number) - titleBarHeightPx
         if (yCalculated > 0) {
             if (xInDiv < horizMargin) return HoverState.Left
             if (xInDiv > rect.width - horizMargin) return HoverState.Right
@@ -79,6 +82,26 @@ export function Pane({ paneId }: { paneId: number }) {
             if (yInDiv > rect.height - vertMargin) return HoverState.Bottom
         }
         return HoverState.Full
+    }
+
+    function xyToTabPosition(x: number, y: number) {
+        const paneRect = paneDiv.current!.getBoundingClientRect()
+        const tabs = paneDiv.current?.getElementsByClassName('tab') || []
+        let totalWidth = 0
+        const relativePosX = x - paneRect.left
+        let tabPosition = null
+        for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i]
+            totalWidth += tab.clientWidth
+            if (relativePosX < totalWidth) {
+                tabPosition = i
+                break
+            }
+        }
+        if (tabPosition === null) {
+            tabPosition = tabs.length - 1
+        }
+        return tabPosition
     }
 
     const isDraggingTabInPane =
@@ -102,11 +125,17 @@ export function Pane({ paneId }: { paneId: number }) {
                 event.clientX,
                 event.clientY
             )
+            const newTabPosition = xyToTabPosition(event.clientX, event.clientY)
             dispatch(
                 moveDraggingTabToPane({
                     paneId: paneId,
                     hoverState: newHoverState,
+                    tabPosition: newTabPosition,
                 })
+                // moveDraggingTabToPane({
+                //     paneId: paneId,
+                //     hoverState: newHoverState,
+                // })
             )
             setHoverState(HoverState.None)
         }

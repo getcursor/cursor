@@ -1240,10 +1240,10 @@ const globalSlice = createSlice({
         },
         moveDraggingTabToPane(
             stobj: Object,
-            action: PayloadAction<{ paneId: number; hoverState: HoverState }>
+            action: PayloadAction<{ paneId: number; hoverState: HoverState, tabPosition: number }>
         ) {
             const state = <State>stobj
-            const { paneId, hoverState } = action.payload
+            const { paneId, hoverState, tabPosition } = action.payload
             if (state.draggingTabId == null) return
 
             let newPaneId = paneId as number | undefined
@@ -1251,7 +1251,7 @@ const globalSlice = createSlice({
                 newPaneId = splitPane(state, paneId, hoverState)
             }
             if (newPaneId == null) return
-            doMoveTabToPane(state, state.draggingTabId, newPaneId)
+            doMoveTabToPane(state, state.draggingTabId, newPaneId, tabPosition)
             state.draggingTabId = null
         },
         executeSplitPane(
