@@ -440,6 +440,23 @@ export function MarkdownPopup({
                             className="markdownpopup__content"
                             ref={reactMarkdownRef}
                         >
+{/*                             <Markdown
+                                options={{
+                                    overrides: {
+                                        a: {
+                                            component: CustomLink,
+                                        },
+                                        pre: {
+                                            component: PreBlock,
+                                        },
+                                        code: {
+                                            component: CodeBlock,
+                                        } 
+                                    }
+                                }}
+                            >
+                                {formattedMessage}
+                            </Markdown> */}
                             <ReactMarkdown
                                 components={{
                                     pre: PreBlock,
