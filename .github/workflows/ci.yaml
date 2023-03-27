@@ -48,29 +48,12 @@ jobs:
               if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' }}
               run: npm run format-check
 
-            - name: Build
-              run: npm run make
+            - name: Package
+              run: npm run package
+              timeout-minutes: 30
 
-            - name: Publish macOS artifacts
-              if: matrix.os == 'macos-latest'
+            - name: Upload the binary
               uses: actions/upload-artifact@v3
               with:
-                  name: macos-artifacts
-                  path: |
-                      out/make/zip/darwin/x64/*.zip
-
-            - name: Publish Linux artifacts
-              if: matrix.os == 'ubuntu-latest'
-              uses: actions/upload-artifact@v3
-              with:
-                  name: linux-artifacts
-                  path: |
-                      out/make/deb/x64/*.deb
-
-            - name: Publish Windows artifacts
-              if: matrix.os == 'windows-latest'
-              uses: actions/upload-artifact@v3
-              with:
-                  name: windows-artifacts
-                  path: |
-                      out/make/squirrel.windows/x64/*.exe
+                  name: ${{ matrix.os }}-binary
+                  path: out
