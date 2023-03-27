@@ -368,7 +368,7 @@ export const continueGeneration = createAsyncThunk(
             // Hit the diffs endpoint
             const server = `${API_ROOT}/continue/`
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -585,7 +585,7 @@ export const streamResponse = createAsyncThunk(
 
             const server = `${API_ROOT}/conversation`
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1016,7 +1016,7 @@ export const diffResponse = createAsyncThunk(
             // data.userRequest.message =
             //     'create a new Modal component, importing from headlessui'
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

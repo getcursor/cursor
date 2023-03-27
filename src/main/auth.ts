@@ -225,7 +225,7 @@ export async function loadStripeProfile() {
             Authorization: `Bearer ${accessToken}`,
         },
     })
-    let resp = await response.json()
+    const resp = await response.json()
     console.log('GOT STRIPE PROFILE', resp)
     if (resp) {
         stripeProfile = resp as string
@@ -416,7 +416,7 @@ export function createLogoutWindow(event: IpcMainInvokeEvent) {
 export function authPackage() {
     ipcMain.handle('loginCursor', async (event: IpcMainInvokeEvent) => {
         console.log('LOGGING IN CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
         if (mainWindow) {
             createAuthWindow(mainWindow)
         } else {
@@ -425,7 +425,7 @@ export function authPackage() {
     })
     ipcMain.handle('payCursor', async (event: IpcMainInvokeEvent) => {
         console.log('PAYING CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
         if (mainWindow) {
             createStripeWindow(mainWindow)
         } else {

@@ -148,8 +148,8 @@ const searchUnseenFiles = async (query: string, state: FullState) => {
     const rootPath = state.global.rootPath!
     // Now we need to search the files that haven't been seen yet
 
-    let nameResultsFuture = connector.searchFilesNameGit({ query, rootPath })
-    let pathResultsFuture = connector.searchFilesPathGit({ query, rootPath })
+    const nameResultsFuture = connector.searchFilesNameGit({ query, rootPath })
+    const pathResultsFuture = connector.searchFilesPathGit({ query, rootPath })
 
     const [initialNameResults, initialPathResults] = await Promise.all([
         nameResultsFuture,
@@ -260,8 +260,8 @@ export const searchFile = (query: string) =>
                 }
             } = {}
 
-            for (let fid in files) {
-                let fileId = parseInt(fid)
+            for (const fid in files) {
+                const fileId = parseInt(fid)
                 const file = files[fid]
                 const filename = file.name
                 const path = getPathForFileId(state, fileId)

@@ -330,7 +330,7 @@ export function ChatPopup() {
 
     function handleMouseDown() {
         if (document.activeElement) {
-            ;(document.activeElement as HTMLElement).blur()
+            (document.activeElement as HTMLElement).blur()
         }
     }
     return (

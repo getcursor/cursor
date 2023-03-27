@@ -2,9 +2,8 @@ import _ from 'lodash'
 
 import * as cp from 'child_process'
 import * as path from 'path'
-import { ipcMain, IpcMainInvokeEvent, app } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, app , app } from 'electron'
 import { promisify } from 'util'
-import { app } from 'electron'
 
 import { platformResourcesDir, PLATFORM_INFO, rgLoc } from './utils'
 

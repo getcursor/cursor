@@ -965,7 +965,7 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
                 'icon',
                 'icon128.png'
             )
-            var options = {
+            const options = {
                 type: 'question',
                 buttons: ['&Accept', '&Cancel'],
                 message: `Accept update?`,
