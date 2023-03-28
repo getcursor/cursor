@@ -136,6 +136,37 @@ const createWindow = () => {
             webSecurity: false,
         },
     })
+
+    main_window.on('minimize', () => {
+        globalShortcut.unregisterAll()
+
+        globalShortcut.register(META_KEY + '+Shift+Space', () => {
+            if (main_window.isMinimized()) {
+                main_window.show()
+            } else {
+                main_window.minimize()
+            }
+        })
+    })
+
+    main_window.on('restore', () => {
+        globalShortcut.register(META_KEY + '+M', () => {
+            main_window.minimize()
+        })
+    
+        globalShortcut.register(META_KEY + '+Shift+M', () => {
+            if (main_window.isMaximized()) {
+                main_window.unmaximize()
+            } else {
+                main_window.maximize()
+            }
+        })
+    
+        globalShortcut.register(META_KEY + '+=', () => {
+            main_window.webContents.send('zoom_in')
+        })
+    })
+
     main_window.webContents.setWindowOpenHandler(({ url }) => {
         shell.openExternal(url)
         return { action: 'deny' }
@@ -144,6 +175,10 @@ const createWindow = () => {
     if (!app.isPackaged) {
         main_window.webContents.openDevTools()
     }
+
+    ipcMain.handle('minimize', () => {
+        main_window.minimize()
+    })
 
     ipcMain.handle('maximize', () => {
         // First check if this is maximized
@@ -169,10 +204,6 @@ const createWindow = () => {
             await main_window.webContents.session.cookies.set(cookieObject)
         }
     )
-
-    ipcMain.handle('minimize', () => {
-        main_window.minimize()
-    })
 
     ipcMain.handle('return_home_dir', () => {
         return machineIdSync()
@@ -305,13 +336,6 @@ const createWindow = () => {
                     accelerator: META_KEY + '+Plus',
                 },
                 {
-                    label: 'Zoom In',
-                    click: () => {
-                        main_window.webContents.send('zoom_in')
-                    },
-                    accelerator: META_KEY + '+=',
-                },
-                {
                     label: 'Zoom Out',
                     click: () => {
                         main_window.webContents.send('zoom_out')
@@ -358,10 +382,22 @@ const createWindow = () => {
 
     globalShortcut.register(META_KEY + '+Shift+M', () => {
         if (main_window.isMaximized()) {
-            main_window.restore()
+            main_window.unmaximize()
         } else {
             main_window.maximize()
         }
+    })
+
+    globalShortcut.register(META_KEY + '+Shift+Space', () => {
+        if (main_window.isMinimized()) {
+            main_window.show()
+        } else {
+            main_window.minimize()
+        }
+    })
+
+    globalShortcut.register(META_KEY + '+=', () => {
+        main_window.webContents.send('zoom_in')
     })
 
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
