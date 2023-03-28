@@ -1319,13 +1319,13 @@ export const pressAICommand = createAsyncThunk(
                 }
                 return
             case 'k':
-                if (chatState.chatIsOpen && lastBotMessage?.finished) {
-                    if (editorView) {
-                        // When there is an editorView, we dispatch something
-                        dispatch(changeMsgType('chat_edit'))
-                        dispatch(changeDraftMsgType('chat_edit'))
-                    }
-                } else if (editorView) {
+                // if (chatState.chatIsOpen && lastBotMessage?.finished) {
+                //     if (editorView) {
+                //         // When there is an editorView, we dispatch something
+                //         dispatch(changeMsgType('chat_edit'))
+                //         dispatch(changeDraftMsgType('chat_edit'))
+                //     }
+                if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({
