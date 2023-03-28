@@ -1,23 +1,7 @@
-import { StateEffect, StateField, Text, Prec } from '@codemirror/state'
-import { debounce } from 'lodash'
-import {
-    getCurrentFileId,
-    getViewFileId,
-    getViewTabId,
-    reduxTransaction,
-} from '../extensions/utils'
-import { store } from '../../app/store'
-import { fixErrors, markDoDiagnosticsExit } from '../fixLSP/fixLSPSlice'
+import { StateEffect, StateField, Text } from '@codemirror/state'
 import { setDiff } from '../extensions/diff'
-import { EditorView, keymap, ViewPlugin, ViewUpdate } from '@codemirror/view'
-import {
-    Diagnostic,
-    getDiagnostics,
-    lintState,
-    activeLintField,
-    setDiagnosticsEffect,
-    setActiveLint,
-} from './lint'
+import { EditorView } from '@codemirror/view'
+import { getDiagnostics, lintState, activeLintField } from './lint'
 import { LineChange } from '../window/state'
 
 // Define the resetLineNumbers effect

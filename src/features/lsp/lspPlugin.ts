@@ -5,7 +5,6 @@ import {
     LanguageServerClient,
     LanguageServerPluginInterface,
     Notification,
-    LSRequest,
     DiagnosticWithAction,
 } from './stdioClient'
 import { gotoDefinition } from '../globalSlice'
@@ -14,10 +13,8 @@ import {
     Diagnostic,
     getDiagnostics,
     lintState,
-    ReplaceGivenRange,
     setDiagnostics,
     Action,
-    replace,
 } from '../linter/lint'
 import {
     EditorView,
@@ -43,7 +40,6 @@ import {
     getCachedFileName,
     getCachedTests,
     getCommentSingle,
-    getHasTestFile,
     getLanguageFromFilename,
 } from '../extensions/utils'
 import type {
@@ -125,12 +121,7 @@ export const semanticTokenField = StateField.define<DecorationSet>({
 
 // TODO - remove this when done testing autocomplete
 import _ from 'lodash'
-import { getCurrentFileName } from '../selectors'
-import {
-    computeAndRenderTest,
-    renderNewTest,
-    requestTestFileName,
-} from '../tests/testSlice'
+import { computeAndRenderTest, renderNewTest } from '../tests/testSlice'
 const dontComplete = [
     'TemplateString',
     'String',
@@ -155,7 +146,6 @@ const darkTransparentVscode = vscodeDarkInit({
     settings: { background: 'transparent' },
 })
 
-const timeout = 10000
 const changesDelay = 100
 
 const CompletionItemKindMap = Object.fromEntries(

@@ -78,7 +78,7 @@ export const generationSlice = createSlice({
     initialState,
     reducers: {
         init(_stobj: object, _action: PayloadAction<number>) {},
-        pending(stobj: Object, action: PayloadAction<number>) {
+        pending(stobj: object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload
             const tab = state.tabs[tabId]
@@ -91,8 +91,8 @@ export const generationSlice = createSlice({
             state.keyboardBindings['Ctrl-c'] =
                 generationSlice.actions.interrupt(tabId)
         },
-        starting(_stobj: Object, _action: PayloadAction<number>) {},
-        completed(stobj: Object, action: PayloadAction<number>) {
+        starting(_stobj: object, _action: PayloadAction<number>) {},
+        completed(stobj: object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload
 
@@ -104,7 +104,7 @@ export const generationSlice = createSlice({
             tab.interrupted = false
             delete state.keyboardBindings['Ctrl-c']
         },
-        interrupt(stobj: Object, action: PayloadAction<number>) {
+        interrupt(stobj: object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload
             const tab = state.tabs[tabId]

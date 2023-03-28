@@ -1,11 +1,7 @@
-import * as cp from 'child_process'
 import fetch from 'node-fetch'
-let childProcess: cp.ChildProcess
-import * as rpc from 'vscode-jsonrpc/node'
-import { IpcMainInvokeEvent } from 'electron'
 
 export async function startServer(repoId: string) {
-    const resp = await fetch('http://localhost:4000/jsonrpc', {
+    await fetch('http://localhost:4000/jsonrpc', {
         method: 'POST',
         body: JSON.stringify({
             jsonrpc: '2.0',

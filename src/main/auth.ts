@@ -1,12 +1,7 @@
 import jwtDecode from 'jwt-decode'
 import * as url from 'url'
 // import envVariables from '../env-variables';
-import {
-    BrowserView,
-    BrowserWindow,
-    ipcMain,
-    IpcMainInvokeEvent,
-} from 'electron'
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { API_ROOT } from '../utils'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
@@ -271,7 +266,7 @@ export function createAuthWindow(parentWindow: BrowserWindow) {
         },
     })
 
-    const { url, state, verifier } = getAuthenticationURL()
+    const { url, verifier } = getAuthenticationURL()
     console.log('SENDING TO URL', url)
 
     const {

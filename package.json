@@ -13,7 +13,7 @@
         "fix": "eslint --ext .ts,.tsx --fix .",
         "format": "prettier --write .",
         "format-check": "prettier --check .",
-        "lint": "eslint --quiet --ext .ts,.tsx .",
+        "lint": "eslint --ext .ts,.tsx .",
         "make": "electron-forge make",
         "package": "electron-forge package",
         "precommit": "pretty-quick --staged",

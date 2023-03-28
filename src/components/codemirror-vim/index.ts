@@ -6,7 +6,6 @@ import {
     StateField,
     StateEffect,
     RangeSetBuilder,
-    Facet,
 } from '@codemirror/state'
 import {
     ViewPlugin,

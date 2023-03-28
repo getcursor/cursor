@@ -5,7 +5,6 @@ import {
     IpcRendererEvent,
 } from 'electron'
 import {
-    LSPProcess,
     LSPRequestMap,
     LSPNotifyMap,
     Language,

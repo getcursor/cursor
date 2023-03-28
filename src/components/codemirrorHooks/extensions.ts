@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import {
     EditorState,
-    Transaction,
-    ChangeDesc,
     Prec,
     Extension,
     Compartment,
@@ -21,21 +19,12 @@ import {
 import { syntaxBundle } from '../../features/extensions/syntax'
 import { indentationMarkers } from '../../features/extensions/indentLines'
 // import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import {
-    acceptDiff,
-    diffExtension,
-    rejectDiff,
-} from '../../features/extensions/diff'
-import {
-    editBoundaryEffect,
-    hackExtension,
-    insertCursorEffect,
-} from '../../features/extensions/hackDiff'
+import { diffExtension } from '../../features/extensions/diff'
+import { hackExtension } from '../../features/extensions/hackDiff'
 import { diagnosticsField, lintGutter } from '../../features/linter/lint'
 import { autocompleteView } from '../../features/extensions/autocomplete'
 import { acceptCompletion } from '@codemirror/autocomplete'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import * as cs from '../../features/chat/chatSlice'
 import * as csel from '../../features/chat/chatSelectors'
 import * as ssel from '../../features/settings/settingsSelectors'
 import { Tab } from '../../features/window/state'
@@ -57,39 +46,22 @@ import {
     languageServerStatus,
 } from '../../features/lsp/languageServerSelector'
 import { getLanguageFromFilename } from '../../features/extensions/utils'
-import { scrollbarPlugin } from '../../features/extensions/minimap'
 import { cursorTooltip } from '../../features/extensions/selectionTooltip'
 // import { activeGutter } from '../../features/extensions/activeLineGutter'
 
-import { indentSelection, history } from '@codemirror/commands'
+import { indentSelection } from '@codemirror/commands'
 import { emacs } from '@replit/codemirror-emacs'
 
 import { newLineText } from '../../features/extensions/newLineText'
 
 import { Tree } from '@lezer/common'
-import { changeSettings } from '../../features/settings/settingsSlice'
-import { regexpLinter } from '../../features/linter/extension'
-import { barExtension, barField } from '../../features/extensions/cmdZBar'
+import { barExtension } from '../../features/extensions/cmdZBar'
 import { updateCommentsEffect } from '../../features/extensions/comments'
-import { getStyleTags, tags, Tag } from '@lezer/highlight'
+import { getStyleTags } from '@lezer/highlight'
 import { fixLintExtension } from '../../features/linter/fixLSPExtension'
 import { storePaneIdExtensions } from '../../features/extensions/storePane'
 import { store } from '../../app/store'
 import { triggerFileSearch } from '../../features/tools/toolSlice'
-
-const getTagName = (tag: Tag) => {
-    for (const key of Object.keys(tags)) {
-        // Turn key to string
-        const keyString = key.toString() as keyof typeof tags
-        const currentTag = tags[keyString]
-
-        if ('id' in currentTag && 'id' in tag) {
-            if (currentTag.id === tag.id) {
-                return keyString
-            }
-        }
-    }
-}
 
 const syntaxCompartment = new Compartment(),
     keyBindingsCompartment = new Compartment(),
@@ -241,7 +213,7 @@ const globalExtensions = [
             },
         ])
     ),
-    scrollbarPlugin,
+    [],
     treeHighlighter,
     syntaxCompartment.of([]),
     lsCompartment.of([]),
@@ -254,28 +226,6 @@ const globalExtensions = [
     commentCompartment.of([]),
     readOnlyCompartment.of([]),
 ]
-
-function getSelectedPos(view: EditorView) {
-    const selection = view.state.selection.main
-
-    const startLine = view.state.doc.lineAt(selection.from).number
-    const endLine = view.state.doc.lineAt(selection.to).number
-
-    const startLinePos = view.state.doc.line(startLine).from
-    const endLinePos = view.state.doc.line(endLine).to
-
-    return { startLinePos, endLinePos }
-}
-
-function getSelectedText(view: EditorView) {
-    const selection = view.state.selection.main
-    const { startLinePos, endLinePos } = getSelectedPos(view)
-    const selectedText =
-        selection.from == selection.to
-            ? null
-            : view.state.doc.sliceString(startLinePos, endLinePos)
-    return selectedText
-}
 
 function getCurrentSelection(view: EditorView) {
     const selection = view.state.selection.main
@@ -398,7 +348,6 @@ export function useExtensions({
                             y: event.clientY,
                         })!
 
-                        const cursorPos = view.state.selection.main.from
                         // dispatch(cs.activateDiffFromEditor({
                         //     currentFile: filePath,
                         //     precedingCode: getPrecedingLines(view, 20)!,

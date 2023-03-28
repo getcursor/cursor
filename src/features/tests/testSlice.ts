@@ -1,20 +1,11 @@
-import {
-    createSlice,
-    createAsyncThunk,
-    PayloadAction,
-    isFulfilled,
-} from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { API_ROOT, streamSource } from '../../utils'
-import { FullState, nextId, State } from '../window/state'
-import { getCurrentPane, getCurrentTab, getFileContents } from '../selectors'
+import { nextId, State } from '../window/state'
 import {
     createFileIfNeeded,
     findFileIdFromPath,
     getContentsIfNeeded,
-    getPathForFileId,
-    loadFileIfNeeded,
 } from '../window/fileUtils'
-import { addTransaction, openFile } from '../globalSlice'
 import { manufacturedConversation } from '../chat/chatSlice'
 
 type Location =
@@ -23,11 +14,6 @@ type Location =
           line: number
           col: number
       }
-
-interface Range {
-    start: Location
-    end: Location
-}
 
 interface FunctionData {
     id: number
@@ -293,7 +279,7 @@ export const updateTestsForFile = createAsyncThunk(
 
 export const saveTests = createAsyncThunk(
     'comments/saveComments',
-    async (payload: { path: string }, { getState, dispatch }) => {
+    async (payload: { path: string }, { getState }) => {
         const state = getState() as { test: TestState }
 
         // Get all test ids for the given path
@@ -365,7 +351,7 @@ export const computeAndRenderTest = createAsyncThunk(
             }),
         })
         const json = await response.json()
-        const { test_code, insert_location } = json
+        const { test_code } = json
 
         const fileContents = await getContentsIfNeeded(
             state.global,
@@ -425,7 +411,7 @@ export const renderNewTest = createAsyncThunk(
         if (testIds.length == 0) return
         const testId = testIds[0]
 
-        const { testCode, testFileName, insertLocation, functionBody } =
+        const { testCode, functionBody } =
             state.test.generatedTests.byIds[testId]
 
         // get the code from the actual file
@@ -527,7 +513,7 @@ export const newTestFile = createAsyncThunk(
 export const testSlice = createSlice({
     name: 'testSlice',
     initialState,
-    extraReducers: (builder) => {
+    extraReducers: (_) => {
         // builder.addCase(newTestFile.fulfilled, (state, action) => {
         //     const {fileName, testFileName} = action.payload;
         //     state.testFiles.map[fileName] = testFileName;
@@ -662,7 +648,7 @@ export const testSlice = createSlice({
             }
 
             if (existingTestIds.length > 0) {
-                const [testId, ...others] = existingTestIds
+                const [testId, ..._others] = existingTestIds
                 byIds[testId].testCode = testCode
                 byIds[testId].insertLocation = insertLocation
             } else {
