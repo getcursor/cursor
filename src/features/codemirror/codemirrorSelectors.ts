@@ -6,9 +6,6 @@
 * and there is the codemirror store
 * We need a way to make sure that the stores are in sync, which happens
 */
-import { createSelector } from 'reselect'
-import { store } from '../../app/store'
-import { FullState } from '../window/state'
 import { FullCodeMirrorState, getCodeMirrorView } from './codemirrorSlice'
 
 export const getViewId = (tabId: number | null) => (state: {}) => {

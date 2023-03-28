@@ -3,8 +3,6 @@ import * as gs from './globalSlice'
 import * as gt from './globalThunks'
 import * as cs from './chat/chatSlice'
 import * as ts from './tools/toolSlice'
-import * as ss from './settings/settingsSlice'
-import * as state from './window/state'
 
 ////////
 // GLOBAL LISTENERS
@@ -132,7 +130,7 @@ connector.registerFileWasUpdated((evt: any, payload: any) => {
 })
 
 // @ts-ignore
-connector.registerOpenRemotePopup((evt: any, payload: any) => {
+connector.registerOpenRemotePopup((_evt: any, _payload: any) => {
     store.dispatch(gs.openRemotePopup(null))
 })
 

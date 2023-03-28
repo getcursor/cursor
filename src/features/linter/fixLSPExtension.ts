@@ -1,26 +1,14 @@
-import { StateEffect, StateField } from '@codemirror/state'
-import { debounce } from 'lodash'
-import {
-    getCurrentFileId,
-    getViewFileId,
-    getViewTabId,
-    reduxTransaction,
-} from '../extensions/utils'
-import { store } from '../../app/store'
-import { fixErrors, markDoDiagnosticsExit } from '../fixLSP/fixLSPSlice'
+import { StateEffect, StateField , Text  } from '@codemirror/state'
+
+
 import { setDiff } from '../extensions/diff'
-import { EditorView, keymap, ViewPlugin, ViewUpdate } from '@codemirror/view'
+import { EditorView } from '@codemirror/view'
 import {
-    Diagnostic,
     getDiagnostics,
     lintState,
     activeLintField,
-    setDiagnosticsEffect,
-    setActiveLint,
 } from './lint'
 import { LineChange } from '../window/state'
-import { Text } from '@codemirror/state'
-import { Prec } from '@codemirror/state'
 
 // Define the resetLineNumbers effect
 export const resetLineNumbersEffect = StateEffect.define<void>()
@@ -32,18 +20,18 @@ export const lineNumbersState = StateField.define<number[]>({
     update(value, tr) {
         // Update the positions of the start of lines when the document changes
         if (tr.docChanged) {
-            let newLineStartPositions = []
-            for (let lineStartPosition of value) {
-                let newPos = tr.changes.mapPos(lineStartPosition, 1)
+            const newLineStartPositions = []
+            for (const lineStartPosition of value) {
+                const newPos = tr.changes.mapPos(lineStartPosition, 1)
                 newLineStartPositions.push(newPos)
             }
             value = newLineStartPositions
         }
 
         // Mark all the positions of the start of lines in the file when the resetLineNumbers effect is submitted
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(resetLineNumbersEffect)) {
-                let lineStartPositions = []
+                const lineStartPositions = []
                 for (let i = 0; i < tr.state.doc.lines; i++) {
                     lineStartPositions.push(tr.state.doc.line(i + 1).from)
                 }
@@ -62,19 +50,19 @@ export function applyLineChangesToView(
     // TODO - change this in accordance with how diffID corresponds to a conversation id now!
 
     // Get the line numbers state
-    let lineNumbers = view.state.field(lineNumbersState)
+    const lineNumbers = view.state.field(lineNumbersState)
 
     let ind = 2
-    for (let lineChange of lineChanges) {
-        let fromLine = lineChange.startLine
-        let toLine = lineChange.endLine
+    for (const lineChange of lineChanges) {
+        const fromLine = lineChange.startLine
+        const toLine = lineChange.endLine
 
         // get new line positions
-        let fromPos = lineNumbers[fromLine - 1]
-        let toPos = lineNumbers[toLine - 1]
+        const fromPos = lineNumbers[fromLine - 1]
+        const toPos = lineNumbers[toLine - 1]
 
-        let origLine = view.state.doc.lineAt(fromPos).number
-        let origEndLine = view.state.doc.lineAt(toPos).number
+        const origLine = view.state.doc.lineAt(fromPos).number
+        const origEndLine = view.state.doc.lineAt(toPos).number
 
         const diffPayload = {
             origText: view.state.doc,
@@ -95,7 +83,7 @@ export function getFixLSPBlobForServerWithSideEffects(
     view: EditorView,
     diagnosticLineNumber?: number
 ) {
-    let diagnostics = getDiagnostics(view.state.field(lintState), view.state)
+    const diagnostics = getDiagnostics(view.state.field(lintState), view.state)
     const seriousDiagnostics = diagnostics.filter((d) => d.severity == 'error')
 
     if (seriousDiagnostics.length == 0) return null
@@ -104,9 +92,9 @@ export function getFixLSPBlobForServerWithSideEffects(
     })
 
     let results = []
-    for (let diagnostic of seriousDiagnostics) {
-        let line = view.state.doc.lineAt(diagnostic.from).number
-        let message = diagnostic.message
+    for (const diagnostic of seriousDiagnostics) {
+        const line = view.state.doc.lineAt(diagnostic.from).number
+        const message = diagnostic.message
         results.push({ line, message })
     }
 

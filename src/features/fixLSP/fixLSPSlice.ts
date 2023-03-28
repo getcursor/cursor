@@ -2,19 +2,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { FixLSPState, FullState, LineChange } from '../window/state'
 
 import { API_ROOT } from '../../utils'
-import { addTransaction } from '../globalSlice'
-import {
-    FixLSPDiffTransaction,
-    GenericTransaction,
-} from '../../components/codemirrorHooks/dispatch'
+
+
 import { getPathForFileId } from '../window/fileUtils'
 import { globalViews } from '../../components/globalViews'
 import {
     applyLineChangesToView,
     getFixLSPBlobForServerWithSideEffects,
 } from '../linter/fixLSPExtension'
-import { setDiff } from '../extensions/diff'
-import { Text } from '@codemirror/state'
 
 export const fixErrors = createAsyncThunk(
     'fixLSP/fixErrors',

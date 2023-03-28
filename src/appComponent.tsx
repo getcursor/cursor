@@ -5,7 +5,7 @@ import {
     useState,
     useCallback,
 } from 'react'
-import { faClose, faCog } from '@fortawesome/pro-regular-svg-icons'
+import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
@@ -26,7 +26,6 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
-import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
@@ -83,7 +82,8 @@ function ErrorPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    Something unexpected happened. Please try again later. If this continues, please contact michael@cursor.so.
+                    Something unexpected happened. Please try again later. If
+                    this continues, please contact michael@cursor.so.
                     <br />
                 </div>
             </div>
@@ -151,11 +151,16 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right
-                    now. Please try again in one minute. To avoid these limits, you can optionally upgrade to <a
+                    We're getting more traffic than we can handle right now.
+                    Please try again in one minute. To avoid these limits, you
+                    can optionally upgrade to{' '}
+                    <a
                         className="pay-link"
                         onClick={() => dispatch(ts.upgradeCursor(null))}
-                    >pro</a>.
+                    >
+                        pro
+                    </a>
+                    .
                 </div>
             </div>
         </Modal>

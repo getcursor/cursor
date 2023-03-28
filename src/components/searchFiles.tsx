@@ -3,7 +3,7 @@ import { Combobox } from '@headlessui/react'
 import { getIconElement } from './filetree'
 import { openFile } from '../features/globalSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { getRootPath, searchAllFiles, searchFile } from '../features/selectors'
+import { getRootPath, searchAllFiles } from '../features/selectors'
 import { untriggerFileSearch } from '../features/tools/toolSlice'
 import { fileSearchTriggered } from '../features/tools/toolSelectors'
 
@@ -163,9 +163,9 @@ export function SearchResult({
 
     // Now paths are relative to the root path
 
-    let splitFilePath = path.split(connector.PLATFORM_DELIMITER)
-    let fileName = splitFilePath.pop()!
-    let precedingPath = splitFilePath
+    const splitFilePath = path.split(connector.PLATFORM_DELIMITER)
+    const fileName = splitFilePath.pop()!
+    const precedingPath = splitFilePath
         .join(connector.PLATFORM_DELIMITER)
         .slice(rootPath!.length + 1)
 
