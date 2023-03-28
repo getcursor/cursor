@@ -39,7 +39,8 @@ function Tab({ tid }: { tid: number }) {
     function revertTabsChildrenEvents() {
         if (tabDiv.current) {
             tabDiv.current.style.background = ''
-            const tabs = tabDiv.current.parentElement?.getElementsByClassName('tab')
+            const tabs =
+                tabDiv.current.parentElement?.getElementsByClassName('tab')
             for (const tab of tabs || []) {
                 tab.childNodes.forEach((child) => {
                     const childElement = child as HTMLElement
@@ -113,7 +114,6 @@ function Tab({ tid }: { tid: number }) {
     )
 }
 
-
 function TabPath({ tid }: { tid: number }) {
     const tab = useAppSelector(getTab(tid))
     const filePath = useAppSelector(getRelativeFilePath(tab.fileId))
@@ -144,12 +144,15 @@ function TabPath({ tid }: { tid: number }) {
     )
 }
 
-function TabRemainder({children}: {children: React.ReactNode}) {
+function TabRemainder({ children }: { children: React.ReactNode }) {
     const containerDiv = useRef<HTMLDivElement>(null)
     function revertTabsChildrenEvents() {
         if (containerDiv.current) {
             containerDiv.current.style.background = ''
-            const tabs = containerDiv.current.parentElement?.getElementsByClassName('tab')
+            const tabs =
+                containerDiv.current.parentElement?.getElementsByClassName(
+                    'tab'
+                )
             for (const tab of tabs || []) {
                 tab.childNodes.forEach((child) => {
                     const childElement = child as HTMLElement
@@ -159,13 +162,14 @@ function TabRemainder({children}: {children: React.ReactNode}) {
         }
     }
     return (
-        <div 
-            className='w-full'
+        <div
+            className="w-full"
             ref={containerDiv}
             onDragOver={(event) => {
                 event.preventDefault()
                 if (containerDiv.current) {
-                    containerDiv.current.style.background = 'rgba(255, 255, 255, 0.3)'
+                    containerDiv.current.style.background =
+                        'rgba(255, 255, 255, 0.3)'
                     containerDiv.current.childNodes.forEach((child) => {
                         const childElement = child as HTMLElement
                         childElement.style.pointerEvents = 'none' // we don't want onDragLeave event for tab children while reordering
@@ -182,7 +186,7 @@ function TabRemainder({children}: {children: React.ReactNode}) {
                 event.preventDefault()
                 revertTabsChildrenEvents() // revert for new pane
             }}
-            >
+        >
             {children}
         </div>
     )
@@ -274,7 +278,6 @@ export function TabBar({
                         )}
                     </TabRemainder>
                 </div>
-
             </div>
 
             {activeTabId != null ? <TabPath tid={activeTabId} /> : null}

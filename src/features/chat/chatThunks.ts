@@ -794,7 +794,12 @@ export const streamResponse = createAsyncThunk(
             const processResponse = async () => {
                 let { value, buffer } = await getVariable('', 'type')
                 checkSend()
-                dispatch(newResponse({ type: value.trim() as BotMessageType, useDiagnostics }))
+                dispatch(
+                    newResponse({
+                        type: value.trim() as BotMessageType,
+                        useDiagnostics,
+                    })
+                )
                 await sendBody(''!, value.trim())
                 if (value.trim() == 'location') {
                     const state = <FullState>getState()
