@@ -2,20 +2,14 @@ import {
     createSlice,
     createAsyncThunk,
     PayloadAction,
-    isFulfilled,
 } from '@reduxjs/toolkit'
-import { API_ROOT } from '../../utils'
-import { FullState, nextId, State } from '../window/state'
-import { getCurrentPane, getCurrentTab, getFileContents } from '../selectors'
+import { API_ROOT , streamSource } from '../../utils'
+import { nextId, State } from '../window/state'
 import {
     createFileIfNeeded,
     findFileIdFromPath,
     getContentsIfNeeded,
-    getPathForFileId,
-    loadFileIfNeeded,
 } from '../window/fileUtils'
-import { addTransaction, openFile } from '../globalSlice'
-import { streamSource } from '../../utils'
 import { manufacturedConversation } from '../chat/chatSlice'
 
 type Location =
@@ -164,15 +158,15 @@ export const updateTestsForFile = createAsyncThunk(
         }
 
         const contents = global.fileCache[fileId].contents
-        let testIds = findTestIds(state.test, { fileName })
+        const testIds = findTestIds(state.test, { fileName })
 
         let cachedTests: TestData[] = []
         if (testIds.length == 0) {
             // @ts-ignore
-            let origTests = await connector.loadTests(fileName)
+            const origTests = await connector.loadTests(fileName)
 
             if (origTests != null) {
-                let foundCachedTests: {
+                const foundCachedTests: {
                     generatedTests: { [testId: number]: TestData }
                     testFileName: string | null
                 } = origTests
@@ -187,7 +181,7 @@ export const updateTestsForFile = createAsyncThunk(
                     }
 
                     // Iterate through each cached test and upsert it
-                    for (let testData of cachedTests) {
+                    for (const testData of cachedTests) {
                         dispatch(
                             upsertTest({
                                 functionId: testData.functionId,
@@ -240,13 +234,13 @@ export const updateTestsForFile = createAsyncThunk(
             }),
         })
         const getNextToken = async () => {
-            let rawResult = await generator.next()
+            const rawResult = await generator.next()
             if (rawResult.done) return null
 
             return rawResult.value
         }
 
-        let generator = streamSource(response)
+        const generator = streamSource(response)
         let line = await getNextToken()
         while (line != null) {
             const {
@@ -420,7 +414,7 @@ export const renderNewTest = createAsyncThunk(
         }: { filePath: string; functionName: string; startLine?: number },
         { dispatch, getState }
     ) => {
-        let state = getState() as { test: TestState; global: State }
+        const state = getState() as { test: TestState; global: State }
 
         const testIds = findTestIds(state.test, {
             fileName: filePath,
@@ -515,7 +509,7 @@ export const newTestFile = createAsyncThunk(
         { fileName, testFileName }: { fileName: string; testFileName: string },
         { dispatch, getState }
     ) => {
-        let state = getState() as { test: TestState; global: State }
+        const state = getState() as { test: TestState; global: State }
 
         dispatch(addTestFileMap({ fileName, testFileName }))
 
@@ -591,7 +585,7 @@ export const testSlice = createSlice({
             const { functionName, functionBody, fileName } =
                 action.payload.functionData
 
-            let existingFunctionIds = findFunctionIds(state, {
+            const existingFunctionIds = findFunctionIds(state, {
                 functionName,
                 fileName,
             })

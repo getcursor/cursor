@@ -1,10 +1,5 @@
-import { ViewUpdate, ViewPlugin, DecorationSet, keymap } from '@codemirror/view'
-import { EditorView, Decoration } from '@codemirror/view'
-import { syntaxTree } from '@codemirror/language'
-import { WidgetType } from '@codemirror/view'
-import { RangeSet, Range } from '@codemirror/state'
-import { store } from '../../app/store'
-import { Prec } from '@codemirror/state'
+import { ViewUpdate, ViewPlugin, DecorationSet,  EditorView, Decoration , WidgetType } from '@codemirror/view'
+import { Range  } from '@codemirror/state'
 
 class LineText extends WidgetType {
     constructor(readonly checked: boolean) {
@@ -12,7 +7,7 @@ class LineText extends WidgetType {
     }
 
     toDOM() {
-        let wrap = document.createElement('span')
+        const wrap = document.createElement('span')
         wrap.setAttribute('aria-hidden', 'true')
         wrap.className = 'cm-newline-text'
         wrap.textContent = `Type ${connector.PLATFORM_META_KEY}K to generate.`
@@ -21,7 +16,7 @@ class LineText extends WidgetType {
 }
 
 function checkboxes(view: EditorView) {
-    let widgets: Range<Decoration>[] = []
+    const widgets: Range<Decoration>[] = []
 
     const pos = view.state.selection.main.head
     const line = view.state.doc.lineAt(pos)

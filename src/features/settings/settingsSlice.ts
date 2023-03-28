@@ -2,15 +2,11 @@ import {
     createAsyncThunk,
     createSlice,
     PayloadAction,
-    ActionCreatorWithoutPayload,
 } from '@reduxjs/toolkit'
 import {
-    FullState,
-    Settings,
     SettingsState,
     initialSettingsState,
 } from '../window/state'
-import { current } from 'immer'
 
 export const changeSettings = createAsyncThunk(
     'settings/changeSettings',

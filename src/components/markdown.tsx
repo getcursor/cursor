@@ -8,7 +8,10 @@ import React, {
 } from 'react'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
-import { Message } from '../features/window/state'
+import { Message ,
+    CodeBlock as CodeBlockType,
+    CodeSymbolType,
+} from '../features/window/state'
 import { faArrowUp, faClose } from '@fortawesome/pro-regular-svg-icons'
 import { getIconElement } from '../components/filetree'
 import * as gs from '../features/globalSlice'
@@ -19,7 +22,7 @@ import {
     highlightActiveLineGutter,
     lineNumbers,
 } from '@codemirror/view'
-import { EditorState, Prec } from '@codemirror/state'
+import { EditorState } from '@codemirror/state'
 import { languages } from '@codemirror/language-data'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { syntaxBundle } from '../features/extensions/syntax'
@@ -30,10 +33,6 @@ import {
     getCurrentFilePath,
 } from '../features/selectors'
 import { ContextBuilder } from '../features/chat/context'
-import {
-    CodeBlock as CodeBlockType,
-    CodeSymbolType,
-} from '../features/window/state'
 
 import * as csel from '../features/chat/chatSelectors'
 
@@ -330,7 +329,7 @@ export function ChatPopup() {
 
     function handleMouseDown() {
         if (document.activeElement) {
-            ;(document.activeElement as HTMLElement).blur()
+            (document.activeElement as HTMLElement).blur()
         }
     }
     return (
@@ -403,9 +402,9 @@ export function MarkdownPopup({
         if (message?.sender == 'bot' && message.type === 'markdown') {
             // setDismissed(false)
             if (reactMarkdownRef.current) {
-                let elem = reactMarkdownRef.current
+                const elem = reactMarkdownRef.current
                 if (elem.children) {
-                    let lastChild = elem.children[elem.children.length - 1]
+                    const lastChild = elem.children[elem.children.length - 1]
                     if (lastChild) {
                         lastChild?.scrollIntoView(false)
                     }
@@ -414,9 +413,9 @@ export function MarkdownPopup({
         } else if (message?.sender == 'user') {
             // setDismissed(false);
             if (reactMarkdownRef.current) {
-                let elem = reactMarkdownRef.current
+                const elem = reactMarkdownRef.current
                 if (elem.children) {
-                    let lastChild = elem.children[elem.children.length - 1]
+                    const lastChild = elem.children[elem.children.length - 1]
                     if (lastChild) {
                         lastChild?.scrollIntoView(false)
                     }
@@ -428,7 +427,7 @@ export function MarkdownPopup({
     if (message.message.trim() == '') {
         return <></>
     }
-    let className = message?.sender == 'user' ? 'userpopup' : 'markdownpopup'
+    const className = message?.sender == 'user' ? 'userpopup' : 'markdownpopup'
     //
     return (
         <>
@@ -685,13 +684,13 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
             autoFocus={autofocus}
             onChange={(e) => {
                 if (e.target.value.includes('<|START_SPECIAL|>')) {
-                    let start =
+                    const start =
                         e.target.value.indexOf('<|START_SPECIAL|>') +
                         '<|START_SPECIAL|>'.length
-                    let end = e.target.value.indexOf('<|END_SPECIAL|>')
+                    const end = e.target.value.indexOf('<|END_SPECIAL|>')
 
-                    let special = e.target.value.slice(start, end)
-                    let item = JSON.parse(special)
+                    const special = e.target.value.slice(start, end)
+                    const item = JSON.parse(special)
                     dispatch(
                         cs.addSymbolToMessage({
                             name: item.name,

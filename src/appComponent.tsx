@@ -5,7 +5,7 @@ import {
     useState,
     useCallback,
 } from 'react'
-import { faClose, faCog } from '@fortawesome/pro-regular-svg-icons'
+import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
@@ -26,7 +26,6 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
-import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'

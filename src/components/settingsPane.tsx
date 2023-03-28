@@ -8,25 +8,20 @@ import {
     copilotChangeEnable,
     copilotChangeSignin,
     installLanguageServer,
-    killConnection,
     runLanguageServer,
     stopLanguageServer,
-} from '../features/lsp/languageServerSlice'
-import { getConnections } from '../features/lsp/languageServerSlice'
+ getConnections } from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 
 import Dropdown from 'react-dropdown'
 import 'react-dropdown/style.css'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { setRepoId } from '../features/globalSlice'
-import { getProgress, getRootPath } from '../features/selectors'
 import {
     copilotStatus,
     getLanguages,
     languageServerStatus,
 } from '../features/lsp/languageServerSelector'
-import { State } from '../features/window/state'
 
 import {
     signInCursor,

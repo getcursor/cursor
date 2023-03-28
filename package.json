@@ -1,9 +1,9 @@
 {
-    "homepage": "cursor.so",
-    "name": "Cursor",
+    "homepage": "https://cursor.so",
+    "name": "cursor",
     "author": {
-        "name": "Michael Truell",
-        "email": "mntruell@gmail.com"
+        "name": "Cursor AI, Inc.",
+        "email": "hiring@cursor.so"
     },
     "productName": "Cursor",
     "version": "0.1.10",
@@ -66,6 +66,7 @@
         "electron-winstaller": "^5.1.0",
         "eslint": "^8.36.0",
         "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-unused-imports": "^2.0.0",
         "husky": "^8.0.3",
         "identity-obj-proxy": "^3.0.0",
         "jest": "^29.3.1",

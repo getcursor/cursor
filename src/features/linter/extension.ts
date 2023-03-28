@@ -16,13 +16,13 @@ import { linter, Diagnostic, replace, lintState, getDiagnostics } from './lint'
 
 // export const regexpLinter = [];
 export const regexpLinter = linter((view) => {
-    let diagnostics: Diagnostic[] = []
+    const diagnostics: Diagnostic[] = []
     syntaxTree(view.state)
         .cursor()
         .iterate((node) => {
             if (node.name == 'RegExp') {
-                let line = view.state.doc.lineAt(node.from).number
-                let col = node.from - view.state.doc.line(line).from
+                const line = view.state.doc.lineAt(node.from).number
+                const col = node.from - view.state.doc.line(line).from
                 diagnostics.push({
                     from: node.from,
                     to: node.to,
@@ -43,7 +43,7 @@ export const regexpLinter = linter((view) => {
             }
         })
     let notAIDiagnostics: Diagnostic[]
-    let lintField = view.state.field(lintState, false)
+    const lintField = view.state.field(lintState, false)
     if (!lintField) return diagnostics
     notAIDiagnostics = getDiagnostics(lintField, view.state).filter(
         (d) => d.severity != 'aiwarning'

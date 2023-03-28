@@ -1,12 +1,9 @@
-import { StateEffect, ChangeDesc } from '@codemirror/state'
-import { Decoration, DecorationSet } from '@codemirror/view'
-import { StateField } from '@codemirror/state'
+import { StateEffect, StateField } from '@codemirror/state'
+import { Decoration, EditorView } from '@codemirror/view'
 import { invertedEffects } from '@codemirror/commands'
-import { EditorView } from '@codemirror/view'
 import * as cs from '../chat/chatSlice'
 import * as gs from '../globalSlice'
 import { store } from '../../app/store'
-import { Tab } from '../window/state'
 
 export interface BarInfo {
     activateBundle: any
@@ -21,8 +18,9 @@ export const barField = StateField.define({
     },
     update(ranges, tr) {
         ranges = ranges.map(tr.changes)
-        for (let e of tr.effects) {
+        for (const e of tr.effects) {
             if (e.is(showBar)) {
+                // do nothing
             }
             if (e.is(hideBar)) {
                 store.dispatch(cs.openCommandBar())
@@ -57,8 +55,8 @@ export const barField = StateField.define({
 })
 
 const invertBar = invertedEffects.of((tr) => {
-    let found = []
-    for (let e of tr.effects) {
+    const found = []
+    for (const e of tr.effects) {
         if (e.is(showBar)) {
             found.push(hideBar.of(e.value))
         }

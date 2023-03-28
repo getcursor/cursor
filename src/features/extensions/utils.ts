@@ -1,16 +1,14 @@
-import { TreeCursor } from '@lezer/common'
+import { TreeCursor , SyntaxNode } from '@lezer/common'
 import { store } from '../../app/store'
 import {
     getCurrentTab,
     getFilePath,
     getFocusedTab,
-    getPane,
     getTab,
 } from '../selectors'
 import { getTests, selectHasTests } from '../tests/testSelectors'
 import { TestData } from '../tests/testSlice'
 import { CommentFunction } from '../window/state'
-import { SyntaxNode } from '@lezer/common'
 import { API_ROOT } from '../../utils'
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
@@ -178,8 +176,8 @@ export function getNamesAndBodies(cursor: TreeCursor, contents: string) {
                 'FunctionDefinition',
             ].includes(cursor.name)
         ) {
-            let from = cursor.from
-            let to = cursor.to
+            const from = cursor.from
+            const to = cursor.to
             const functionBody = contents.slice(from, to)
 
             // get the actual body of the function using Lezer
@@ -294,7 +292,7 @@ export function getCachedComments() {
 }
 
 export function getCachedTests() {
-    let tests: { [key: string]: TestData } = {}
+    const tests: { [key: string]: TestData } = {}
     const state = store.getState()
     const tab = getFocusedTab(state)
     if (tab != null) {

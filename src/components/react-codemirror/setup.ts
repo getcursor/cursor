@@ -10,7 +10,7 @@ import {
     highlightActiveLine,
     keymap,
 } from '@codemirror/view'
-import { EditorState, Extension } from '@codemirror/state'
+import { EditorState, Extension , Prec } from '@codemirror/state'
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import {
@@ -28,7 +28,6 @@ import {
     indentUnit,
     foldKeymap,
 } from '@codemirror/language'
-import { Prec } from '@codemirror/state'
 
 import { lintKeymap } from '../../features/linter/lint'
 
