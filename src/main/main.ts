@@ -144,7 +144,7 @@ const createWindow = () => {
             globalShortcut.register(META_KEY + '+M', () => {
                 main_window.minimize()
             })
-    
+
             globalShortcut.register(META_KEY + '+Shift+M', () => {
                 if (main_window.isMaximized()) {
                     main_window.unmaximize()
@@ -152,7 +152,7 @@ const createWindow = () => {
                     main_window.maximize()
                 }
             })
-    
+
             globalShortcut.register(META_KEY + '+=', () => {
                 main_window.webContents.send('zoom_in')
             })
@@ -160,7 +160,7 @@ const createWindow = () => {
             shortcutRegistered = true
         }
     })
-    
+
     main_window.on('blur', () => {
         if (shortcutRegistered) {
             globalShortcut.unregister(META_KEY + '+M')
