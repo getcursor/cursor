@@ -48,10 +48,6 @@ export function XTermComponent({ height }: { height: number }) {
         terminal.current.onData((e) => {
             connector.terminalInto(e)
         })
-
-        terminal.current.onData((e) => {
-            connector.terminalInto(e)
-        })
     
 
         connector.registerIncData(handleIncomingData)
