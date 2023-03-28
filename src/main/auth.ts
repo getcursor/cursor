@@ -1,4 +1,5 @@
 import jwtDecode from 'jwt-decode'
+import {shell} from 'electron'
 import * as url from 'url'
 // import envVariables from '../env-variables';
 import {
@@ -16,23 +17,33 @@ const store = new Store()
 
 let win: BrowserWindow | null = null
 
-// const auth0Domain = process.env.AUTH0_DOMAIN!
-// const clientId = process.env.AUTH0_CLIENT_ID!
+// const auth0Domain = 'cursor.us.auth0.com'
+// const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
+
 const auth0Domain = 'cursor.us.auth0.com'
 const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
 
 let accessToken: string | null = null
 let profile: any | null = null
-let refreshToken = null
+let openAISecretKey: string | null = null
+let refreshToken: string | null = null
 let stripeProfile: string | null = null
+let verifier: string | null = null
 
-const STRIPE_SUCCESS_URL = 'http://localhost:8000/success/'
-const STRIPE_FAILURE_URL = 'http://localhost:8000/failure/'
+const STRIPE_SUCCESS_URL = 'electron-fiddle://success/'
+const STRIPE_FAILURE_URL = 'electron-fiddle://failure/'
 
 const AUTH0_CALLBACK_URL = `${API_ROOT}/auth/auth0_callback`
 const redirectUri = AUTH0_CALLBACK_URL
 const DUMMY_URL = `${API_ROOT}/dummy/*`
-const API_AUDIENCE = 'https://cursor.us.auth0.com/api/v2/'
+const API_AUDIENCE = `https://${auth0Domain}/api/v2/`
+
+const loginUrl = `${API_ROOT}/auth/login`
+const signUpUrl = `${API_ROOT}/auth/signUp`
+const logoutUrl = `${API_ROOT}/auth/logout`
+const settingsUrl = `${API_ROOT}/auth/settings`
+const supportUrl = `${API_ROOT}/auth/support`
+const payUrl = `${API_ROOT}/auth/pay`
 
 const storeWrapper = {
     get: async (key: string) => {
@@ -57,17 +68,6 @@ const storeWrapper = {
     },
 }
 
-export function getAccessToken() {
-    return accessToken
-}
-
-export function getProfile() {
-    return profile
-}
-
-export function getStripeProfile() {
-    return stripeProfile
-}
 function base64URLEncode(str: Buffer) {
     return str
         .toString('base64')
@@ -80,7 +80,7 @@ function sha256(buffer: Buffer) {
 }
 
 export function getAuthenticationURL() {
-    const verifier = base64URLEncode(crypto.randomBytes(32))
+    verifier = base64URLEncode(crypto.randomBytes(32))
     const challenge = base64URLEncode(sha256(Buffer.from(verifier)))
 
     const state = Math.random().toString(36).substring(2, 18)
@@ -99,7 +99,7 @@ export function getAuthenticationURL() {
     }
 
     return {
-        url: `https://${auth0Domain}/authorize?${new URLSearchParams(
+        url: `${loginUrl}?${new URLSearchParams(
             queryParams
         )}`,
         state,
@@ -166,7 +166,6 @@ export async function refreshTokens(event: IpcMainInvokeEvent) {
 
 export async function loadTokens(
     callbackURL: string,
-    verifier: string,
     window: BrowserWindow
 ) {
     const urlParts = url.parse(callbackURL, true)
@@ -202,14 +201,14 @@ export async function loadTokens(
         }
         accessToken = data.access_token
         profile = jwtDecode(data.id_token)
-        refreshToken = data.refresh_token
+        refreshToken = data.refresh_token!
 
         if (refreshToken) {
             await storeWrapper.set('refreshToken', refreshToken)
         }
     } catch (error) {
         await logout(window)
-        destroyAuthWin(window)
+        // destroyAuthWin(window)
 
         throw error
     }
@@ -238,7 +237,6 @@ export async function logout(window: BrowserWindow) {
     profile = null
     refreshToken = null
     stripeProfile = null
-    console.log('UPDATING AUTH STATUS IN LOGOUT')
     window.webContents.send('updateAuthStatus', {
         accessToken,
         profile,
@@ -252,7 +250,6 @@ export async function logoutEvent(event: IpcMainInvokeEvent) {
     profile = null
     refreshToken = null
     stripeProfile = null
-    console.log('UPDATING AUTH STATUS IN LOGOUT')
     event.sender.send('updateAuthStatus', {
         accessToken,
         profile,
@@ -264,138 +261,23 @@ export function getLogOutUrl() {
     return `https://${auth0Domain}/v2/logout`
 }
 
-export function createAuthWindow(parentWindow: BrowserWindow) {
-    destroyAuthWin(parentWindow)
-
-    win = new BrowserWindow({
-        width: 1000,
-        height: 800,
-        modal: true,
-        show: true,
-        frame: true,
-        // parent: parentWindow,
-        webPreferences: {
-            nodeIntegration: false,
-            webSecurity: false,
-            // enableRemoteModule: false
-        },
-    })
-
-    const { url, state, verifier } = getAuthenticationURL()
-    console.log('SENDING TO URL', url)
-
-    const {
-        session: { webRequest },
-    } = win.webContents
-
-    const filter = {
-        urls: [DUMMY_URL],
-    }
-    const requestListener = async ({ url }: { url: string }) => {
-        console.log('INTERRUPTED', url)
-        await loadTokens(url, verifier, parentWindow)
-        await loadStripeProfile()
-        console.log('GOT STRIPE PROFILE', stripeProfile)
-        // Not sure what to do here:
-        // createAppWindow();
-        if (!stripeProfile && win) {
-            console.log('Creating stripe window')
-            createStripeWindow(parentWindow, win)
-        } else {
-            console.log('Destroying auth window')
-            return destroyAuthWin(parentWindow)
-        }
-    }
-
-    webRequest.onBeforeRequest(filter, requestListener)
-
-    win?.webContents.loadURL(url)
-    win.on('closed', () => {
-        win = null
-    })
+export async function login() {
+    // const { url, state, } = getAuthenticationURL()
+    await shell.openExternal(loginUrl);
 }
 
-function destroyAuthWin(parentWindow: BrowserWindow) {
-    if (!win) return
-    win.close()
-    win = null
-    console.log('UPDATING AUTH STATUS IN DESTROY AUTH WIN')
-    parentWindow.webContents.send('updateAuthStatus', {
-        accessToken,
-        profile,
-        stripeProfile,
-    })
+export async function signup() {
+    await shell.openExternal(signUpUrl);
 }
 
-let stripeWin: BrowserWindow | null = null
-
-export function createStripeWindow(
-    parentWindow: BrowserWindow,
-    oldStripeWindow?: BrowserWindow
-) {
-    destroyStripeWin(parentWindow)
-
-    if (!oldStripeWindow) {
-        stripeWin = new BrowserWindow({
-            width: 800,
-            height: 600,
-            modal: true,
-            show: true,
-            frame: true,
-            // parent: parentWindow,
-            webPreferences: {
-                nodeIntegration: false,
-                webSecurity: false,
-            },
-        })
-    } else {
-        stripeWin = oldStripeWindow
-    }
-
-    stripeUrlRequest(stripeWin)
-
-    const filter = {
-        urls: [STRIPE_SUCCESS_URL, STRIPE_FAILURE_URL],
-    }
-
-    stripeWin.webContents.session.webRequest.onBeforeRequest(
-        filter,
-        async ({ url }) => {
-            if (url == STRIPE_SUCCESS_URL) {
-                console.log('SUCCESS')
-                // First wait 2 seconds
-                await new Promise((resolve) => setTimeout(resolve, 2000))
-                await loadStripeProfile()
-            } else {
-                // First wait 2 seconds
-                await new Promise((resolve) => setTimeout(resolve, 2000))
-                await loadStripeProfile()
-                console.log('FAILURE')
-            }
-            // Not sure what to do here:
-            // createAppWindow();
-            console.log('Destroying stripe window')
-            return destroyStripeWin(parentWindow)
-        }
-    )
-
-    stripeWin.on('closed', () => {
-        stripeWin = null
-    })
+export async function pay() {
+    await shell.openExternal(payUrl);
 }
-
-function destroyStripeWin(parentWindow: BrowserWindow) {
-    console.log('Destroying stripe window', stripeWin)
-    if (!stripeWin) return
-    stripeWin.close()
-    stripeWin = null
-    win = null
-    console.log('UPDATING AUTH STATUS IN DESTROY STRIPE WIN')
-    parentWindow.webContents.send('updateAuthStatus', {
-        accessToken,
-        profile,
-        stripeProfile,
-    })
+export async function settings() {
+    await shell.openExternal(settingsUrl);
+}
+export async function support() {
+    await shell.openExternal(supportUrl);
 }
 
 export function createLogoutWindow(event: IpcMainInvokeEvent) {
@@ -414,27 +296,34 @@ export function createLogoutWindow(event: IpcMainInvokeEvent) {
 }
 
 export function authPackage() {
-    ipcMain.handle('loginCursor', async (event: IpcMainInvokeEvent) => {
-        console.log('LOGGING IN CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
-        if (mainWindow) {
-            createAuthWindow(mainWindow)
-        } else {
-            console.log('main window not found')
-        }
-    })
-    ipcMain.handle('payCursor', async (event: IpcMainInvokeEvent) => {
-        console.log('PAYING CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
-        if (mainWindow) {
-            createStripeWindow(mainWindow)
-        } else {
-            console.log('main window not found')
-        }
-    })
+    // Simple browser opening functions
+    ipcMain.handle('loginCursor', login);
+    ipcMain.handle('signupCursor', signup)
+    ipcMain.handle('payCursor', pay)
+    ipcMain.handle('settingsCursor', settings)
+    ipcMain.handle('logoutCursor', createLogoutWindow)
 
+    // Functions to handle electron-fiddle
+    ipcMain.handle('loginData', async (event: IpcMainInvokeEvent, data: {
+        accessToken: string
+        profile: any
+        stripeProfile: string
+    }) => {
+        // Set the global values
+        accessToken = data.accessToken
+        profile = data.profile
+        stripeProfile = data.stripeProfile
+        await refreshTokens(event)
+        await loadStripeProfile()
+
+        event.sender.send('updateAuthStatus', {
+            accessToken,
+            profile,
+            stripeProfile,
+        })
+    })
+        
     ipcMain.handle('refreshTokens', async (event: IpcMainInvokeEvent) => {
-        console.log('REFRESHING TOKENS')
         await refreshTokens(event)
         await loadStripeProfile()
 
@@ -445,13 +334,7 @@ export function authPackage() {
         })
     })
 
-    ipcMain.handle('logoutCursor', async (event: IpcMainInvokeEvent) => {
-        console.log('LOGGING OUT')
-        createLogoutWindow(event)
-    })
-
     ipcMain.handle('getUserCreds', async (event: IpcMainInvokeEvent) => {
-        console.log('GETTING USER CREDS')
         await refreshTokens(event)
         await loadStripeProfile()
         return {
