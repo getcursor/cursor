@@ -4,8 +4,6 @@ import {
     EditorView,
     DecorationSet,
     ViewUpdate,
-    keymap,
-    Command,
 } from '@codemirror/view'
 import {
     Facet,
@@ -14,7 +12,6 @@ import {
     Transaction,
     Extension,
     Annotation,
-    AnnotationType,
     EditorState,
     Prec,
 } from '@codemirror/state'
@@ -78,7 +75,7 @@ interface GhostText {
 }
 
 export const completionDecoration = StateField.define<CompletionState>({
-    create(state: EditorState) {
+    create(_state: EditorState) {
         return { ghostText: null }
     },
     update(state: CompletionState, transaction: Transaction) {
@@ -184,7 +181,7 @@ const copilotEvent = Annotation.define<null>()
  *****************************************************************************/
 
 const acceptSuggestionCommand = (
-    copilotClient: LanguageServerClient,
+    _copilotClient: LanguageServerClient,
     view: EditorView
 ) => {
     // We delete the ghost text and insert the suggestion.
@@ -234,7 +231,7 @@ const acceptSuggestionCommand = (
     return true
 }
 export const rejectSuggestionCommand = (
-    copilotClient: LanguageServerClient,
+    _copilotClient: LanguageServerClient,
     view: EditorView
 ) => {
     // We delete the suggestion, then carry through with the original keypress
@@ -319,7 +316,7 @@ const completionPlugin = (copilotClient: LanguageServerClient) =>
                 return false
             }
         },
-        mousedown(event, view) {
+        mousedown(_event, view) {
             return rejectSuggestionCommand(copilotClient, view)
         },
     })

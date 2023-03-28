@@ -419,7 +419,6 @@ export function InnerCommandPalette({
                         setQuery('')
                     }, 100)
                     // setShowing(false)
-                } else {
                 }
             }
             // click the hidden combo button

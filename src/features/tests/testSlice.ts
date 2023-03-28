@@ -201,7 +201,6 @@ export const updateTestsForFile = createAsyncThunk(
                 } catch (e) {
                     console.error(e)
                 }
-            } else {
             }
         } else {
             cachedTests = testIds.map(

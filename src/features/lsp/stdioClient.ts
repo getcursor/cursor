@@ -40,7 +40,6 @@ import { URI } from 'vscode-uri'
 import type * as LSP from 'vscode-languageserver-protocol'
 import type { PluginValue } from '@codemirror/view'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { posToOffset } from './lspPlugin'
 import { Action } from '../linter/lint'
 import { v4 as uuidv4 } from 'uuid'
 

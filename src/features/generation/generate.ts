@@ -3,7 +3,6 @@ import { addTransaction } from '../globalSlice'
 import { State, initialState, FullState } from '../window/state'
 import { getFilePath } from '../selectors'
 import { streamSource, API_ROOT } from '../../utils'
-import { EditorView } from '@codemirror/view'
 
 const API_ENDPOINT = '/long_complete'
 
@@ -78,11 +77,7 @@ export const generationSlice = createSlice({
     name: 'generation',
     initialState,
     reducers: {
-        init(stobj: Object, action: PayloadAction<number>) {
-            const state = <State>stobj
-            const tabId = action.payload
-            //state.keyboardBindings['Cmd-e'] = ''
-        },
+        init(_stobj: object, _action: PayloadAction<number>) {},
         pending(stobj: Object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload
@@ -96,7 +91,7 @@ export const generationSlice = createSlice({
             state.keyboardBindings['Ctrl-c'] =
                 generationSlice.actions.interrupt(tabId)
         },
-        starting(stobj: Object, action: PayloadAction<number>) {},
+        starting(_stobj: Object, _action: PayloadAction<number>) {},
         completed(stobj: Object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload

@@ -1002,7 +1002,7 @@ const globalSlice = createSlice({
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         insertMultiTabAndSetActive(
-            stobj: Object,
+            stobj: object,
             _action: PayloadAction<null>
         ) {
             const state = <State>stobj
@@ -1027,7 +1027,7 @@ const globalSlice = createSlice({
             createCachedTabIfNotExists(state, tabid)
             setActiveTab(state, tabid)
         },
-        setMultiTabToDiff(stobj: Object, _action: PayloadAction<null>) {
+        setMultiTabToDiff(stobj: object, _action: PayloadAction<null>) {
             const state = <State>stobj
             const tabId = getActiveTabId(state)!
             const tab = state.tabs[tabId]
@@ -1035,7 +1035,7 @@ const globalSlice = createSlice({
             tab.isMultiDiff = true
         },
         insertTab(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 paneId: number
                 fileId: number
@@ -1053,13 +1053,13 @@ const globalSlice = createSlice({
                 state.tabCache[tabId].scrollPos = scrollPos
             }
         },
-        activeTab(stobj: Object, action: PayloadAction<number>) {
+        activeTab(stobj: object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload as number
             setActiveTab(state, tabId)
         },
         overwriteFolder(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 folderPath: string
                 folderData: FolderData
@@ -1102,7 +1102,7 @@ const globalSlice = createSlice({
             sortAllFolders(state)
         },
         scrollUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; scrollPos: number }>
         ) {
             const state = <State>stobj
@@ -1112,7 +1112,7 @@ const globalSlice = createSlice({
             state.tabCache[tabId].scrollPos = scrollPos
         },
         codeUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 code: string
                 update: ReduxEditorState
@@ -1147,7 +1147,7 @@ const globalSlice = createSlice({
             updateEditorState(state, tabId, update)
         },
         vimUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; vimState: any }>
         ) {
             const state = <State>stobj
@@ -1159,7 +1159,7 @@ const globalSlice = createSlice({
             state.tabCache[tabId].vimState = vimState
         },
         triggerRename: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<number | null>
         ) => {
             const state = <State>stobj
@@ -1169,7 +1169,7 @@ const globalSlice = createSlice({
             triggerFileRename(state)
         },
         updateRenameName: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 fid: number
                 new_name: string
@@ -1185,7 +1185,7 @@ const globalSlice = createSlice({
             file.renameName = new_name
         },
         forceCloseTab: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<number | null>
         ) => {
             const state = <State>stobj
@@ -1193,7 +1193,7 @@ const globalSlice = createSlice({
             if (tabid == null) return
             doCloseTab(state, tabid)
         },
-        selectTab: (stobj: Object, action: PayloadAction<number>) => {
+        selectTab: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabid = action.payload
             const tab = state.tabs[tabid]
@@ -1203,37 +1203,37 @@ const globalSlice = createSlice({
             setActiveTab(state, tabid)
             setSelectedFile(state, fileid)
         },
-        selectPane: (stobj: Object, action: PayloadAction<number>) => {
+        selectPane: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const paneid = action.payload
 
             setPaneActive(state, paneid)
         },
-        editorCreated: (stobj: Object, action: PayloadAction<number>) => {
+        editorCreated: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabId = action.payload
             // move up dummy variable to force a rerender
             state.tabs[tabId].isReady += 1
         },
         moveTabToPane(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; paneId: number }>
         ) {
             const state = <State>stobj
             const { tabId, paneId } = action.payload
             doMoveTabToPane(state, tabId, paneId)
         },
-        setDraggingTab: (stobj: Object, action: PayloadAction<number>) => {
+        setDraggingTab: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabId = action.payload
             state.draggingTabId = tabId
         },
-        stopDraggingTab: (stobj: Object, action: PayloadAction<null>) => {
+        stopDraggingTab: (stobj: object, action: PayloadAction<null>) => {
             const state = <State>stobj
             state.draggingTabId = null
         },
         moveDraggingTabToPane(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 paneId: number
                 hoverState: HoverState
@@ -1253,20 +1253,20 @@ const globalSlice = createSlice({
             state.draggingTabId = null
         },
         executeSplitPane(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneId: number; hoverState: HoverState }>
         ) {
             const state = <State>stobj
             const { paneId, hoverState } = action.payload
             splitPane(state, paneId, hoverState)
         },
-        setZoomFactor: (stobj: Object, action: PayloadAction<number>) => {
+        setZoomFactor: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const zoomFactor = action.payload
             state.zoomFactor = zoomFactor
         },
         addTransaction: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 tabId: number
                 transactionFunction: CustomTransaction | CustomTransaction[]
@@ -1292,7 +1292,7 @@ const globalSlice = createSlice({
             })
         },
         splitPaneUnselected: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneId: number; direction: HoverState }>
         ) => {
             const state = <State>stobj
@@ -1318,7 +1318,7 @@ const globalSlice = createSlice({
             setSelectedFile(state, fileId)
         },
         splitCurrentPaneUnselected: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ direction: HoverState }>
         ) => {
             const state = <State>stobj
@@ -1349,7 +1349,7 @@ const globalSlice = createSlice({
             setSelectedFile(state, fileId)
         },
         flushTransactions: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; transactionIds: number[] }>
         ) => {
             const state = <State>stobj
@@ -1365,7 +1365,7 @@ const globalSlice = createSlice({
             tabCache.pendingTransactions = newPendingTransactions
         },
         moveToPane: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneDirection: string }>
         ) => {
             const state = <State>stobj

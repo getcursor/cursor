@@ -469,7 +469,7 @@ export function nextValue(keys: string[]) {
         return Math.max(...keys.map((x) => parseInt(x))) + 1
     }
 }
-export function nextId(byIds: Object) {
+export function nextId(byIds: object) {
     return nextValue(Object.keys(byIds))
 }
 export function nextTabID(state: State) {

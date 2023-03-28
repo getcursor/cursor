@@ -23,7 +23,7 @@ import {
     highlightActiveLineGutter,
     lineNumbers,
 } from '@codemirror/view'
-import { EditorState, Prec } from '@codemirror/state'
+import { EditorState } from '@codemirror/state'
 import { languages } from '@codemirror/language-data'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { syntaxBundle } from '../features/extensions/syntax'

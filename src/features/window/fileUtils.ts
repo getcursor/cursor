@@ -9,7 +9,6 @@ import {
     initialState,
 } from './state'
 
-import { Dispatch } from 'redux'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 // Returns a new CachedFile object with the given contents and a counter of 0.
@@ -490,7 +489,7 @@ export const fileSlice = createSlice({
         })
     },
     reducers: {
-        addExistingFolder: (stobj: Object, action: PayloadAction<string>) => {
+        addExistingFolder: (stobj: object, action: PayloadAction<string>) => {
             const _addExistingFolder = (state: State, path: string) => {
                 const folderid = nextFolderID(state)
                 const name = getNameFromPath(path)!
@@ -524,7 +523,7 @@ export const fileSlice = createSlice({
             _addExistingFolder(<State>stobj, action.payload)
         },
         addFileToState: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 fileid: number
                 file: File

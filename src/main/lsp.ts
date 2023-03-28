@@ -245,7 +245,7 @@ class LSPManager {
     }
     async installLanguage(
         language: Language,
-        rootDir: string
+        _rootDir: string
     ): Promise<DownloadedLanguage | null> {
         log.info('INSTALLING')
         let remoteUrl
@@ -253,7 +253,7 @@ class LSPManager {
         let zip
         let extractFn
         switch (language) {
-            case 'python':
+            case 'python': {
                 log.info('installing python')
                 // try {
                 //     await promisify(cp.exec)('pip install -U "pyright"')
@@ -309,7 +309,8 @@ class LSPManager {
                     ],
                 }
                 return await findViableVersion(candidateLang)
-            case 'typescript':
+            }
+            case 'typescript': {
                 try {
                     await npmDownload(
                         'typescript',
@@ -325,13 +326,15 @@ class LSPManager {
                     console.error(e)
                     return null
                 }
-            case 'css':
+            }
+            case 'css': {
                 return {
                     isNode: true,
                     command: path.join(lspDir, 'css.js'),
                     args: ['--stdio'],
                 }
-            case 'html':
+            }
+            case 'html': {
                 try {
                     return {
                         isNode: true,
@@ -341,7 +344,8 @@ class LSPManager {
                 } catch (e) {
                     return null
                 }
-            case 'php':
+            }
+            case 'php': {
                 try {
                     await npmDownload('intelephense')
                     return {
@@ -352,13 +356,15 @@ class LSPManager {
                 } catch (e) {
                     return null
                 }
-            case 'copilot':
+            }
+            case 'copilot': {
                 return {
                     isNode: true,
                     command: path.join(lspDir, 'copilot', 'dist', 'agent.js'),
                     args: [],
                 }
-            case 'go':
+            }
+            case 'go': {
                 const goDir = path.join(lspDir, 'go')
                 try {
                     // Check $GOPATH, and remove $GOPATH/go.mod file
@@ -387,7 +393,8 @@ class LSPManager {
                     command: goBinary,
                     args: [],
                 }
-            case 'java':
+            }
+            case 'java': {
                 remoteUrl =
                     'https://download.eclipse.org/jdtls/snapshots/jdt-language-server-latest.tar.gz'
                 // Make dir if not exists path.join(lspPlugin, 'java')
@@ -425,8 +432,8 @@ class LSPManager {
                         'java.base/java.lang=ALL-UNNAMED',
                     ],
                 }
-
-            case 'c':
+            }
+            case 'c': {
                 const cVersion = await getLatestVersion(
                     'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
@@ -470,7 +477,8 @@ class LSPManager {
                     command: cLSPath,
                     args: [],
                 }
-            case 'rust':
+            }
+            case 'rust': {
                 const rustVersion = await getLatestVersion(
                     'https://api.github.com/repos/rust-analyzer/rust-analyzer/releases/latest'
                 )
@@ -554,7 +562,8 @@ class LSPManager {
                     command: rustLSPath,
                     args: [],
                 }
-            case 'csharp':
+            }
+            case 'csharp': {
                 const csharpVersion = await getLatestVersion(
                     'https://api.github.com/repos/OmniSharp/omnisharp-roslyn/releases/latest'
                 )
@@ -645,7 +654,7 @@ class LSPManager {
                     command: csharpLSPath,
                     args: ['--languageserver'],
                 }
-
+            }
             default:
                 return null
         }

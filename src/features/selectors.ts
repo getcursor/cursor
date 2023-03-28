@@ -7,26 +7,28 @@ import {
 import { createSelector } from 'reselect'
 import { store } from '../app/store'
 
-export const getDraggingTabId = (state: {}) =>
+export const getDraggingTabId = (state: object) =>
     (<FullState>state).global.draggingTabId
-export const getZoomFactor = (state: {}) => (<FullState>state).global.zoomFactor
+export const getZoomFactor = (state: object) =>
+    (<FullState>state).global.zoomFactor
 
-export const getProgress = (state: {}) => (<FullState>state).global.repoProgress
+export const getProgress = (state: object) =>
+    (<FullState>state).global.repoProgress
 
 // PANE SELECTORS
 export const getPaneIsActive = (paneId: number) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.paneState.byIds
         },
         // Gets the actual pane
         (panes: State['paneState']['byIds']) => panes[paneId].isActive
     )
-export const getPaneStateBySplits = (state: {}) =>
+export const getPaneStateBySplits = (state: object) =>
     (<FullState>state).global.paneState.bySplits
 export const getPane = (paneId: number) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.paneState.byIds
         },
         // Gets the actual pane
@@ -35,14 +37,14 @@ export const getPane = (paneId: number) =>
 
 export const getEditorSelection = (tabId: number) =>
     createSelector(
-        (state: {}) => (state as FullState).global.tabCache[tabId],
+        (state: object) => (state as FullState).global.tabCache[tabId],
         (tab) => tab.initialEditorState?.selection
     )
 
 export const getCurrentTab = (paneId: number) =>
     createSelector(
         getPane(paneId),
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         (pane: Pane, tabs: State['tabs']) => {
             connector
             if (pane) {
@@ -60,8 +62,8 @@ export const getCurrentTab = (paneId: number) =>
     )
 
 export const selectFocusedTabId = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.tabs,
     (panes: State['paneState']['byIds'], tabs: State['tabs']) => {
         for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
@@ -81,8 +83,8 @@ export const selectFocusedTabId = createSelector(
 )
 
 export const getFocusedTab = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.tabs,
     (panes: State['paneState']['byIds'], tabs: State['tabs']) => {
         for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
@@ -102,7 +104,7 @@ export const getFocusedTab = createSelector(
 )
 
 export const getCurrentPane = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.paneState.byIds,
     (panes: State['paneState']['byIds']) => {
         for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
@@ -117,21 +119,21 @@ export const getCurrentPane = createSelector(
 
 // TAB SELECTORS
 export const getTabs = createSelector(
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.tabs,
     // Gets the actual tab row
     (tabs: State['tabs']) => Object.values(tabs).filter((tab) => tab.isActive)
 )
 
 export const getTab = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         // Gets the actual tab row
         (tabs: State['tabs']) => tabs[tid]
     )
 
 export const getPageType = (tabId: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         (tabs: State['tabs']): 'multi' | 'editor' => {
             if (tabs[tabId].isMulti) {
                 return 'multi'
@@ -249,8 +251,8 @@ export const searchAllFiles = async (query: string) => {
 /// AMAN ADDITION FOR SEARCHING FOR FILES
 export const searchFile = (query: string) =>
     createSelector(
-        (state: {}) => (<FullState>state).global,
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global,
+        (state: object) => (<FullState>state).global.files,
         (state: State, files: State['files']) => {
             const resultsSet: {
                 [path: string]: {
@@ -331,15 +333,15 @@ export const searchFile = (query: string) =>
 
 export const getFolder = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.folders,
         // Gets the actual folder
         (folders: State['folders']) => folders[fid]
     )
 
 export const getNotDeletedFiles = (parendFolderId: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders,
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.files,
         (folders: State['folders'], files: State['files']) => {
             const folder = folders[parendFolderId]
             return folder.fileIds.filter((fid) => !files[fid].deleted)
@@ -348,7 +350,7 @@ export const getNotDeletedFiles = (parendFolderId: number) =>
 
 export const getFileName = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].name
     )
@@ -396,9 +398,9 @@ export const getCurrentFilePath = createSelector(
 )
 
 export const getAllPaths = createSelector(
-    (state: {}) => (<FullState>state).global.files,
-    (state: {}) => (<FullState>state).global.folders,
-    (state: {}) => (<FullState>state).global,
+    (state: object) => (<FullState>state).global.files,
+    (state: object) => (<FullState>state).global.folders,
+    (state: object) => (<FullState>state).global,
     (files: State['files'], folders: State['folders'], state) => {
         const filePaths: Set<string> = new Set()
         const folderPaths: Set<string> = new Set()
@@ -421,26 +423,26 @@ export const getAllPaths = createSelector(
 
 export const getFileRenameName = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].renameName
     )
 
 export const getFileIndentUnit = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].indentUnit
     )
 
 export const getFile = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid]
     )
 
-export const getFolders = (state: {}) => (<FullState>state).global.folders
+export const getFolders = (state: object) => (<FullState>state).global.folders
 
 function getDepthWrapper(
     files: State['files'],
@@ -467,10 +469,10 @@ function getDepthWrapper(
 
 export const getDepth = (folderId: number, isFile = false) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.files
         },
-        (state: {}) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.folders,
         (files: State['files'], folders: State['folders']) =>
             getDepthWrapper(files, folders)(folderId, isFile)
     )
@@ -491,27 +493,27 @@ export const getRelativeFilePath = (fid: number) => (state: FullState) =>
 // EDITOR SELECTORS
 export const getFileContents = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.fileCache,
+        (state: object) => (<FullState>state).global.fileCache,
         (fileCache: State['fileCache']) => fileCache[fid].contents
     )
 
 // EDITOR SELECTORS
 export const getFileResetContents = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.fileCache,
+        (state: object) => (<FullState>state).global.fileCache,
         (fileCache: State['fileCache']) => fileCache[fid].counter
     )
 
 export const getCachedTab = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabCache,
+        (state: object) => (<FullState>state).global.tabCache,
         (tabCache: State['tabCache']) => tabCache[tid]
     )
 
 // CodeMirror Transaction Selectors
 export const getPendingTransactions = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabCache,
+        (state: object) => (<FullState>state).global.tabCache,
         (tabCache: State['tabCache']) => tabCache[tid].pendingTransactions
     )
 
@@ -537,7 +539,7 @@ export const getRemoteBad = (state: FullState) => state.global.remoteBad
 
 export const getFolderOpen = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders[fid],
+        (state: object) => (<FullState>state).global.folders[fid],
         (folder: Folder) => {
             return folder.isOpen
         }
