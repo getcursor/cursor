@@ -295,7 +295,6 @@ export async function getPayload({
         customCodeBlocks,
         codeBlockIdentifiers,
         msgType: chatState.msgType,
-        apiKey: oaiKey,
         // Messy, but needed for the single lsp stuff to work
         maxOrigLine: forContinue
             ? getLastBotMessage(chatState, conversationId)!.maxOrigLine
@@ -330,6 +329,7 @@ export async function getPayload({
         contextType: state.settingsState.settings.contextType,
 
         rootPath: state.global.rootPath,
+        apiKey: oaiKey,
     }
 
     // document.cookie = `repo_path=${state.global.rootPath}`
