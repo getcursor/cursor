@@ -161,7 +161,9 @@ export function SettingsPopup() {
                                     value={settings.tabSize}
                                 />
                             </div>
+
                             <CursorLogin />
+
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
@@ -224,6 +226,9 @@ function CursorLogin() {
     return (
         <div className="settings__item">
             <div className="settings__item_title">Cursor Pro</div>
+            <div className="settings__item_description">
+                Optionally reserve capacity to avoid "maximum capacity" limits.
+            </div>
             {currentPanel}
         </div>
     )

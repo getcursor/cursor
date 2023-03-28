@@ -274,6 +274,10 @@ export async function getPayload({
     // hack
     dispatch(updateLastUserMessageMsgType(null))
 
+    let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
+    if (oaiKey == null || oaiKey === '') {
+       oaiKey = null; 
+    }
     const userRequest = {
         // Core request
         message: lastUserMessage.message,
@@ -325,6 +329,7 @@ export async function getPayload({
         contextType: state.settingsState.settings.contextType,
 
         rootPath: state.global.rootPath,
+        apiKey: oaiKey,
     }
 
     // document.cookie = `repo_path=${state.global.rootPath}`

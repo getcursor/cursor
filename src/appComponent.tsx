@@ -54,7 +54,7 @@ const customStyles = {
         height: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: '600px',
+        maxWidth: '700px',
     },
 }
 
@@ -73,7 +73,7 @@ function ErrorPopup() {
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        Maximum Capacity
+                        We ran into a problem
                     </div>
                     <div
                         className="errorPopup__title_close"
@@ -83,8 +83,7 @@ function ErrorPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right now.
-                    Please try again later.
+                    Something unexpected happened. Please try again later. If this continues, please contact michael@cursor.so.
                     <br />
                 </div>
             </div>
@@ -152,16 +151,11 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than our servers can handle right
-                    now. To avoid these limits and to purchase reserved
-                    capacity, you can upgrade to{' '}
-                    <a
+                    We're getting more traffic than we can handle right
+                    now. Please try again in one minute. To avoid these limits, you can optionally upgrade to <a
                         className="pay-link"
                         onClick={() => dispatch(ts.upgradeCursor(null))}
-                    >
-                        Cursor Pro
-                    </a>{' '}
-                    for $20/month.
+                    >pro</a>.
                 </div>
             </div>
         </Modal>
