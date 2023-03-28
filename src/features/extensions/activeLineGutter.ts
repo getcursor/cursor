@@ -1,12 +1,10 @@
 /* This file isn't currently being used */
 import { EditorView, gutter, GutterMarker } from '@codemirror/view'
-import { StateField, StateEffect, RangeSet } from '@codemirror/state'
-import { store } from '../../app/store'
+import { RangeSet } from '@codemirror/state'
 
 // We arent doing this anymore
 const activeLineMarker = new (class extends GutterMarker {
     toDOM() {
-        const div = document.createElement('div')
         const btn = document.createElement('button')
         btn.addEventListener('click', () => {
             // do something

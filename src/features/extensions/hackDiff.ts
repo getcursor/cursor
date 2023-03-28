@@ -4,30 +4,7 @@ This is a codemirror v6 implementation of inline diffs.
 There are state fields that store the information for the diffs present in a 
 block of code. 
 */
-import {
-    StateField,
-    StateEffect,
-    Extension,
-    Transaction,
-    Range,
-    Text,
-    TransactionSpec,
-    EditorState,
-    AnnotationType,
-    ChangeSpec,
-    Prec,
-} from '@codemirror/state'
-import {
-    Decoration,
-    DecorationSet,
-    EditorView,
-    ViewPlugin,
-    ViewUpdate,
-    PluginValue,
-    WidgetType,
-} from '@codemirror/view'
-import { presentableDiff, Change, Chunk } from '@codemirror/merge'
-import { invertedEffects } from '@codemirror/commands'
+import { StateField, StateEffect, Extension } from '@codemirror/state'
 
 export interface EditBoundary {
     start: number

@@ -1,11 +1,5 @@
 import { syntaxTree } from '@codemirror/language'
-import {
-    Prec,
-    RangeSetBuilder,
-    EditorState,
-    StateEffect,
-    StateField,
-} from '@codemirror/state'
+import { Prec, RangeSetBuilder, StateEffect } from '@codemirror/state'
 import {
     Decoration,
     DecorationSet,
@@ -17,42 +11,9 @@ import {
 import { Tree } from '@lezer/common'
 import { store } from '../../app/store'
 import { addCommentToDoc } from '../comment/commentSlice'
-import {
-    getCurrentTab,
-    getFile,
-    getFilePath,
-    getFocusedTab,
-} from '../selectors'
+import { getFilePath, getFocusedTab } from '../selectors'
 import { CommentFunction } from '../window/state'
 import { getNamesAndBodies } from './utils'
-
-// Insanely messy but we use the comments piece to find the functions
-// That we can then pass up to tests
-class UpdateTestDirWidget extends WidgetType {
-    constructor() {
-        super()
-    }
-    eq(other: UpdateTestDirWidget) {
-        return this === other
-    }
-
-    toDOM() {
-        const wrap = document.createElement('div')
-        wrap.setAttribute('aria-hidden', 'true')
-        wrap.className = 'cm-ai-comment-container'
-
-        const button = document.createElement('button')
-        button.textContent = 'Enter Test Directory'
-
-        const tooltip = document.createElement('div')
-        tooltip.classList.add('cm-ai-comment-tooltip')
-        tooltip.appendChild(button)
-
-        wrap.appendChild(tooltip)
-
-        return wrap
-    }
-}
 
 class CommentWidget extends WidgetType {
     constructor(

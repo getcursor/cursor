@@ -1,20 +1,11 @@
 import {
     State,
-    Pane,
-    Tab,
     CachedTab,
-    CachedFile,
-    ReduxTransaction,
     ReduxEditorState,
-    Folder,
-    File,
-    FolderData,
     HoverState,
-    PaneState,
     nextTabID,
     nextPaneID,
 } from './state'
-import { current } from '@reduxjs/toolkit'
 
 import { doDeleteFile, setSelectedFile } from './fileUtils'
 
@@ -389,8 +380,6 @@ export function doCloseTab(state: State, tabId: number) {
 
 export function doMoveToAdjacentPane(state: State, paneDirection: string) {
     const currentPaneId = getActivePaneID(state)!
-    const tabId = getActiveTabId(state)!
-    const tab = state.tabs[tabId]
     // const currentPaneId = tab.paneId;
 
     // paneDirection is one of 'left', 'right', 'up', 'down'

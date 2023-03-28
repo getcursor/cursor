@@ -2,14 +2,11 @@ import {
     ViewUpdate,
     ViewPlugin,
     DecorationSet,
-    keymap,
     EditorView,
     Decoration,
     WidgetType,
 } from '@codemirror/view'
-import { syntaxTree } from '@codemirror/language'
-import { RangeSet, Range, Prec } from '@codemirror/state'
-import { store } from '../../app/store'
+import { Range } from '@codemirror/state'
 
 class LineText extends WidgetType {
     constructor(readonly checked: boolean) {

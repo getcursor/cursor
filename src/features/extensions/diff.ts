@@ -20,9 +20,7 @@ import {
     Transaction,
     Range,
     Text,
-    TransactionSpec,
     EditorState,
-    AnnotationType,
     ChangeSpec,
     Prec,
 } from '@codemirror/state'
@@ -30,18 +28,14 @@ import {
     Decoration,
     DecorationSet,
     EditorView,
-    ViewPlugin,
     ViewUpdate,
-    PluginValue,
     GutterMarker,
     gutterLineClass,
     keymap,
-    TooltipView,
     Tooltip,
     showTooltip,
     WidgetType,
 } from '@codemirror/view'
-import { presentableDiff, Change, Chunk } from '@codemirror/merge'
 import { invertedEffects } from '@codemirror/commands'
 import posthog from 'posthog-js'
 
@@ -62,15 +56,6 @@ function partsEqual(a: Diff.Change[], b: Diff.Change[]) {
     if (a.length !== b.length) return false
     for (let i = 0; i < a.length; i++) if (!chunkEqual(a[i], b[i])) return false
     return true
-}
-
-// Function to add line numbers to the left of each line of text
-function addLineNumbers(text: string): string {
-    const lines = text.split('\n')
-    const numberedLines = lines.map(
-        (line, index) => `${(index + 1).toString().padStart(4, ' ')}: ${line}`
-    )
-    return numberedLines.join('\n')
 }
 
 function getDiffTooltip(

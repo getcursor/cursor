@@ -5,7 +5,6 @@ import * as ss from '../features/settings/settingsSlice'
 import * as ls from '../features/logging/loggingSlice'
 import * as ts from '../features/tools/toolSlice'
 import * as csel from '../features/chat/chatSelectors'
-import * as tsel from '../features/tools/toolSelectors'
 import * as gsel from '../features/selectors'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { useEffect, useState } from 'react'
@@ -19,7 +18,6 @@ import {
     faSquare,
     faTimes,
     faRobot,
-    faTerminal,
     faSquareTerminal,
 } from '@fortawesome/pro-regular-svg-icons'
 
