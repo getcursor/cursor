@@ -495,10 +495,8 @@ export const newTestFile = createAsyncThunk(
     'testSlice/newTestFile',
     async (
         { fileName, testFileName }: { fileName: string; testFileName: string },
-        { dispatch, getState }
+        { dispatch }
     ) => {
-        const state = getState() as { test: TestState; global: State }
-
         dispatch(addTestFileMap({ fileName, testFileName }))
 
         // Creates the file if it doesn't exist

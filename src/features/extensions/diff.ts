@@ -79,10 +79,9 @@ function getDiffTooltip(
     }
 
     // Get the topmost field. If none, just show at the top of the screen
-    let { from, to, value } = diffValue.visibleDeco.iter()
+    let { from, value } = diffValue.visibleDeco.iter()
     if (value == null) {
         from = 0
-        to = 0
     }
 
     return {
@@ -412,17 +411,10 @@ export const diffField = StateField.define<DiffState>({
     update(allDecos: DiffState, tr: Transaction) {
         // If the transaction has any addDiff effects, map them to decorations and update the decoration set
         // First modify the decoration set to stay on the same lines if the transaction is a line change
-        let {
-            parts,
-            visibleDeco,
-            diffId,
-            origLine,
-            currentLine,
-            tooltip,
-            subDiffTooltips,
-            loading,
-            chunks,
-        } = allDecos
+        let { parts, visibleDeco, diffId, origLine, currentLine, loading } =
+            allDecos
+
+        const { subDiffTooltips, chunks, tooltip } = allDecos
 
         let isChanged = false
         // First we check for if we have modified the diff
@@ -1371,9 +1363,6 @@ export const setDiff =
             let greenLines = 0
             let lineOffset = 0
 
-            // Keeps track of the end for an edit
-            let endPos = view.state.doc.line(origEndLine).to
-
             parts.forEach((part) => {
                 if (part.added) {
                     const insertLineNumber =
@@ -1390,7 +1379,6 @@ export const setDiff =
 
                     greenLines += part.count ?? 0
 
-                    endPos += part.value.length + 1
                     // On any insertion, we increase where the end lies
                 }
                 lineOffset += part.count ?? 0

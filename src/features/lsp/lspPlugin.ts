@@ -120,26 +120,10 @@ export const semanticTokenField = StateField.define<DecorationSet>({
 })
 
 // TODO - remove this when done testing autocomplete
+
 import _ from 'lodash'
 import { computeAndRenderTest, renderNewTest } from '../tests/testSlice'
-const dontComplete = [
-    'TemplateString',
-    'String',
-    'RegExp',
-    'LineComment',
-    'BlockComment',
-    'VariableDefinition',
-    'Type',
-    'Label',
-    'PropertyDefinition',
-    'PropertyName',
-    'PrivatePropertyDefinition',
-    'PrivatePropertyName',
-]
-const keywords =
-    /*@__PURE__*/ 'break case const continue default delete export extends false finally in instanceof let new return static super switch this throw true typeof var yield'
-        .split(' ')
-        .map((kw) => ({ label: kw, type: 'keyword' }))
+
 // TODO - End of temporarily added stuff
 
 const darkTransparentVscode = vscodeDarkInit({
@@ -269,7 +253,7 @@ export class LanguageServerPlugin implements LanguageServerPluginInterface {
         if (!result) return null
 
         // Extract the contents and the range from the result
-        const { contents, range } = result
+        const { contents } = result
 
         // Convert the position and range to offsets
         const pos = posToOffset(view.state.doc, { line, character })!

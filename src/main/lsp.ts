@@ -72,8 +72,8 @@ fixPath()
 async function npmDownload(...packages: string[]) {
     for (const p of packages) {
         if (process.platform === 'win32') {
-            await new Promise((resolve, reject) => {
-                const childProcess = cp.spawn('npm', ['install', '-g', p], {
+            await new Promise((_resolve, _reject) => {
+                cp.spawn('npm', ['install', '-g', p], {
                     shell: true,
                 })
             })
@@ -118,8 +118,8 @@ async function findViableVersion(lang: DownloadedLanguage) {
         let result: Promise<string>
         try {
             childProcess = cp.spawn(command, args, { shell: true })
-            result = new Promise((resolve, reject) => {
-                childProcess.on('error', (err) => {
+            result = new Promise((resolve, _reject) => {
+                childProcess.on('error', (_) => {
                     log.info('FAILURE for', command, args)
                     resolve('EXITED')
                 })
@@ -139,7 +139,7 @@ async function findViableVersion(lang: DownloadedLanguage) {
             continue
         }
 
-        const timeout = new Promise((resolve, reject) => {
+        const timeout = new Promise((resolve, _reject) => {
             setTimeout(() => {
                 log.info('SUCESS for', command, args)
                 resolve('DONE')
@@ -429,7 +429,7 @@ class LSPManager {
                     ],
                 }
             }
-            case 'c':
+            case 'c': {
                 const cVersion = await getLatestVersion(
                     'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
@@ -473,6 +473,7 @@ class LSPManager {
                     command: cLSPath,
                     args: [],
                 }
+            }
             case 'rust': {
                 const rustVersion = await getLatestVersion(
                     'https://api.github.com/repos/rust-analyzer/rust-analyzer/releases/latest'
@@ -690,7 +691,7 @@ class LSPManager {
             if (fallbacks != null) {
                 const fallBackIndex = 0
                 // Bind exit event listener
-                childProcess.on('exit', (code, signal) => {
+                childProcess.on('exit', (_code, _signal) => {
                     if (fallbacks != null && fallBackIndex < fallbacks.length) {
                         const { command, args } = fallbacks[fallBackIndex]
                         childProcess = cp.fork(command, args, {
@@ -769,11 +770,11 @@ class LSPManager {
                     identifier: tmpIdentifier,
                 })
                 //
-                const future = new Promise((resolve, reject) => {
+                const future = new Promise((resolve, _reject) => {
                     // TODO - get rid of the response callback later bc it may hurt performance
                     ipcMain.handle(
                         'responseCallbackLS' + tmpIdentifier,
-                        (event, data) => {
+                        (_event, data) => {
                             resolve(data)
                         }
                     )
@@ -808,13 +809,12 @@ class LSPManager {
         //log.info('Finished starting server', language)
         return language
     }
-    killServer(event: IpcMainInvokeEvent, language: Language) {
+    killServer(_event: IpcMainInvokeEvent, language: Language) {
         if (this.runningClients.hasOwnProperty(language)) {
             const { connection, childProcess } = this.runningClients[language]
             connection.dispose()
             childProcess.kill()
             delete this.runningClients[language]
-            const oldLang = this.store.get(language)
         }
     }
     killAll(event: IpcMainInvokeEvent) {
@@ -824,7 +824,7 @@ class LSPManager {
     }
     //   async function sendRequest<K extends keyof LSPRequestMap>(event: IpcMainInvokeEvent, arg: {
     async sendRequest<K extends keyof LSPRequestMap>(
-        event: IpcMainInvokeEvent,
+        _event: IpcMainInvokeEvent,
         {
             language,
             method,
@@ -859,14 +859,13 @@ class LSPManager {
             const { wordBefore, ...otherParams } =
                 params as LSPCustomCompletionParams
             const wordBeforeLower = wordBefore.toLowerCase()
-            let start = performance.now()
+
             const out = await connection.sendRequest<LSPRequestMap[K][1]>(
                 method,
                 otherParams
             )
             // Filter down items
             if (out != null) {
-                start = performance.now()
                 // Later we can specify the typing
                 let remainingItems: any[] = []
                 if (Array.isArray(out)) {
@@ -996,7 +995,7 @@ class LSPManager {
     }
 
     async sendNotification<K extends keyof LSPNotifyMap>(
-        event: IpcMainInvokeEvent,
+        _event: IpcMainInvokeEvent,
         {
             language,
             method,
@@ -1017,11 +1016,11 @@ class LSPManager {
 export const setupLSPs = (store: Store) => {
     const lspManager = new LSPManager(store)
     ipcMain.handle('getLSState', lspManager.getLSState.bind(lspManager))
-    ipcMain.handle('installLS', (event, { rootDir, language }) =>
+    ipcMain.handle('installLS', (_event, { rootDir, language }) =>
         lspManager.maybeInstallLanguage(language, rootDir)
     )
     ipcMain.handle('startLS', lspManager.startServer.bind(lspManager))
-    ipcMain.handle('stopLS', (event, language) => lspManager.stopLS(language))
+    ipcMain.handle('stopLS', (_event, language) => lspManager.stopLS(language))
     ipcMain.handle('killLS', lspManager.killServer.bind(lspManager))
     ipcMain.handle('sendRequestLS', lspManager.sendRequest.bind(lspManager))
     ipcMain.handle(

@@ -15,8 +15,6 @@ const escapeShell = function (cmd: string) {
     return to_ret
 }
 
-const isWindows = process.platform === 'win32'
-
 // A class that implements a lightweight ssh client in nodejs Typescript using spawn
 class SSHClient {
     // A private property that holds the spawned ssh process
@@ -37,7 +35,7 @@ class SSHClient {
         })
 
         // Handle the exit event from the ssh process
-        this.sshProcess.on('exit', (code, signal) => {
+        this.sshProcess.on('exit', (_code, _signal) => {
             if (this.callback != null) this.callback('exit')
             this.callback = null
             out = ''
@@ -360,12 +358,6 @@ export class FileSystem {
             childProcess.stdout.on('data', (data) => {
                 const lines = data.toString().trim().split('\n')
 
-                // deduplicate lines
-                const deduplicatedLines = lines.filter(
-                    (line: any, index: any) => {
-                        return lines.indexOf(line) === index
-                    }
-                )
                 for (const line of lines) {
                     try {
                         const inotifyOutput = line.trim()
@@ -394,9 +386,9 @@ export class FileSystem {
                     } catch (err) {}
                 }
             })
-            childProcess.stderr.on('data', function (data) {})
+            childProcess.stderr.on('data', function (_data) {})
 
-            childProcess.on('exit', function (code) {})
+            childProcess.on('exit', function (_code) {})
         } else {
             const watcher = new Watcher(rootDir, {
                 ignore,

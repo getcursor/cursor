@@ -46,7 +46,7 @@ export const insertCursorState = StateField.define<ContinueCursor | null>({
 })
 
 export const hackLockEffect = StateEffect.define<{ on: boolean }>({
-    map: (val, mapping) => ({ on: val.on }),
+    map: (val, _mapping) => ({ on: val.on }),
 })
 export const hackLockState = StateField.define<{ on: boolean }>({
     create: () => ({ on: false }),

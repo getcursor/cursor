@@ -233,11 +233,6 @@ const handleSearch = async (query: string, setResults: any, rootPath: any) => {
             }
             const newestResults = [...fileLevelResultsMap.values()]
             setResults(newestResults)
-            if (newestResults.length != 0) {
-                const firstResult = newestResults[0].results[0]
-                const start = firstResult.data.submatches[0].start
-                const end = firstResult.data.submatches[0].end
-            }
         })
 }
 

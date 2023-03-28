@@ -103,7 +103,7 @@ interface LintGutterConfig {
 
 /// ALL OF BELOW IS CUSTOM CODE AMAN INSERTED
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export function magicFix(editorView: EditorView) {
+export function magicFix(_editorView: EditorView) {
     return
 }
 export type ActionTransaction = ReplaceRange | ReplaceGivenRange | TriggerFixLSP
@@ -317,16 +317,16 @@ export const diagnosticsField = StateField.define<Diagnostic[]>({
         const out: Diagnostic[] = []
         return out
     },
-    toJSON: (value, state) => {
+    toJSON: (_value, state) => {
         const lintStateField = state.field(lintState, false)
         if (!lintStateField) return []
         const diagnostics = getDiagnostics(lintStateField, state)
         return diagnostics
     },
-    fromJSON: (value, state) => {
+    fromJSON: (value, _state) => {
         return value
     },
-    update(value, tr) {
+    update(value, _tr) {
         return value
     },
 })
@@ -375,7 +375,7 @@ export const lintState = StateField.define<LintState>({
     // Convert to JSON so that it can be serialized
     toJSON: getDiagnostics,
     // Convert from JSON so that it can be deserialized
-    fromJSON: (value: Diagnostic[], state: EditorState) => {
+    fromJSON: (_value: Diagnostic[], _state: EditorState) => {
         // let origLintState = new LintState(Decoration.none, null, null)
         // return LintState.init(value, origLintState.panel, state);
         return new LintState(Decoration.none, null, null)

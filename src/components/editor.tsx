@@ -42,7 +42,7 @@ import { getSettings } from '../features/settings/settingsSelectors'
 import { useExtensions } from './codemirrorHooks/extensions'
 import { useSetDiff } from './codemirrorHooks/diffHook'
 
-export function getPrecedingLines(view: EditorView, numLines: number) {
+export function getPrecedingLines(view: EditorView, _numLines: number) {
     return view.state.doc.sliceString(0, view.state.selection.main.from)
     // const {startLinePos, endLinePos} = getPrecedingLinesPos(view, numLines);
     // const selectedText = view.state.doc.sliceString(startLinePos, endLinePos);
@@ -160,17 +160,6 @@ function usePreviousNumber(value: number) {
     })
     return ref.current
 }
-const hashString = (str: string) => {
-    let hash = 0
-    if (str.length == 0) return hash
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i)
-        hash = (hash << 5) - hash + char
-        hash = hash & hash // Convert to 32bit integer
-    }
-    return String(hash)
-}
-
 export default function Editor({ tabId }: { tabId: number }) {
     const dispatch = useAppDispatch()
 
@@ -230,7 +219,6 @@ export default function Editor({ tabId }: { tabId: number }) {
 
     //const diffReadOnly = useRenderDiffs({editorRef, tabId});
     const lastBotMessage = useAppSelector(csel.getLastBotMessage)
-    const lastUserMessage = useAppSelector(csel.getLastUserMessage)
 
     const updateRemoteState = () => {
         if (oldEditorRef.current?.view?.state != null && oldTabId != null) {
@@ -292,7 +280,7 @@ export default function Editor({ tabId }: { tabId: number }) {
                     autoFocus={isPaneActive && isRenaming == null}
                     className="window__editor"
                     height="100%"
-                    onCreateEditor={(view: EditorView, state: EditorState) => {
+                    onCreateEditor={(view: EditorView, _state: EditorState) => {
                         setJustCreated((old) => !old)
 
                         if (cachedTab != null && cachedTab.scrollPos != null) {
@@ -334,7 +322,6 @@ export default function Editor({ tabId }: { tabId: number }) {
                     }}
                     onChange={throttleCallback(
                         (code: string, update: ViewUpdate) => {
-                            const start = performance.now()
                             // do any of the transactiosn contain the dontshow annotation
                             const canMarkNotSaved = !update.transactions.some(
                                 (t) => {
@@ -370,7 +357,6 @@ export function Page({ tid }: { tid: number }) {
     const pageType = useAppSelector(getPageType(tid))
 
     let page
-    const randomId = String(Math.random())
     if (pageType == 'editor') {
         page = <Editor tabId={tid} />
     } else {

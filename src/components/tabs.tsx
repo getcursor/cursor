@@ -53,10 +53,10 @@ function Tab({ tid }: { tid: number }) {
     return (
         <div
             draggable="true"
-            onDragStart={(e) => {
+            onDragStart={(_e) => {
                 dispatch(setDraggingTab(tid))
             }}
-            onDragEnd={(e) => {
+            onDragEnd={(_e) => {
                 revertTabsChildrenEvents() // revert for current pane
                 dispatch(stopDraggingTab())
             }}

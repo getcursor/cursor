@@ -96,7 +96,6 @@ export function CodeBlock({
     // Get child that is code
 
     // Extract the language name from the className
-    const dispatch = useAppDispatch()
     const [codeButton, setCodeButton] = useState(false)
     let language: string
 
@@ -142,7 +141,7 @@ export function CodeBlock({
                             : lineNumbers({
                                   formatNumber: (
                                       n: number,
-                                      state: EditorState
+                                      _state: EditorState
                                   ) => String(n + startLine),
                               }),
                         EditorView.editable.of(isEditable),
@@ -276,7 +275,6 @@ export function ChatPopup() {
     const isChatHistoryOpen = useAppSelector<boolean>(csel.isChatHistoryOpen)
 
     const messages = useAppSelector(csel.getCurrentConversationMessages())
-    const filePath = useAppSelector(getCurrentFilePath)
 
     const commandBoxRef = useRef<HTMLDivElement>(null)
 
@@ -310,18 +308,9 @@ export function ChatPopup() {
         />
     ))
 
-    function close() {
-        dispatch(cs.interruptGeneration(null))
-        dispatch(cs.setChatOpen(false))
-    }
-
     const handleSelectHistory = (id: string) => {
         dispatch(cs.setCurrentConversation(id))
         dispatch(cs.setChatOpen(true))
-    }
-
-    const handleCloseHistory = () => {
-        dispatch(cs.toggleChatHistory())
     }
 
     const commandBarActionTips = isChatHistoryOpen
@@ -379,8 +368,6 @@ export function ChatPopup() {
 export function MarkdownPopup({
     message,
     dismissed,
-    last,
-    onApply,
 }: {
     message: Message
     dismissed: boolean
@@ -482,7 +469,7 @@ export function MarkdownPopup({
         </>
     )
 }
-const CustomLink = ({ children, href, ...props }: any) => {
+const CustomLink = ({ children, href }: any) => {
     return (
         <a href={href} target="_blank">
             {children}
@@ -490,61 +477,8 @@ const CustomLink = ({ children, href, ...props }: any) => {
     )
 }
 
-function CodeBlockLink({
-    index,
-    codeBlock,
-}: {
-    index: number
-    codeBlock: CodeBlockType
-}) {
-    const dispatch = useAppDispatch()
-    const currentFile = useAppSelector(getFile(codeBlock.fileId))
-    const filePath = useAppSelector(getFilePath(codeBlock.fileId))
-    const folderPath = useAppSelector(getFolderPath(currentFile.parentFolderId))
-    const iconElement = getIconElement(currentFile.name)
-    return (
-        <div
-            className="commandBar__codelink"
-            onClick={() => {
-                dispatch(
-                    gs.openFile({
-                        filePath: filePath,
-                        selectionRegions: [
-                            {
-                                start: {
-                                    line: codeBlock.startLine,
-                                    character: 0,
-                                },
-                                end: { line: codeBlock.endLine, character: 0 },
-                            },
-                        ],
-                    })
-                )
-            }}
-        >
-            <div className="file__line file__no_highlight">
-                <div className="file__icon">{iconElement}</div>
-                <div className="file__name">{currentFile.name}</div>
-                <div className="file__path">{folderPath}</div>
-                <div className="file__path">
-                    Lines {codeBlock.startLine} - {codeBlock.endLine}
-                </div>
-                <div
-                    className="file__close_button"
-                    onClick={(e: any) => {
-                        e.stopPropagation()
-                        dispatch(cs.removeCodeBlock(index))
-                    }}
-                >
-                    <FontAwesomeIcon icon={faClose} />
-                </div>
-            </div>
-        </div>
-    )
-}
-
 const Item = ({
-    entity: { name, type, summary, path, startIndex, endIndex },
+    entity: { name, summary, path, startIndex, endIndex },
 }: {
     entity: {
         name: string
@@ -579,7 +513,7 @@ const Item = ({
     )
 }
 
-const Loading = ({ data }: { data: any }) => <div>Loading</div>
+const Loading = () => <div>Loading</div>
 
 export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     const dispatch = useAppDispatch()
@@ -650,7 +584,7 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
             className="commandBar__input"
             placeholder={placeholder}
             loadingComponent={Loading}
-            scrollToItem={(container, item) => {
+            scrollToItem={(_container, item) => {
                 if (item) {
                     item.scrollIntoView({ block: 'nearest', inline: 'nearest' })
                 }
@@ -666,7 +600,7 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
                         //   .map(({ name, char }) => ({ name, char }));
                     },
                     component: Item,
-                    output: (item, trigger) => {
+                    output: (item, _trigger) => {
                         return (
                             '<|START_SPECIAL|>' +
                             JSON.stringify(item) +
@@ -765,7 +699,6 @@ function formatPromptTime(sentAt: number): string {
 }
 
 function formatPromptPreview(prompt: string): string {
-    const maxLength = 38
     const noNewlines = prompt.replace(/(\r\n|\n|\r)/gm, '')
     // const truncated =
     //     noNewlines.length > maxLength
@@ -852,9 +785,6 @@ export function CommandBar({
     }
 
     const commandBarOpen = useAppSelector(csel.getIsCommandBarOpen)
-    const isChatHistoryAvailable = useAppSelector(
-        csel.getIsChatHistoryAvailable
-    )
 
     return (
         <>

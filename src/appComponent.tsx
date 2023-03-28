@@ -294,9 +294,6 @@ export function App() {
     const commandBarOpen = useAppSelector(csel.getIsCommandBarOpen)
     const currentActiveTab = useAppSelector(getFocusedTab)
 
-    // Get the currently opened filename
-    const activeFilePath = useAppSelector(gsel.getCurrentFilePath)
-
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             const AI_KEYS = ['k', 'l', 'Backspace', 'Enter']

@@ -66,15 +66,12 @@ export function getLastBotMessage(
 
 export const beforeAppendResponse = createAsyncThunk(
     'chat/appendResponse',
-    async (
-        payload: { text: string; token: string },
-        { getState, dispatch }
-    ) => {}
+    async (_payload: { text: string; token: string }, {}) => {}
 )
 export const chatSlice = createSlice({
     name: 'chat',
     initialState: initialChatState as ChatState,
-    extraReducers: (builder) => {},
+    extraReducers: (_builder) => {},
     reducers: {
         addOtherBlockToMessage(
             chatState: ChatState,
@@ -451,7 +448,6 @@ export const chatSlice = createSlice({
             chatState.draftMessages[conversationId].message = action.payload
         },
         abortCommandBar(chatState: ChatState) {
-            const conversationId = chatState.currentConversationId
             chatState.isCommandBarOpen = false
         },
         turnOnCommandK(chatState: ChatState) {
@@ -478,7 +474,7 @@ export const chatSlice = createSlice({
         },
         updateLastUserMessageMsgType(
             chatState: ChatState,
-            action: PayloadAction<null>
+            _action: PayloadAction<null>
         ) {
             const lastUserMessage =
                 chatState.userMessages[chatState.userMessages.length - 1]

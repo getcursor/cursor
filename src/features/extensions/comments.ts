@@ -64,8 +64,6 @@ class CommentWidget extends WidgetType {
         return false
     }
 }
-import { selectHasTests } from '../tests/testSelectors'
-
 // codemirror state effect for updating comments
 export const updateCommentsEffect = StateEffect.define<boolean>()
 
@@ -102,10 +100,6 @@ class TreeHighlighter {
         const tab = getFocusedTab(state)
         if (tab != null) {
             const filePath = getFilePath(tab.fileId)(state)
-            const hasTests = selectHasTests(filePath)(state)
-            if (!hasTests) {
-            } else {
-            }
             comments = state.commentState.fileThenNames[filePath] || {}
         }
 

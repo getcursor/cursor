@@ -12,7 +12,7 @@ import {
 
 export const fixErrors = createAsyncThunk(
     'fixLSP/fixErrors',
-    async (payload: { tabId: number }, { getState, dispatch }) => {
+    async (payload: { tabId: number }, { getState }) => {
         const state = getState() as FullState
         const tab = state.global.tabs[payload.tabId]
         const fileId = state.global.tabs[payload.tabId].fileId

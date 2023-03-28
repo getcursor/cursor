@@ -4,13 +4,13 @@ import { FullState, LoggingState, initialLoggingState } from '../window/state'
 
 export const sendFeedbackMessage = createAsyncThunk(
     'chat/getResponse',
-    async (payload: null, { getState, dispatch }) => {
+    async (_payload: null, { getState, dispatch }) => {
         const state = <FullState>getState()
         const message = state.loggingState.feedbackMessage
         dispatch(updateFeedbackMessage(''))
         dispatch(closeChat(null))
 
-        const response = await fetch(`${API_ROOT}/save_message`, {
+        await fetch(`${API_ROOT}/save_message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,11 +34,11 @@ export const loggingSlice = createSlice({
         },
         toggleFeedback(
             loggingState: LoggingState,
-            action: PayloadAction<null>
+            _action: PayloadAction<null>
         ) {
             loggingState.isOpen = !loggingState.isOpen
         },
-        closeChat(loggingState: LoggingState, action: PayloadAction<null>) {
+        closeChat(loggingState: LoggingState, _action: PayloadAction<null>) {
             loggingState.isOpen = false
         },
     },

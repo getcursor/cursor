@@ -471,7 +471,7 @@ export class CodebaseIndexer {
             try {
                 // Get file contents
                 fileContents = await new Promise((resolve) => {
-                    return fileSystem.readFile(file, (err, data) => {
+                    return fileSystem.readFile(file, (_err, data) => {
                         if (data == null) return null
                         return resolve(data.toString())
                     })
@@ -523,9 +523,8 @@ export class CodebaseIndexer {
             return this.filesUploaded / (this.numFiles + 1)
         }
     }
-    async syncWithServer(apiRoot: string, files: string[], repoId: string) {
+    async syncWithServer(_apiRoot: string, files: string[], repoId: string) {
         await this.updateFilesIfNeeded(files, repoId)
-        //
     }
     async reIndex() {
         if (fileSystem.isRemote || !store.get('uploadPreferences')) return
@@ -540,60 +539,12 @@ export class CodebaseIndexer {
             }
         )
     }
-
-    async startUpdateLoop(
-        apiRoot: string,
-        files: string[],
-        repoId: string,
-        onStart = false
-    ) {
-        // //
-        // if (onStart) {
-        //     try {
-        //         //
-        //         await this.uploadFiles(files, repoId)
-        //         // await this.syncWithServer(apiRoot, files, repoId);
-        //     } catch (e) {
-        //
-        //     }
-        // }
-        // //
-        // setInterval(() => {
-        //     //
-        //     this.syncWithServer(apiRoot, files, repoId)
-        // }, 1000 * 2 * 60)
-        // setInterval(() => {
-        //     //
-        //     this.reIndex()
-        // }, 1000 * 60 * 60)
-        // //
-    }
-}
-
-function getSettings(rootDir: string) {
-    const settings = (store.get('settingsFile' + rootDir) || {
-        repoId: null,
-        uploaded: false,
-    }) as {
-        repoId: string | null
-        uploaded: boolean
-    }
-    return settings
-}
-
-function setSettings(
-    rootDir: string,
-    settings: { repoId: string | null; uploaded: boolean }
-) {
-    store.set('settingsFile' + rootDir, settings)
 }
 
 export function setupIndex(apiRoot: string, win: BrowserWindow) {
-    const indexers = new Map<string, CodebaseIndexer>()
-
     ipcMain.handle(
         'syncProject',
-        async function (event: IpcMainInvokeEvent, rootDir: string) {
+        async function (_event: IpcMainInvokeEvent, rootDir: string) {
             // const settings = getSettings(rootDir)
             // if (settings.repoId == null) return null
 
@@ -607,7 +558,7 @@ export function setupIndex(apiRoot: string, win: BrowserWindow) {
 
     ipcMain.handle(
         'indexProject',
-        async function (event: IpcMainInvokeEvent, rootDir: string) {
+        async function (_event: IpcMainInvokeEvent, rootDir: string) {
             // const connectedToInternet = await fetch(`${apiRoot}/`, {
             //     method: 'GET',
             // })
@@ -645,7 +596,7 @@ export function setupIndex(apiRoot: string, win: BrowserWindow) {
     )
     ipcMain.handle(
         'initProject',
-        async function (event: IpcMainInvokeEvent, rootDir: string) {
+        async function (_event: IpcMainInvokeEvent, _rootDir: string) {
             // log.warn('INITIALIZING PROJECT')
             // const connectedToInternet = await fetch(`${apiRoot}/`, {
             //     method: 'GET',
@@ -698,16 +649,16 @@ export function setupIndex(apiRoot: string, win: BrowserWindow) {
     ipcMain.handle(
         'checkRepoStatus',
         async function (
-            event: IpcMainInvokeEvent,
-            repoId: string,
-            rootDir: string
+            _event: IpcMainInvokeEvent,
+            _repoId: string,
+            _rootDir: string
         ) {
             // return await checkStatus(repoId, apiRoot, rootDir)
         }
     )
     ipcMain.handle(
         'getProgress',
-        async function (event: IpcMainInvokeEvent, repoId: string) {
+        async function (_event: IpcMainInvokeEvent, _repoId: string) {
             return {
                 progress: 1,
                 state: 'done',
