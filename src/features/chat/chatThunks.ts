@@ -40,6 +40,7 @@ import {
     setChatOpen,
     setCurrentDraftMessage,
     setGenerating,
+    setHitTokenLimit,
     startNewMessage,
     toggleChatHistory,
     tokenLimitInterrupt,
@@ -514,6 +515,7 @@ export const continueGeneration = createAsyncThunk(
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
             }
+            dispatch(setHitTokenLimit({conversationId, hitTokenLimit: false}))
         }
     }
 )
