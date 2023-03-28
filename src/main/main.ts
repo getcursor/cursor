@@ -179,18 +179,6 @@ const createWindow = () => {
         }
     })
 
-    // main_window.on('minimize', () => {
-    //     globalShortcut.unregisterAll()
-
-    //     globalShortcut.register(META_KEY + '+Shift+Space', () => {
-    //         if (main_window.isMinimized()) {
-    //             main_window.show()
-    //         } else {
-    //             main_window.minimize()
-    //         }
-    //     })
-    // })
-
     main_window.webContents.setWindowOpenHandler(({ url }) => {
         shell.openExternal(url)
         return { action: 'deny' }
