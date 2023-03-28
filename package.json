@@ -6,7 +6,7 @@
         "email": "mntruell@gmail.com"
     },
     "productName": "Cursor",
-    "version": "0.1.7",
+    "version": "0.1.9",
     "description": "Cursor is an AI-first coding environment.",
     "main": ".webpack/main",
     "scripts": {
@@ -142,6 +142,7 @@
         "fix-path": "^4.0.0",
         "fork-ts-checker-webpack-plugin": "^7.2.14",
         "gunzip-file": "^0.1.1",
+        "jwt-decode": "^3.1.2",
         "line-diff": "^2.1.1",
         "lodash.debounce": "^4.0.8",
         "markdown-it": "^13.0.1",
@@ -169,6 +170,7 @@
         "uuid": "^9.0.0",
         "watcher": "^2.2.2",
         "webpack": "^5.75.0",
-        "xterm": "^4.19.0"
+        "xterm": "^4.19.0",
+        "xterm-addon-web-links": "^0.6.0"
     }
 }

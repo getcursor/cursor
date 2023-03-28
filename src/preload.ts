@@ -189,6 +189,7 @@ const electronConnector = {
         ipcRenderer.removeListener('terminal-incData', callback)
     },
     terminalInto: (data: any) => ipcRenderer.invoke('terminal-into', data),
+    terminalClickLink: (data: any) => ipcRenderer.invoke('terminal-click-link', data),
     terminalResize: (data: any) => ipcRenderer.invoke('terminal-resize', data),
 
     registerFileWasAdded: (callback: Callback) =>
@@ -380,6 +381,40 @@ const electronConnector = {
         ipcRenderer.on('addCodeToPrompt', (event, data) => {
             callback(data)
         })
+    },
+    setCookies: async (cookieObject: {
+        url: string
+        name: string
+        value: string
+    }) => {
+        await ipcRenderer.invoke('setCookies', cookieObject)
+    },
+    loginCursor: async () => {
+        await ipcRenderer.invoke('loginCursor')
+    },
+    logoutCursor: async () => {
+        await ipcRenderer.invoke('logoutCursor')
+    },
+    getUserCreds: async () => {
+        return await ipcRenderer.invoke('getUserCreds')
+    },
+    payCursor: async () => {
+        return await ipcRenderer.invoke('payCursor')
+    },
+    registerUpdateAuthStatus(
+        callback: (payload: {
+            accessToken?: string | null
+            profile?: any | null
+            stripeProfile?: string | null
+        }) => void
+    ) {
+        ipcRenderer.on('updateAuthStatus', (event, data) => {
+            console.log('UPDATING AUTH STATUS', data)
+            callback(data)
+        })
+    },
+    refreshTokens() {
+        ipcRenderer.invoke('refreshTokens')
     },
 }
 

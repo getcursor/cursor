@@ -3,7 +3,7 @@ import { Settings } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
-import { setupLSPs } from './lsp'
+import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
 import _, { uniqueId } from 'lodash'
@@ -35,6 +35,8 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
+import { authPackage, refreshTokens } from './auth'
+
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
@@ -48,6 +50,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 if (require('electron-squirrel-startup')) {
     app.quit()
 }
+
+let main_window: Electron.BrowserWindow
 
 // Remove holded defaults
 if (process.platform === 'darwin')
@@ -87,7 +91,7 @@ function logError(error: any) {
             'utf8'
         )
         const body = {
-            name: app.getPath('userData'),
+            name: app.getPath('userData').replace(/ /g, '\\ '),
             log: encodeURIComponent(logFile),
             error: error.toString(),
         }
@@ -111,7 +115,7 @@ const createWindow = () => {
     const width = 1500,
         height = 800
     // Create the browser window.
-    const main_window = new BrowserWindow({
+    main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
             ? {
                   titleBarStyle: 'hidden',
@@ -155,6 +159,17 @@ const createWindow = () => {
     ipcMain.handle('close', () => {
         app.quit()
     })
+
+    ipcMain.handle(
+        'setCookies',
+        async (
+            event: IpcMainInvokeEvent,
+            cookieObject: { url: string; name: string; value: string }
+        ) => {
+            await main_window.webContents.session.cookies.set(cookieObject)
+        }
+    )
+
     ipcMain.handle('minimize', () => {
         main_window.minimize()
     })
@@ -162,6 +177,9 @@ const createWindow = () => {
     ipcMain.handle('return_home_dir', () => {
         return machineIdSync()
     })
+
+    // Sets up auth stuff here
+    authPackage()
 
     // check if store has uploadPreferences, if not, then ask the user for them
     if (store.get('uploadPreferences') == undefined) {
@@ -775,7 +793,7 @@ const createWindow = () => {
             menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
         }
     )
-
+    
     ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
         const template: MenuItemConstructorOptions[] = [
             {
@@ -888,6 +906,12 @@ const createWindow = () => {
         }
         return null
     })
+
+    // click on the terminal link
+    ipcMain.handle('terminal-click-link', (event, data) => {
+        shell.openExternal(data);
+    })
+
     setupLSPs(store)
     const projectPathObj = store.get('projectPath')
     if (
@@ -933,6 +957,60 @@ const modifyHeaders = () => {
         }
     )
 }
+
+todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
+    function check() {
+        if (showingDialog) {
+            setTimeout(check, 1000)
+        } else {
+            showingDialog = true
+            // ask the user if they want to update
+            const iconPath = path.join(
+                __dirname,
+                'assets',
+                'icon',
+                'icon128.png'
+            )
+            var options = {
+                type: 'question',
+                buttons: ['&Accept', '&Cancel'],
+                message: `Accept update?`,
+                icon: iconPath,
+                normalizeAccessKeys: true,
+                detail: `New update available for Cursor! New features and bug fixes (only takes 10-20 seconds)`,
+            }
+
+            const win = BrowserWindow.getFocusedWindow()!
+            dialog
+                .showMessageBox(win, options)
+                .then((choice: any) => {
+                    showingDialog = false
+                    if (choice.response == 0) {
+                        setTimeout(() => {
+                            // First we clear the lsp store
+                            lspStore(store).clear()
+
+                            // Then we quit and install
+                            todesktop.autoUpdater.restartAndInstall()
+                        }, 100)
+                    }
+                })
+                .catch((err: any) => {})
+        }
+    }
+
+    check()
+})
+app.on('ready', function () {
+    if (isAppInApplicationsFolder) {
+        if (app.isPackaged) {
+            todesktop.autoUpdater.checkForUpdates()
+            setInterval(() => {
+                todesktop.autoUpdater.checkForUpdates()
+            }, 1000 * 60 * 15)
+        }
+    }
+})
 
 app.on('ready', modifyHeaders)
 app.on('ready', createWindow)

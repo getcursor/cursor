@@ -440,6 +440,23 @@ export function MarkdownPopup({
                             className="markdownpopup__content"
                             ref={reactMarkdownRef}
                         >
+                            {/*                             <Markdown
+                                options={{
+                                    overrides: {
+                                        a: {
+                                            component: CustomLink,
+                                        },
+                                        pre: {
+                                            component: PreBlock,
+                                        },
+                                        code: {
+                                            component: CodeBlock,
+                                        } 
+                                    }
+                                }}
+                            >
+                                {formattedMessage}
+                            </Markdown> */}
                             <ReactMarkdown
                                 components={{
                                     pre: PreBlock,
@@ -592,6 +609,9 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
         placeholder = 'Instructions for code to generate...'
     } else if (getMsgType == 'chat_edit') {
         placeholder = 'Instructions for editing the current file...'
+    } else {
+        // TODO - this case should not exist
+        placeholder = 'Chat about the current file/selection...'
     }
 
     const builder = useRef<ContextBuilder>()
