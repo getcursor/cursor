@@ -274,9 +274,10 @@ export async function getPayload({
     // hack
     dispatch(updateLastUserMessageMsgType(null))
 
-    let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
+    let oaiKey: string | undefined | null =
+        state.settingsState.settings.openAIKey
     if (oaiKey == null || oaiKey === '') {
-       oaiKey = null; 
+        oaiKey = null
     }
     const userRequest = {
         // Core request
