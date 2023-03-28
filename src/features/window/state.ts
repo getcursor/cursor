@@ -1,6 +1,7 @@
 import { Action } from '@reduxjs/toolkit'
 import { TransactionSpec } from '@codemirror/state'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
+import { Languages } from '../../i18n';
 import { v4 as uuidv4 } from 'uuid'
 
 export interface File {
@@ -301,6 +302,7 @@ export interface Settings {
     contextType: string
     textWrapping: string
     tabSize?: string
+    language: Languages
 }
 
 export interface SettingsState {
@@ -402,6 +404,7 @@ export const initialSettingsState = {
         contextType: 'none',
         textWrapping: 'disabled',
         tabSize: undefined,
+        language: 'English',
     },
 }
 

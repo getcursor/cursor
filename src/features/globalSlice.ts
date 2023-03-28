@@ -91,7 +91,7 @@ import { getPane } from './selectors'
 import posthog from 'posthog-js'
 import { removeEditor } from './codemirror/codemirrorSlice'
 import { initializeChatState } from './chat/chatThunks'
-
+import { init as initI18n } from '../i18n';
 // export const monitorUploadProgress = createAsyncThunk(
 //     'global/monitorUploadProgress',
 //     async (args: null, { getState, dispatch }) => {
@@ -728,6 +728,7 @@ export const initState = createAsyncThunk(
 
         let settings = await connector.initSettings()
         dispatch(changeSettingsNoSideffect(settings))
+        initI18n(settings.language);
 
         if (config != null && config.defaultFolder) {
             await dispatch(trulyOpenFolder(config.defaultFolder))

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import * as ssel from '../features/settings/settingsSelectors'
 import {
@@ -28,9 +29,12 @@ import {
 } from '../features/lsp/languageServerSelector'
 import { State } from '../features/window/state'
 
+import { localeOptions, Languages } from '../i18n';
+
 import Modal from 'react-modal'
 
 export function SettingsPopup() {
+    const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch()
     const settings = useAppSelector(ssel.getSettings)
     const isSettingsOpen = useAppSelector(ssel.getSettingsIsOpen)
@@ -93,14 +97,14 @@ export function SettingsPopup() {
                         >
                             <i className="fas fa-times"></i>
                         </div>
-                        <div className="settings__title">SETTINGS</div>
+                        <div className="settings__title">{t("SETTINGS")}</div>
                         <div className="settings__content">
                             <div className="settings__item">
                                 <div className="settings__item_title">
-                                    Key Bindings
+                                    {t("Key Bindings")}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls whether to use vim, emacs, or none
+                                    {t("Controls whether to use vim, emacs, or none")}
                                 </div>
                                 <Dropdown
                                     options={['none', 'vim', 'emacs']}
@@ -116,11 +120,11 @@ export function SettingsPopup() {
                             </div>
 
                             <div className="settings__item">
-                                <div className="settings__item_title">
-                                    Tab Size
+                                <div className="settings__item_title">                                    
+                                    {t("Tab Size")}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls the tab size
+                                    {t("Controls the tab size")}
                                 </div>
                                 <Dropdown
                                     options={['2', '4', '8']}
@@ -136,11 +140,11 @@ export function SettingsPopup() {
                             </div>
 
                             <div className="settings__item">
-                                <div className="settings__item_title">
-                                    Text Wrapping
+                                <div className="settings__item_title">                                    
+                                    {t("Text Wrapping")}
                                 </div>
                                 <div className="settings__item_description">
-                                    Controls whether text wrapping is enabled
+                                    {t("Controls whether text wrapping is enabled")}
                                 </div>
                                 <Dropdown
                                     options={['enabled', 'disabled']}
@@ -152,6 +156,28 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.textWrapping}
+                                />
+                            </div>
+
+                            <div className="settings__item">
+                                <div className="settings__item_title">                                    
+                                    {t("Languages")}
+                                </div>
+                                <div className="settings__item_description">                                    
+                                    {t("Controls whether text wrapping is enabled")}
+                                </div>
+                                <Dropdown
+                                    options={Object.keys(localeOptions)}
+                                    onChange={(e) => {
+                                        const lang = e.value as Languages;
+                                        i18n.changeLanguage(localeOptions[lang]);
+                                        dispatch(                                            
+                                            changeSettings({
+                                                language: lang,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.language}
                                 />
                             </div>
 
@@ -174,6 +200,7 @@ export function SettingsPopup() {
 }
 
 function CopilotPanel() {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch()
     const { signedIn, enabled } = useAppSelector(copilotStatus)
     const [localState, setLocalState] = useState<
@@ -237,47 +264,47 @@ function CopilotPanel() {
         )
     } else if (localState == 'signingIn') {
         currentPanel = (
-            <div className="copilot__signin">
-                Please click this link:&nbsp;&nbsp;
+            <div className="copilot__signin">                
+                {t("Please click this link:")}&nbsp;&nbsp;
                 <a href={localData?.url} target="_blank">
                     {localData?.url}
                 </a>
                 <br />
-                Enter this code: {localData?.code}
-                <br />
-                Click here when done:
-                <button onClick={tryFinishSignIn}>Done</button>
+                {t("Enter this code:")} {localData?.code}
+                <br />                
+                {t("Click here when done:")}
+                <button onClick={tryFinishSignIn}>{t("Done")}</button>
             </div>
         )
     } else if (localState == 'signInFailed') {
         currentPanel = (
-            <div className="copilot__signin">
-                Sign in failed. Please try again.
+            <div className="copilot__signin">                
+                {t("Sign in failed. Please try again.")}
                 {loading ? (
-                    <p>Loading...</p>
+                    <p>{t("Loading...")}</p>
                 ) : (
-                    <button onClick={trySignIn}>Sign in</button>
+                    <button onClick={trySignIn}>{t("Sign in")}</button>
                 )}
             </div>
         )
     } else {
         currentPanel = (
             <div className="copilot__signin">
-                Currently signed in <br />
+                {t("Currently signed in")} <br />
                 {enabled ? (
-                    <button onClick={disableCopilot}>Disable</button>
+                    <button onClick={disableCopilot}>{t("Disable")}</button>
                 ) : (
-                    <button onClick={enableCopilot}>Enable</button>
+                    <button onClick={enableCopilot}>{t("Enable")}</button>
                 )}
                 <br />
-                <button onClick={signOut}>Sign out</button>
+                <button onClick={signOut}>{t("Sign out")}</button>
             </div>
         )
     }
 
     return (
         <div className="settings__item">
-            <div className="settings__item_title">Copilot</div>
+            <div className="settings__item_title">{t("Copilot")}</div>
             {currentPanel}
         </div>
     )
@@ -352,6 +379,7 @@ function CopilotPanel() {
 // }
 
 function LanguageServerPanel({ languageName }: { languageName: string }) {
+    const { t } = useTranslation();
     const dispatch = useAppDispatch()
     const languageState = useAppSelector(languageServerStatus(languageName))
 
@@ -384,9 +412,9 @@ function LanguageServerPanel({ languageName }: { languageName: string }) {
                 </div>
                 <div className="copilot__signin">
                     {languageRunning ? (
-                        <button onClick={stopServer}>Stop</button>
+                        <button onClick={stopServer}>{t("Stop")}</button>
                     ) : (
-                        <button onClick={runServer}>Run</button>
+                        <button onClick={runServer}>{t("Run")}</button>
                     )}
                 </div>
             </div>
@@ -394,7 +422,7 @@ function LanguageServerPanel({ languageName }: { languageName: string }) {
     } else {
         container = (
             <div className="copilot__signin">
-                <button onClick={installServer}>Install</button>
+                <button onClick={installServer}>{t("Install")}</button>
             </div>
         )
     }
@@ -402,7 +430,7 @@ function LanguageServerPanel({ languageName }: { languageName: string }) {
     return (
         <div className="settings__item">
             <div className="settings__item_title">
-                {languageName} Language Server
+                {languageName} {t("Language Server")}
             </div>
             {container}
         </div>
