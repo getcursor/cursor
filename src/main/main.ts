@@ -793,7 +793,7 @@ const createWindow = () => {
             menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
         }
     )
-    
+
     ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
         const template: MenuItemConstructorOptions[] = [
             {
@@ -909,7 +909,7 @@ const createWindow = () => {
 
     // click on the terminal link
     ipcMain.handle('terminal-click-link', (event, data) => {
-        shell.openExternal(data);
+        shell.openExternal(data)
     })
 
     setupLSPs(store)

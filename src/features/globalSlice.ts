@@ -1254,7 +1254,11 @@ const globalSlice = createSlice({
         },
         moveDraggingTabToPane(
             stobj: Object,
-            action: PayloadAction<{ paneId: number; hoverState: HoverState, tabPosition: number }>
+            action: PayloadAction<{
+                paneId: number
+                hoverState: HoverState
+                tabPosition: number
+            }>
         ) {
             const state = <State>stobj
             const { paneId, hoverState, tabPosition } = action.payload
