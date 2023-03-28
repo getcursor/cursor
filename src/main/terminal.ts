@@ -3,8 +3,12 @@ import * as pty from 'node-pty'
 
 import { ipcMain } from 'electron'
 
-export function setupTerminal(mainWindow: any, rootPath?: string) {
-    const shells =
+export function setupTerminal(
+    mainWindow: any,
+    newTerminalId: number,
+    rootPath?: string
+) {
+    let shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
     const filteredEnv: { [key: string]: string } = Object.entries(
         process.env
@@ -35,16 +39,26 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
         }
     }
 
-    if (ptyProcess == null) return
-    ipcMain.handle('terminal-into', (event, data) => {
-        ptyProcess.write(data)
+    if (ptyProcess == null) {
+        console.log(`Failed to create terminal with id: ${newTerminalId}`)
+        return
+    }
+
+    ipcMain.handle(`terminal-into-${newTerminalId}`, (event, data) => {
+        if (data != null && data !== '') {
+            ptyProcess.write(data)
+        }
+    })
+
+    ipcMain.handle(`terminal-resize-${newTerminalId}`, (event, size) => {
+        ptyProcess.resize(size.cols, size.rows)
+    })
+
+    ipcMain.handle(`terminal-sigcont-${newTerminalId}`, (event) => {
+        ptyProcess.kill('SIGCONT')
     })
 
     ptyProcess.on('data', (data: any) => {
-        mainWindow.webContents.send('terminal-incData', data)
-    })
-
-    ipcMain.handle('terminal-resize', (event, size) => {
-        ptyProcess.resize(size.cols, size.rows)
+        mainWindow.webContents.send(`terminal-incData-${newTerminalId}`, data)
     })
 }

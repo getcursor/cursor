@@ -244,7 +244,7 @@ body {
 }
 
 .titlebar__ai_button:hover,
-..titlebar__right_button:hover {
+.titlebar__right_button:hover {
     cursor: pointer;
 }
 
@@ -2412,11 +2412,12 @@ free servers .disabled_command .shortcut__block {
 
 .terminalContainer {
     width: 100%;
-    padding: 8px 18px;
+    padding: 2px 18px;
 }
 
 .terminalInnerContainer {
     overflow: clip;
+    flex-grow: 1;
 }
 
 .terminalContainer .header {
@@ -2436,6 +2437,49 @@ free servers .disabled_command .shortcut__block {
     color: #bbb;
     flex-grow: 1;
     font-size: 12px;
+}
+
+.terminal-content {
+    display: flex;
+    height: 100%;
+  }
+  
+.terminal-tabs {
+    width: 150px;
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+  
+.terminal-tab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.terminal-tab.active {
+    background-color: var(--title-bar-background);
+}
+
+.terminal-tab:hover {
+    background-color: var(--tab-not-active)
+}
+
+.close-tab-btn {
+    background-color: transparent;
+    border: none;
+    color: #f1f1f1;
+    font-size: 12px;
+    cursor: pointer;
+}
+  
+.createButton {
+    color: #bbb;
+    font-size: 18px;
+    margin-right: 10px;
 }
 
 .closeButton {

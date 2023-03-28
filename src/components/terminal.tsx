@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
@@ -8,11 +8,11 @@ import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { FullState } from '../features/window/state'
 import * as gs from '../features/globalSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faPlus, faTerminal } from '@fortawesome/free-solid-svg-icons'
 import { throttleCallback } from './componentUtils'
 import { faChevronDown, faChevronUp } from '@fortawesome/pro-regular-svg-icons'
 
-export function XTermComponent({ height }: { height: number }) {
+export function XTermComponent({ height, id }: { height: number; id: number }) {
     const terminalRef = useRef<HTMLDivElement>(null)
     const searchBarInputRef = useRef<HTMLInputElement>(null)
     const terminal = useRef<Terminal | null>(null)
@@ -25,10 +25,18 @@ export function XTermComponent({ height }: { height: number }) {
     )
     const searchAddon = useRef<SearchAddon>(new SearchAddon())
     const [searchBarOpen, setSearchBarOpen] = React.useState(false)
+    const terminalOpenSelector = useAppSelector(
+        (state: FullState) => state.global.terminalOpen
+    )
 
-    const handleIncomingData = (e: any, data: any) => {
-        terminal.current!.write(data)
-    }
+    const handleIncomingData = useCallback(
+        (e: { id: number }, data: any) => {
+            if (e.id === id && terminal.current) {
+                terminal.current.write(data)
+            }
+        },
+        [id]
+    )
 
     useEffect(() => {
         terminal.current = new Terminal({
@@ -38,7 +46,7 @@ export function XTermComponent({ height }: { height: number }) {
             },
         })
         terminal.current.onResize((size: { cols: number; rows: number }) => {
-            connector.terminalResize(size)
+            connector.terminalResize(id, size)
         })
 
         terminal.current.loadAddon(fitAddon.current)
@@ -47,12 +55,12 @@ export function XTermComponent({ height }: { height: number }) {
 
         if (terminalRef.current) {
             terminal.current.open(terminalRef.current)
+            // Send a single newline character to the terminal when it is first opened
+            connector.terminalInto(id, '\n')
         }
 
-        connector.terminalInto('\n')
-
         terminal.current.onData((e) => {
-            connector.terminalInto(e)
+            connector.terminalInto(id, e)
         })
 
         terminal.current.attachCustomKeyEventHandler((e) => {
@@ -66,16 +74,18 @@ export function XTermComponent({ height }: { height: number }) {
             return true
         })
 
-        connector.registerIncData(handleIncomingData)
+        connector.registerIncData(id, handleIncomingData)
 
         // Make the terminal's size and geometry fit the size of #terminal-container
         fitAddon.current.fit()
 
         return () => {
-            if (terminal.current != null) terminal.current.dispose()
-            connector.deregisterIncData(handleIncomingData)
+            if (terminal.current) {
+                terminal.current.dispose()
+            }
+            connector.deregisterIncData(id, handleIncomingData)
         }
-    }, [terminalRef])
+    }, [terminalRef, id, handleIncomingData])
 
     useEffect(() => {
         if (terminal.current != null) {
@@ -106,6 +116,21 @@ export function XTermComponent({ height }: { height: number }) {
             searchAddon.current.findPrevious(searchBarInputRef.current.value)
         }
     }
+    // Refresh the terminal display when the component is re-rendered
+    useEffect(() => {
+        if (terminal.current != null) {
+            fitAddon.current.fit()
+        }
+    }, [id])
+
+    useEffect(() => {
+        if (terminalOpenSelector) {
+            // The terminal was just opened, so focus on the XTermComponent
+            if (terminal.current) {
+                terminal.current.focus()
+            }
+        }
+    }, [terminalOpenSelector])
 
     return (
         <div
@@ -158,12 +183,99 @@ export function XTermComponent({ height }: { height: number }) {
         </div>
     )
 }
+
+type TerminalWrapper = {
+    id: number
+}
+
+type TerminalTabsProps = {
+    terminals: TerminalWrapper[]
+    activeTerminal: TerminalWrapper
+    switchTerminal: (terminal: TerminalWrapper) => void
+    removeTerminal: (terminal: TerminalWrapper) => void
+    rootFolder: string
+}
+
+const TerminalTabs: React.FC<TerminalTabsProps> = ({
+    terminals,
+    activeTerminal,
+    switchTerminal,
+    removeTerminal,
+    rootFolder,
+}) => {
+    return (
+        <div className="terminal-tabs">
+            {terminals.map((terminal: TerminalWrapper) => (
+                <div
+                    className={`terminal-tab${
+                        activeTerminal.id === terminal.id ? ' active' : ''
+                    }`}
+                    key={terminal.id}
+                    onClick={() => switchTerminal(terminal)}
+                >
+                    <FontAwesomeIcon icon={faTerminal} />
+                    <span>{rootFolder}</span>
+                    <button
+                        className="close-tab-btn"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            removeTerminal(terminal)
+                        }}
+                    >
+                        <FontAwesomeIcon
+                            icon={faTimes}
+                            style={{ fontSize: '1.1rem' }}
+                        />
+                    </button>
+                </div>
+            ))}
+        </div>
+    )
+}
+
 export const BottomTerminal: React.FC = () => {
     const dispatch = useAppDispatch()
     const terminalOpenSelector = useAppSelector(
         (state: FullState) => state.global.terminalOpen
     )
+    const rootPathSelector = useAppSelector(
+        (state: FullState) => state.global.rootPath
+    )
+
+    const [terminals, setTerminals] = React.useState([{ id: 0 }])
+    const [activeTerminal, setActiveTerminal] = React.useState(terminals[0])
+
     const [terminalOpen, setTerminalOpen] = React.useState(false)
+
+    const addTerminal = () => {
+        if (terminals.length >= 10) {
+            return
+        }
+        connector.createNewTerminal()
+        const newTerminal = { id: Math.max(...terminals.map((t) => t.id)) + 1 }
+        setTerminals([...terminals, newTerminal])
+        setActiveTerminal(newTerminal)
+    }
+
+    const removeTerminal = (terminalToRemove: TerminalWrapper) => {
+        if (terminals.length > 1) {
+            setTerminals(
+                terminals.filter(
+                    (terminal) => terminal.id !== terminalToRemove.id
+                )
+            )
+            if (activeTerminal.id === terminalToRemove.id) {
+                setActiveTerminal(terminals[0] || {})
+            }
+        } else {
+            console.log('Cannot remove all terminals!')
+        }
+    }
+
+    const switchTerminal = (terminal: TerminalWrapper) => {
+        setActiveTerminal(terminal)
+        connector.sendSigCont(terminal.id)
+    }
 
     useEffect(() => {
         if (terminalOpenSelector) {
@@ -241,6 +353,13 @@ export const BottomTerminal: React.FC = () => {
                         <div className="header">
                             <div className="terminalTitle">TERMINAL</div>
                             <button
+                                className="createButton"
+                                onClick={addTerminal}
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                            </button>
+
+                            <button
                                 className="closeButton"
                                 onClick={() => {
                                     dispatch(gs.closeTerminal())
@@ -249,7 +368,29 @@ export const BottomTerminal: React.FC = () => {
                                 <FontAwesomeIcon icon={faTimes} />
                             </button>
                         </div>
-                        <XTermComponent height={terminalInnerContainerHeight} />
+                        <div className="terminal-content">
+                            {terminals.map(
+                                (terminal) =>
+                                    activeTerminal.id === terminal.id && (
+                                        <XTermComponent
+                                            key={terminal.id}
+                                            height={
+                                                terminalInnerContainerHeight
+                                            }
+                                            id={terminal.id}
+                                        />
+                                    )
+                            )}
+                            <TerminalTabs
+                                terminals={terminals}
+                                activeTerminal={activeTerminal}
+                                switchTerminal={switchTerminal}
+                                removeTerminal={removeTerminal}
+                                rootFolder={
+                                    rootPathSelector?.split('/').pop() ?? ''
+                                }
+                            />
+                        </div>
                     </div>
                 </div>
             ) : null}

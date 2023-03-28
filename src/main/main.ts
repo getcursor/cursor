@@ -940,27 +940,40 @@ const createWindow = () => {
         return null
     })
 
+    let terminalCounter = 0
+
+    function createTerminal() {
+        const projectPathObj = store.get('projectPath')
+        if (
+            typeof projectPathObj === 'object' &&
+            projectPathObj !== null &&
+            'defaultFolder' in projectPathObj
+        ) {
+            const projectPath = projectPathObj.defaultFolder
+            if (typeof projectPath === 'string') {
+                setupTerminal(main_window, terminalCounter, projectPath)
+            } else {
+                setupTerminal(main_window, terminalCounter)
+            }
+        } else {
+            setupTerminal(main_window, terminalCounter)
+        }
+        terminalCounter++
+        return terminalCounter
+    }
+
+    ipcMain.handle('create-new-terminal', (event) => {
+        const id = createTerminal()
+        return id
+    })
+
     // click on the terminal link
     ipcMain.handle('terminal-click-link', (event, data) => {
         shell.openExternal(data)
     })
 
     setupLSPs(store)
-    const projectPathObj = store.get('projectPath')
-    if (
-        typeof projectPathObj === 'object' &&
-        projectPathObj !== null &&
-        'defaultFolder' in projectPathObj
-    ) {
-        const projectPath = projectPathObj.defaultFolder
-        if (typeof projectPath === 'string') {
-            setupTerminal(main_window, projectPath)
-        } else {
-            setupTerminal(main_window)
-        }
-    } else {
-        setupTerminal(main_window)
-    }
+    createTerminal()
 
     setupSearch()
     log.info('setting up index')

@@ -181,16 +181,34 @@ const electronConnector = {
     registerOpenRemotePopup: (callback: Callback) =>
         ipcRenderer.on('openRemotePopup', callback),
 
-    registerIncData(callback: (event: any, data: any) => void) {
-        ipcRenderer.on('terminal-incData', callback)
+    registerIncData(id: number, callback: (event: any, data: any) => void) {
+        ipcRenderer.on(`terminal-incData-${id}`, (event: any, data: any) => {
+            callback({ ...event, id }, data)
+        })
     },
-    deregisterIncData(callback: (event: any, data: any) => void) {
-        ipcRenderer.removeListener('terminal-incData', callback)
+    deregisterIncData(id: number, callback: (event: any, data: any) => void) {
+        ipcRenderer.removeListener(
+            `terminal-incData-${id}`,
+            (event: any, data: any) => {
+                if (event.id === id) {
+                    callback(event, data)
+                }
+            }
+        )
     },
-    terminalInto: (data: any) => ipcRenderer.invoke('terminal-into', data),
+    terminalInto: (terminalId: number, data: any) =>
+        ipcRenderer.invoke(`terminal-into-${terminalId}`, data),
     terminalClickLink: (data: any) =>
         ipcRenderer.invoke('terminal-click-link', data),
-    terminalResize: (data: any) => ipcRenderer.invoke('terminal-resize', data),
+    createNewTerminal: async () => {
+        const terminalId = await ipcRenderer.invoke('create-new-terminal')
+        return terminalId
+    },
+    sendSigCont(terminalId: number) {
+        ipcRenderer.invoke(`terminal-sigcont-${terminalId}`)
+    },
+    terminalResize: (terminalId: number, data: any) =>
+        ipcRenderer.invoke(`terminal-resize-${terminalId}`, data),
 
     registerFileWasAdded: (callback: Callback) =>
         ipcRenderer.on('fileWasAdded', callback),
@@ -407,7 +425,6 @@ const electronConnector = {
         }) => void
     ) {
         ipcRenderer.on('updateAuthStatus', (event, data) => {
-            console.log('UPDATING AUTH STATUS', data)
             callback(data)
         })
     },
