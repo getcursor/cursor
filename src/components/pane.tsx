@@ -65,6 +65,7 @@ export function Pane({ paneId }: { paneId: number }) {
     function xyToPaneHoverState(x: number, y: number) {
         if (!paneDiv.current) return HoverState.None
         const rect = paneDiv.current!.getBoundingClientRect()
+
         const horizMargin = rect.width / 4
         const vertMargin = rect.height / 4
         const xInDiv = x - rect.left

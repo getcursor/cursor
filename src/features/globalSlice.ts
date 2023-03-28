@@ -230,7 +230,7 @@ export const openFile = createAsyncThunk(
         const { fileId } = result.payload
         await dispatch(selectFile(fileId))
 
-        const tabId = getActiveTabId((<FullState>getState()).global)!
+        const tabId: number = getActiveTabId((<FullState>getState()).global)!
         if (selectionRegions != null) {
             const { start, end } = selectionRegions[0]
             dispatch(
@@ -279,6 +279,7 @@ export const saveFile = createAsyncThunk(
             }
         }
 
+        await connector.saveFile(path, cachedFile.contents)
         return { fileId }
     }
 )
@@ -294,7 +295,7 @@ export const forceSaveAndClose = createAsyncThunk(
 export const deleteFolder = createAsyncThunk(
     'global/deleteFolder',
     async (folderId: number | null, { getState }) => {
-        const state = (<FullState>getState()).global
+        const state: any = (<FullState>getState()).global
         if (folderId == null) {
             folderId = state.rightClickId
             if (!folderId) {
@@ -472,9 +473,11 @@ export const rightClickFolder = createAsyncThunk(
 export const loadFolder = createAsyncThunk(
     'global/loadFolder',
     async (
-        { folderId }: { folderId: number; goDeep: boolean },
+        { folderId, goDeep }: { folderId: number; goDeep: boolean },
         { getState }
     ) => {
+        void goDeep // unimplemented
+
         const state: State = (<FullState>getState()).global
 
         if (state.folders[folderId].loaded) return null
@@ -508,7 +511,7 @@ export const openRemoteFolder = createAsyncThunk(
         })
 
         if (!res) {
-            dispatch(setBadConnection(null))
+            dispatch(setBadConnection())
             return null
         }
 
@@ -698,7 +701,7 @@ export const setIsNotFirstTimeWithSideEffect = createAsyncThunk(
 
 export const initState = createAsyncThunk(
     'global/initState',
-    async (_args: null, { dispatch }) => {
+    async (args: null, { dispatch }) => {
         const config = await connector.getProject()
         connector.refreshTokens()
 
@@ -898,6 +901,7 @@ const globalSlice = createSlice({
                 if (action.payload == null) {
                     return
                 }
+                // const fileid = action.payload as number
                 commitFileRename(state)
             })
             .addCase(rightClickFile.fulfilled, (stobj, action) => {
@@ -1001,10 +1005,7 @@ const globalSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
-        insertMultiTabAndSetActive(
-            stobj: object,
-            _action: PayloadAction<null>
-        ) {
+        insertMultiTabAndSetActive(stobj: object) {
             const state = <State>stobj
             const paneId = getActivePaneID(state)!
 
@@ -1027,7 +1028,7 @@ const globalSlice = createSlice({
             createCachedTabIfNotExists(state, tabid)
             setActiveTab(state, tabid)
         },
-        setMultiTabToDiff(stobj: object, _action: PayloadAction<null>) {
+        setMultiTabToDiff(stobj: object) {
             const state = <State>stobj
             const tabId = getActiveTabId(state)!
             const tab = state.tabs[tabId]
@@ -1228,7 +1229,7 @@ const globalSlice = createSlice({
             const tabId = action.payload
             state.draggingTabId = tabId
         },
-        stopDraggingTab: (stobj: object, action: PayloadAction<null>) => {
+        stopDraggingTab: (stobj: object) => {
             const state = <State>stobj
             state.draggingTabId = null
         },
@@ -1390,10 +1391,10 @@ const globalSlice = createSlice({
         openNoAuthRateLimit(state: State) {
             state.showNoAuthRateLimit = true
         },
-        closeError(state: State, action: PayloadAction<null>) {
+        closeError(state: State) {
             state.showError = false
         },
-        openError(state: State, action: PayloadAction<null>) {
+        openError(state: State) {
             state.showError = true
         },
         setVersion(state: State, action: PayloadAction<string>) {
@@ -1422,7 +1423,7 @@ const globalSlice = createSlice({
                 parentFolderPath
             )!
             const newFileId = insertNewFile(state, parentFolderId, fileName)
-            const file = state.files[newFileId]
+            // const file = state.files[newFileId]
             delete state.fileCache[newFileId]
         },
         afterFileWasDeleted(state: State, action: PayloadAction<string>) {
@@ -1505,10 +1506,10 @@ const globalSlice = createSlice({
             const folder = state.folders[folderId]
             folder.isOpen = isOpen
         },
-        closeRemotePopup(state: State, action: PayloadAction<null>) {
+        closeRemotePopup(state: State) {
             state.showRemotePopup = false
         },
-        openRemotePopup(state: State, action: PayloadAction<null>) {
+        openRemotePopup(state: State) {
             state.showRemotePopup = true
         },
         setRemoteCommand(state: State, action: PayloadAction<string>) {
@@ -1517,7 +1518,7 @@ const globalSlice = createSlice({
         setRemotePath(state: State, action: PayloadAction<string>) {
             state.remotePath = action.payload
         },
-        setBadConnection(state: State, action: PayloadAction<null>) {
+        setBadConnection(state: State) {
             state.remoteBad = true
         },
         afterSelectFile(
@@ -1531,13 +1532,13 @@ const globalSlice = createSlice({
         setIsNotFirstTime(state: State, action: PayloadAction<boolean>) {
             state.isNotFirstTime = action.payload
         },
-        openTerminal(state: State, action: PayloadAction<null>) {
+        openTerminal(state: State) {
             state.terminalOpen = true
         },
-        closeTerminal(state: State, action: PayloadAction<null>) {
+        closeTerminal(state: State) {
             state.terminalOpen = false
         },
-        toggleTerminal(state: State, action: PayloadAction<null>) {
+        toggleTerminal(state: State) {
             state.terminalOpen = !state.terminalOpen
         },
     },

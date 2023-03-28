@@ -112,8 +112,8 @@ connector.registerFileWasUpdated((evt: any, payload: any) => {
 })
 
 // @ts-ignore
-connector.registerOpenRemotePopup((evt: any, payload: any) => {
-    store.dispatch(gs.openRemotePopup(null))
+connector.registerOpenRemotePopup((_evt: any, _payload: any) => {
+    store.dispatch(gs.openRemotePopup())
 })
 
 /////////

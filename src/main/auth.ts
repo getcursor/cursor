@@ -122,16 +122,35 @@ export async function stripeUrlRequest(window: BrowserWindow) {
 export async function refreshTokens(event: IpcMainInvokeEvent) {
     const refreshToken = await storeWrapper.get('refreshToken')
 
-    const refreshOptions = {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-            grant_type: 'refresh_token',
-            client_id: clientId,
-            refresh_token: refreshToken,
-            // audience: API_AUDIENCE,
-            state: 'thisisatest',
-        }),
+    let refreshOptions = {}
+
+    if (refreshToken) {
+        refreshOptions = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                grant_type: 'refresh_token',
+                client_id: clientId,
+                refresh_token: refreshToken,
+                // audience: API_AUDIENCE,
+                state: 'thisisatest',
+            }),
+        }
+
+        const response = await fetch(
+            `https://${auth0Domain}/oauth/token`,
+            refreshOptions
+        )
+        const data = (await response.json()) as {
+            access_token: string
+            id_token: string
+        }
+
+        accessToken = data.access_token
+        profile = jwtDecode(data.id_token)
+    } else {
+        // No refresh token
+        //throw new Error('No available refresh token.')
     }
     const response = await fetch(
         `https://${auth0Domain}/oauth/token`,

@@ -30,7 +30,9 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
             })
             ptyProcess = res
             break
-        } catch (e) {}
+        } catch (e) {
+            // ignore errors
+        }
     }
 
     if (ptyProcess == null) return

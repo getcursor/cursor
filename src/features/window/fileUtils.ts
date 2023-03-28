@@ -376,6 +376,7 @@ export async function getContentsIfNeeded(state: State, fileid: number) {
         return cachedFile.contents
     } else {
         const path = getPathForFileId(state, fileid)
+        // @ts-ignore
         const contents = await connector.getFile(path)
         return contents
     }

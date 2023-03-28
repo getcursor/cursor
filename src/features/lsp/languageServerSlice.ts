@@ -1,9 +1,9 @@
 import { createAsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { LanguageServerClient, Language, LSLanguages } from './stdioClient'
+import { LanguageServerClient, LSLanguages } from './stdioClient'
 import { Text } from '@codemirror/state'
 
-import { posToOffset, offsetToPos } from './lspPlugin'
+import { offsetToPos } from './lspPlugin'
 import { getContentsIfNeeded, loadFileIfNeeded } from '../window/fileUtils'
 import { FullState, LanguageServerState } from '../window/state'
 import { URI } from 'vscode-uri'
@@ -98,6 +98,7 @@ export const startConnections = createAsyncThunk(
         dispatch(copilotChangeSignin(signedIn))
 
         const maybeRun = async (languageServerName: string) => {
+            // @ts-ignore
             const savedState = await connector.getLSState(languageServerName)
             if (savedState == null) return
 
@@ -150,7 +151,7 @@ export const killConnection = createAsyncThunk(
 
 export const killAllConnections = createAsyncThunk(
     'lsp/killAllConnections',
-    async (_args: null, { dispatch }) => {
+    async (args: null, { dispatch }) => {
         const futures = []
         for (const lspName in clientConnections) {
             futures.push(dispatch(killConnection(lspName)))

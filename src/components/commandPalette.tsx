@@ -178,7 +178,7 @@ const mainCommands: { [key in MainCommandIds]: Command } = {
         description: 'Open the integrated terminal',
         shortcut: ['Ctrl+`'],
         action: (dispatch: Dispatch<AnyAction>) => {
-            dispatch(openTerminal(null))
+            dispatch(openTerminal())
         },
     },
     ssh: {
@@ -187,7 +187,7 @@ const mainCommands: { [key in MainCommandIds]: Command } = {
         name: 'Open SSH Folder',
         description: 'Open a remote folder over ssh',
         action: (dispatch: Dispatch<AnyAction>) => {
-            dispatch(openRemotePopup(null))
+            dispatch(openRemotePopup())
         },
     },
     chatHistory: {
@@ -518,6 +518,7 @@ export function InnerCommandPalette({
                                         index: number
                                     ) => {
                                         const command = allCommands[obj.id]
+                                        const toret = null
                                         if (obj.clickable === null) {
                                             return (
                                                 <CommandResult

@@ -5,7 +5,6 @@ import {
     getContentsIfNeeded,
 } from '../window/fileUtils'
 import { FullState } from '../window/state'
-import { current } from '@reduxjs/toolkit'
 import { joinAdvanced } from '../../utils'
 import { badWords } from './badWords'
 

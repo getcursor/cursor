@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { findFileIdFromPath } from '../window/fileUtils'
 import { CommentFunction, CommentState, FullState } from '../window/state'
+
 import { API_ROOT, streamSource } from '../../utils'
 
 const initialState: CommentState = {

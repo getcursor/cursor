@@ -1,4 +1,5 @@
 import { StateEffect, StateField, Text } from '@codemirror/state'
+
 import { setDiff } from '../extensions/diff'
 import { EditorView } from '@codemirror/view'
 import { getDiagnostics, lintState, activeLintField } from './lint'

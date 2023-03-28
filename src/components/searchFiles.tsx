@@ -3,7 +3,7 @@ import { Combobox } from '@headlessui/react'
 import { getIconElement } from './filetree'
 import { openFile } from '../features/globalSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { getRootPath, searchAllFiles, searchFile } from '../features/selectors'
+import { getRootPath, searchAllFiles } from '../features/selectors'
 import { untriggerFileSearch } from '../features/tools/toolSlice'
 import { fileSearchTriggered } from '../features/tools/toolSelectors'
 

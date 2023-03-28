@@ -153,6 +153,7 @@ export const updateTestsForFile = createAsyncThunk(
 
         let cachedTests: TestData[] = []
         if (testIds.length == 0) {
+            // @ts-ignore
             const origTests = await connector.loadTests(fileName)
 
             if (origTests != null) {
@@ -494,8 +495,10 @@ export const newTestFile = createAsyncThunk(
     'testSlice/newTestFile',
     async (
         { fileName, testFileName }: { fileName: string; testFileName: string },
-        { dispatch }
+        { dispatch, getState }
     ) => {
+        const state = getState() as { test: TestState; global: State }
+
         dispatch(addTestFileMap({ fileName, testFileName }))
 
         // Creates the file if it doesn't exist

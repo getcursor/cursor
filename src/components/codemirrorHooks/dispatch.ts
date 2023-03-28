@@ -14,6 +14,7 @@ import { ReduxTransaction, LineChange } from '../../features/window/state'
 import { showBar } from '../../features/extensions/cmdZBar'
 
 import { reduxTransaction } from '../../features/extensions/utils'
+// import { showBar } from '../../features/extensions/cmdZBar'
 
 type TransactionFunction = CustomTransaction | CustomTransaction[]
 
@@ -354,7 +355,9 @@ function getTransaction(
 
 export const customDispatchEffect = StateEffect.define<CustomTransaction>()
 
+const runningaverage: number[] = []
 export function customDispatch(view: EditorView, tr: Transaction) {
+    const start = performance.now()
     // First we handle the original default transaction
     view.update([tr])
 

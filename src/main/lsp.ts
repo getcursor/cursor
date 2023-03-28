@@ -1,20 +1,16 @@
-import _ from 'lodash'
-
 import * as fs from 'fs'
 import * as cp from 'child_process'
 import * as rpc from 'vscode-jsonrpc/node'
 import * as path from 'path'
 import { promisify } from 'util'
-import { homedir, type } from 'os'
+import { type } from 'os'
 import { app, ipcMain, IpcMainInvokeEvent } from 'electron'
 import fetch from 'node-fetch'
 import AdmZip from 'adm-zip'
 import * as targz from 'targz'
-import { gzip, ungzip } from 'node-gzip'
+import { ungzip } from 'node-gzip'
 // Import uuid
 import { v4 as uuidv4 } from 'uuid'
-import { Transform } from 'stream'
-import * as LSP from 'vscode-languageserver-protocol'
 import * as tar from 'tar'
 import {
     LSPRequestMap,
@@ -433,7 +429,7 @@ class LSPManager {
                     ],
                 }
             }
-            case 'c': {
+            case 'c':
                 const cVersion = await getLatestVersion(
                     'https://api.github.com/repos/clangd/clangd/releases/latest'
                 )
@@ -477,7 +473,6 @@ class LSPManager {
                     command: cLSPath,
                     args: [],
                 }
-            }
             case 'rust': {
                 const rustVersion = await getLatestVersion(
                     'https://api.github.com/repos/rust-analyzer/rust-analyzer/releases/latest'

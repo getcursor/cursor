@@ -6,8 +6,6 @@ import { setupTestIndexer } from './testIndexer'
 import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
-import _, { uniqueId } from 'lodash'
-
 import {
     app,
     shell,
@@ -35,7 +33,7 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { authPackage, refreshTokens } from './auth'
+import { authPackage } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
@@ -371,7 +369,7 @@ const createWindow = () => {
         store.set('settings', settings)
     })
 
-    ipcMain.handle('initSettings', (event: Event) => {
+    ipcMain.handle('initSettings', (_event: Event) => {
         if (store.has('settings')) {
             log.info('found settings')
             return store.get('settings')
@@ -380,7 +378,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('get_platform', function (event: any, arg: null) {
+    ipcMain.handle('get_platform', function (_event: any) {
         return process.platform
     })
 
@@ -461,7 +459,7 @@ const createWindow = () => {
     )
 
     log.info('setting up handle getClipboard')
-    ipcMain.handle('getClipboard', function (event: any, arg: null) {
+    ipcMain.handle('getClipboard', function (_event: any) {
         const clip = clipboard.readText()
         return clip
     })
@@ -470,7 +468,7 @@ const createWindow = () => {
         store.set('uploadPreferences', arg)
     })
 
-    ipcMain.handle('getUploadPreference', function (event: any, arg: null) {
+    ipcMain.handle('getUploadPreference', function (_event: any) {
         if (store.has('uploadPreferences')) {
             return store.get('uploadPreferences')
         } else {
@@ -478,7 +476,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('createTutorDir', function (event: any) {
+    ipcMain.handle('createTutorDir', function (_event: any) {
         const toCopyFrom = path.join(resourcesDir, 'tutor')
         const toCopyTo = path.join(app.getPath('home'), 'cursor-tutor')
 
@@ -568,7 +566,7 @@ const createWindow = () => {
         clipboard.writeText(arg)
     })
 
-    ipcMain.handle('getProject', function (event: Event) {
+    ipcMain.handle('getProject', function (_event: Event) {
         if (store.has('projectPath')) {
             const res = store.get('projectPath') as any
             return res
@@ -577,7 +575,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('getRemote', function (event: Event) {
+    ipcMain.handle('getRemote', function (_event: Event) {
         const ret = {
             remoteCommand: store.has('remoteCommand')
                 ? store.get('remoteCommand')
@@ -627,7 +625,7 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('get_version', function (event: Event) {
+    ipcMain.handle('get_version', function (_event: Event) {
         return app.getVersion()
     })
 
@@ -674,7 +672,7 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('check_learn_codebase', function (event: Event, arg: any) {
+    ipcMain.handle('check_learn_codebase', function (event: Event) {
         // ask the user if we can learn their codebase, if yes, send back true
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
         const options = {
@@ -689,14 +687,20 @@ const createWindow = () => {
 
         const win = BrowserWindow.getFocusedWindow()!
         showingDialog = true
-        dialog.showMessageBox(win, options).then((choice: any) => {
-            showingDialog = false
-            if (choice.response == 0)
-                event.sender.send('register_learn_codebase')
-        })
+        dialog
+            .showMessageBox(win, options)
+            .then((choice: any) => {
+                showingDialog = false
+                if (choice.response == 0) {
+                    event.sender.send('register_learn_codebase')
+                } else if (choice.response == 1) {
+                    // do nothing
+                }
+            })
+            .catch((_err: any) => {})
     })
 
-    ipcMain.handle('right_click_file', function (event: Event, arg: null) {
+    ipcMain.handle('right_click_file', function (event: Event) {
         const template: MenuItemConstructorOptions[] = [
             {
                 label: 'Rename',
@@ -722,7 +726,7 @@ const createWindow = () => {
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
     })
 
-    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
+    ipcMain.handle('right_click_tab', function (event: Event) {
         const template: MenuItemConstructorOptions[] = [
             {
                 label: 'Close All',
@@ -789,7 +793,7 @@ const createWindow = () => {
                                     event.sender.send('delete_folder_click')
                                 }
                             })
-                            .catch((err: any) => {})
+                            .catch((_err: any) => {})
                     },
                 },
             ]
@@ -887,7 +891,7 @@ const createWindow = () => {
     )
 
     // show the open folder dialog
-    ipcMain.handle('open_folder', function (event: any, arg: null) {
+    ipcMain.handle('open_folder', function (_event: any, _arg: null) {
         showingDialog = true
         const result = dialog.showOpenDialogSync(main_window, {
             properties: ['openDirectory'],
@@ -952,7 +956,7 @@ const modifyHeaders = () => {
     )
 }
 
-todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
+todesktop.autoUpdater.on('update-downloaded', (_ev, _info) => {
     function check() {
         if (showingDialog) {
             setTimeout(check, 1000)
@@ -975,18 +979,21 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
             }
 
             const win = BrowserWindow.getFocusedWindow()!
-            dialog.showMessageBox(win, options).then((choice: any) => {
-                showingDialog = false
-                if (choice.response == 0) {
-                    setTimeout(() => {
-                        // First we clear the lsp store
-                        lspStore(store).clear()
+            dialog
+                .showMessageBox(win, options)
+                .then((choice: any) => {
+                    showingDialog = false
+                    if (choice.response == 0) {
+                        setTimeout(() => {
+                            // First we clear the lsp store
+                            lspStore(store).clear()
 
-                        // Then we quit and install
-                        todesktop.autoUpdater.restartAndInstall()
-                    }, 100)
-                }
-            })
+                            // Then we quit and install
+                            todesktop.autoUpdater.restartAndInstall()
+                        }, 100)
+                    }
+                })
+                .catch((_err: any) => {})
         }
     }
 

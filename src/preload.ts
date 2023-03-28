@@ -239,7 +239,7 @@ const electronConnector = {
         return ipcRenderer.invoke('loadTests', blob)
     },
     getProject: () => ipcRenderer.invoke('getProject'),
-    saveProject: (data: object) => ipcRenderer.invoke('saveProject', data),
+    saveProject: (data: unknown) => ipcRenderer.invoke('saveProject', data),
 
     getClipboard: () => ipcRenderer.invoke('getClipboard', null),
 

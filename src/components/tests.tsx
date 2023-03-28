@@ -1,18 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import {
-    getCurrentFilePath,
-    getCurrentFileId,
-    getAllPaths,
-    getFileName,
-} from '../features/selectors'
+import { getCurrentFilePath, getAllPaths } from '../features/selectors'
 import { isTestModalVisible } from '../features/tests/testSelectors'
-import {
-    newTestFile,
-    requestTestFileName,
-    closeTestFileName,
-} from '../features/tests/testSlice'
-import { debounce } from 'lodash'
+import { newTestFile, closeTestFileName } from '../features/tests/testSlice'
 
 export function TestModal() {
     const dispatch = useAppDispatch()

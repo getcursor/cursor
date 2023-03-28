@@ -1,10 +1,4 @@
-import {
-    Settings,
-    FullState,
-    SettingsState,
-    LoggingState,
-} from '../window/state'
-import { createSelector } from 'reselect'
+import { FullState } from '../window/state'
 
 export const getFeedbackMessage = (state: FullState) =>
     state.loggingState.feedbackMessage

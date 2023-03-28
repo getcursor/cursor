@@ -1,7 +1,5 @@
 import { createAsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { getLanguageFromFilename } from '../extensions/utils'
 import {
-    Text,
     Transaction,
     TransactionSpec,
     EditorState,
@@ -9,24 +7,12 @@ import {
     Extension,
     EditorSelection,
 } from '@codemirror/state'
-import { getContentsIfNeeded, loadFileIfNeeded } from '../window/fileUtils'
+import { FullState, State } from '../window/state'
+import { EditorView } from '@codemirror/view'
 import {
-    FullState,
-    LanguageServerState,
-    State,
-    nextId,
-    nextValue,
-} from '../window/state'
-import { URI } from 'vscode-uri'
-import { EditorView, EditorViewConfig } from '@codemirror/view'
-import { setDiff } from '../extensions/diff'
-import {
-    useDispatchHook,
     customDispatch,
-    dontShowAnnotation,
     syncDispatch,
 } from '../../components/codemirrorHooks/dispatch'
-import { CodeMirror } from '../../components/codemirror-vim'
 
 interface UpsertEditor {
     tabId: number

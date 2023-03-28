@@ -380,7 +380,6 @@ export function doCloseTab(state: State, tabId: number) {
 
 export function doMoveToAdjacentPane(state: State, paneDirection: string) {
     const currentPaneId = getActivePaneID(state)!
-    // const currentPaneId = tab.paneId;
 
     // paneDirection is one of 'left', 'right', 'up', 'down'
     // find the adjacent pane in the given direction
@@ -476,45 +475,42 @@ export function doSelectFile(state: State, fileid: number) {
     setActiveTab(state, tabid)
     setSelectedFile(state, fileid)
 
+    function computeFirstIndents(candidateIndents: string[]) {
+        // convert all preceding tabs to spaces
+        const indentLengths = candidateIndents.map((line) => {
+            const indent = line.match(/^\s*/)
+            if (indent != null) {
+                return indent[0]
+            } else {
+                return ''
+            }
+        })
+
+        // compute the indent difference between the previous line and the current line
+        const firstIndents = indentLengths
+            .map((indent, index) => {
+                if (index === 0) {
+                    return null
+                }
+                const lastIndent = indentLengths[index - 1] as string
+                if (lastIndent.length == indent.length) {
+                    return null
+                } else if (lastIndent.length > indent.length) {
+                    return lastIndent.slice(
+                        -(lastIndent.length - indent.length)
+                    )
+                } else {
+                    return indent.slice(0, indent.length - lastIndent.length)
+                }
+            })
+            .filter((indent) => indent != null)
+
+        return firstIndents as string[]
+    }
+
     // the indenting logic
     if (file.indentUnit == null) {
         const contents = state.fileCache[fileid].contents
-
-        function computeFirstIndents(candidateIndents: string[]) {
-            // convert all preceding tabs to spaces
-            const indentLengths = candidateIndents.map((line) => {
-                const indent = line.match(/^\s*/)
-                if (indent != null) {
-                    return indent[0]
-                } else {
-                    return ''
-                }
-            })
-
-            // compute the indent difference between the previous line and the current line
-            const firstIndents = indentLengths
-                .map((indent, index) => {
-                    if (index === 0) {
-                        return null
-                    }
-                    const lastIndent = indentLengths[index - 1] as string
-                    if (lastIndent.length == indent.length) {
-                        return null
-                    } else if (lastIndent.length > indent.length) {
-                        return lastIndent.slice(
-                            -(lastIndent.length - indent.length)
-                        )
-                    } else {
-                        return indent.slice(
-                            0,
-                            indent.length - lastIndent.length
-                        )
-                    }
-                })
-                .filter((indent) => indent != null)
-
-            return firstIndents as string[]
-        }
 
         const lines = contents.split('\n')
         const numFromEitherEnd = 50

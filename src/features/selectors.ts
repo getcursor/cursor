@@ -245,7 +245,7 @@ export const searchAllFiles = async (query: string) => {
 /// AMAN ADDITION FOR SEARCHING FOR FILES
 
 // // FOLDER/FILE SELECTORS
-// const searchAllFile = (query: string) => (state: {}) => {
+// const searchAllFile = (query: string) => (state: object) => {
 //     const appFiles = searchFile
 
 /// AMAN ADDITION FOR SEARCHING FOR FILES

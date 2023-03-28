@@ -40,9 +40,7 @@ import {
 } from './codemirrorHooks/dispatch'
 import { getSettings } from '../features/settings/settingsSelectors'
 import { useExtensions } from './codemirrorHooks/extensions'
-import * as cs from '../features/chat/chatSlice'
 import { useSetDiff } from './codemirrorHooks/diffHook'
-import { diffResponse } from '../features/chat/chatThunks'
 
 export function getPrecedingLines(view: EditorView, numLines: number) {
     return view.state.doc.sliceString(0, view.state.selection.main.from)
