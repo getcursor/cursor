@@ -36,7 +36,6 @@ export function XTermComponent({ height }: { height: number }) {
         }
 
         connector.terminalInto('\n')
-
         terminal.current.onData((e) => {
             connector.terminalInto(e)
         })
@@ -77,6 +76,7 @@ export const BottomTerminal: React.FC = () => {
     useEffect(() => {
         if (terminalOpenSelector) {
             setTerminalOpen(true)
+            connector.terminalRootPath("")
         }
     }, [terminalOpenSelector])
 

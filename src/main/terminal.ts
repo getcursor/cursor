@@ -2,8 +2,14 @@ import os from 'os'
 import * as pty from 'node-pty'
 
 import { ipcMain } from 'electron'
+import log from 'electron-log'
+import Store from 'electron-store'
+
+const store = new Store()
 
 export function setupTerminal(mainWindow: any) {
+    const opened_folder_path = store.get("projectRoot") as string;
+
     let shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
     const filteredEnv: { [key: string]: string } = Object.entries(
@@ -25,10 +31,11 @@ export function setupTerminal(mainWindow: any) {
                 name: 'xterm-color',
                 cols: 80,
                 rows: 24,
-                cwd: process.env.HOME,
+                cwd: opened_folder_path,
                 env: filteredEnv,
             })
             ptyProcess = res
+            
             break
         } catch (e) {}
     }
@@ -45,4 +52,11 @@ export function setupTerminal(mainWindow: any) {
     ipcMain.handle("terminal-resize", (event, size) => {
       ptyProcess.resize(size.cols, size.rows);
     });
+
+    ipcMain.handle('terminal-path', (event, data) => {
+        const opened_folder_path = store.get("projectRoot") as string;
+        ptyProcess.write(`cd "${opened_folder_path}"\n`);
+        ptyProcess.write(`clear\n`);
+    })
 }
+

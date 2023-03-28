@@ -865,8 +865,10 @@ const createWindow = () => {
         showingDialog = false
         log.info('Opening folder: ' + result)
         if (result && result.length > 0) {
+            const opened_folder_path: string = result[0]
             setFileSystem(new FileSystem())
-            return result[0]
+            store.set('projectRoot', opened_folder_path)
+            return opened_folder_path
         }
         return null
     })
