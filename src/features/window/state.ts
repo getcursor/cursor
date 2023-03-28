@@ -301,6 +301,7 @@ export interface Settings {
     useFour: string
     contextType: string
     textWrapping: string
+    openAIKey?: string
     tabSize?: string
 }
 
