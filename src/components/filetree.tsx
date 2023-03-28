@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import {
-    faFolder,
     faChevronDown,
     faChevronRight,
     faFile,
@@ -13,7 +11,6 @@ import {
     faCodeMerge,
     faEyeSlash,
     faGear,
-    faComputer,
     faInfoCircle,
 } from '@fortawesome/sharp-solid-svg-icons'
 import * as gs from '../features/globalSlice'
@@ -23,7 +20,6 @@ import {
     getFile,
     getFolder,
     getFolderOpen,
-    getFolders,
     getNotDeletedFiles,
 } from '../features/selectors'
 import {

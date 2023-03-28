@@ -270,7 +270,7 @@ function getTransaction(
                 scrollIntoView: customTransaction.scroll == 'intoView',
                 annotations: [dontShowAnnotation.of(false)],
             }
-        case 'insertStartLine':
+        case 'insertStartLine': {
             // get the position of the start of the line
             const currentLine = view.state.doc.lineAt(from)
             const lineStart = currentLine.from
@@ -302,6 +302,7 @@ function getTransaction(
                     annotations: [dontShowAnnotation.of(false)],
                 }
             }
+        }
         case 'bar':
             return {
                 effects: showBar.of(customTransaction.blob),

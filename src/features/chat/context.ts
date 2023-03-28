@@ -1,5 +1,3 @@
-import { LanguageServerClient } from '../lsp/stdioClient'
-import * as LSP from 'vscode-languageserver-types'
 import { API_ROOT } from '../../utils'
 import { CodeSymbolType } from '../window/state'
 

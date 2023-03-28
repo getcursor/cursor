@@ -1,12 +1,6 @@
 import { TreeCursor, SyntaxNode } from '@lezer/common'
 import { store } from '../../app/store'
-import {
-    getCurrentTab,
-    getFilePath,
-    getFocusedTab,
-    getPane,
-    getTab,
-} from '../selectors'
+import { getCurrentTab, getFilePath, getFocusedTab, getTab } from '../selectors'
 import { getTests, selectHasTests } from '../tests/testSelectors'
 import { TestData } from '../tests/testSlice'
 import { CommentFunction } from '../window/state'
@@ -19,59 +13,6 @@ export const reduxTransaction = StateEffect.define<{
     type: string
     payload: any
 }>({})
-
-const languagesToExtension = {
-    python: ['py', 'pyi'],
-    javascript: ['js', 'jsx', 'ts', 'tsx'],
-    java: ['java'],
-    c: ['c'],
-    cpp: ['cpp', 'cc', 'cxx', 'c++', 'h', 'hpp', 'hh', 'hxx', 'h++'],
-    go: ['go'],
-    rust: ['rs'],
-    ruby: ['rb'],
-    php: ['php'],
-    scala: ['scala'],
-    kotlin: ['kt', 'kts'],
-    swift: ['swift'],
-    dart: ['dart'],
-    r: ['r'],
-    julia: ['jl'],
-    haskell: ['hs'],
-    html: ['html', 'htm'],
-    css: ['css'],
-    csharp: ['cs'],
-    coffeescript: ['coffee'],
-    clojure: ['clj'],
-    bibtex: ['bib'],
-    abap: ['abap'],
-    bat: ['bat'],
-    fsharp: ['fs', 'fsx'],
-    elixir: ['ex', 'exs'],
-    erlang: ['erl', 'hrl'],
-    dockerfile: ['dockerfile'],
-    handlebars: ['hbs'],
-    ini: ['ini'],
-    latex: ['tex'],
-    less: ['less'],
-    lua: ['lua'],
-    makefile: ['mak'],
-    markdown: ['md'],
-    'objective-c': ['m'],
-    'objective-cpp': ['mm'],
-    perl: ['pl', 'pm', 'p6'],
-    powershell: ['ps1'],
-    jade: ['pug'],
-    razor: ['cshtml'],
-    scss: ['scss'],
-    sass: ['sass'],
-    shaderlab: ['shader'],
-    shellscript: ['sh', 'bash'],
-    sql: ['sql'],
-    vb: ['vb'],
-    xml: ['xml'],
-    xsl: ['xsl'],
-    yaml: ['yaml', 'yml'],
-}
 
 const extensions: { [key: string]: string } = {
     abap: 'abap',

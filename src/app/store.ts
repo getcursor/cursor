@@ -53,12 +53,6 @@ const reduceReducers = (...args: any) => {
     }
 }
 
-const logReducer = (state: object, action: object) => {
-    //
-    //
-    return state
-}
-
 export const fullReducer = combineReducers({
     global: reduceReducers(
         initialState,

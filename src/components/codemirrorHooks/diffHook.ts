@@ -6,7 +6,6 @@ import { rejectDiff, setDiff } from '../../features/extensions/diff'
 import { editBoundaryState } from '../../features/extensions/hackDiff'
 import { useAppDispatch } from '../../app/hooks'
 // Import chatslice
-import * as cs from '../../features/chat/chatSlice'
 // Hook to get the previous value of lastBotMessage
 function usePrevious<T>(value: T) {
     const ref = useRef<T>()

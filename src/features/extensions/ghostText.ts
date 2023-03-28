@@ -420,8 +420,9 @@ const completionRequester = (client: LanguageServerClient) => {
                             return
                         }
 
+                        const { text } = completionResult.completions[0]
+
                         let {
-                            text,
                             displayText,
                             range: { start, end },
                             position,
