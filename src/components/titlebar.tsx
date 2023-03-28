@@ -84,7 +84,7 @@ function MenuBar() {
                 title="File"
                 options={[
                     [
-                        'New File',
+                        'New File?',
                         () => {
                             dispatch(gs.newFile({ parentFolderId: null }))
                         },

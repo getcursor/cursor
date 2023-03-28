@@ -1,4 +1,5 @@
-import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
+import { init as initI18n } from "../i18n";
 import fetch from 'node-fetch'
 import { Settings } from '../features/window/state'
 
@@ -108,8 +109,162 @@ process.on('unhandledRejection', (error) => {
     logError(error)
 })
 
+export const getMenuTemplate = (t: any, main_window: any) => {
+    let menuList: any[] = []
+    const quitApp = {
+        label: t('Quit App'),
+        click: () => {
+            app.quit()
+        },
+        accelerator: META_KEY + '+Q',
+    }
+    if (process.platform === 'darwin') {
+        menuList.push({
+            label: t(process.platform === 'darwin' ? 'Custom Menu' : 'Cursor'),
+            submenu: [quitApp],
+        })
+    }
+    menuList = menuList.concat([
+        {
+            label: t('File'),
+            submenu: [
+                {
+                    label: t('New File'),
+                    click: () => {
+                        main_window.webContents.send('new_file_click')
+                    },
+                    accelerator: META_KEY + '+N',
+                },
+                {
+                    label: t('Open Folder'),
+                    click: () => {
+                        main_window.webContents.send('open_folder_triggered')
+                    },
+                    accelerator: META_KEY + '+O',
+                },
+                {
+                    label: t('Open Remote Folder'),
+                    click: () => {
+                        main_window.webContents.send('openRemotePopup')
+                    },
+                },
+                {
+                    label: t('Save File'),
+                    click: () => {
+                        main_window.webContents.send('saved')
+                    },
+                    accelerator: META_KEY + '+S',
+                },
+                {
+                    label: t('Close Tab'),
+                    click: () => {
+                        main_window.webContents.send('close_tab')
+                    },
+                    accelerator: META_KEY + '+W',
+                },
+                ...(process.platform === 'darwin'
+                    ? []
+                    : [{ type: 'separator' }, quitApp]),
+            ],
+        },
+        {
+            label: t('Edit'),
+            submenu: [
+                {
+                    label: t('Undo'),
+                    accelerator: META_KEY + '+Z',
+                    selector: 'undo:',
+                },
+                {
+                    label: t('Redo'),
+                    accelerator: META_KEY + '+Shift+Z',
+                    selector: 'redo:',
+                },
+                { type: 'separator' },
+                {
+                    label: t('Cut'),
+                    accelerator: META_KEY + '+X',
+                    selector: 'cut:',
+                },
+                {
+                    label: t('Copy'),
+                    accelerator: META_KEY + '+C',
+                    selector: 'copy:',
+                },
+                {
+                    label: t('Paste'),
+                    accelerator: META_KEY + '+V',
+                    selector: 'paste:',
+                },
+                {
+                    label: t('Select All'),
+                    accelerator: META_KEY + '+A',
+                    selector: 'selectAll:',
+                },
+            ],
+        } as MenuItemConstructorOptions,
+        {
+            label: t('View'),
+            submenu: [
+                {
+                    label: t('Zoom In'),
+                    click: () => {
+                        main_window.webContents.send('zoom_in')
+                    },
+                    accelerator: META_KEY + '+Plus',
+                },
+                {
+                    label: t('Zoom In'),
+                    click: () => {
+                        main_window.webContents.send('zoom_in')
+                    },
+                    accelerator: META_KEY + '+=',
+                },
+                {
+                    label: t('Zoom Out'),
+                    click: () => {
+                        main_window.webContents.send('zoom_out')
+                    },
+                    accelerator: META_KEY + '+-',
+                },
+                {
+                    label: t('Reset Zoom'),
+                    click: () => {
+                        main_window.webContents.send('zoom_reset')
+                    },
+                    accelerator: META_KEY + '+0',
+                },
+                {
+                    label: t('Search'),
+                    click: () => {
+                        main_window.webContents.send('search')
+                    },
+                    accelerator: META_KEY + '+Shift+F',
+                },
+                {
+                    label: t('File Search'),
+                    click: () => {
+                        main_window.webContents.send('fileSearch')
+                    },
+                    accelerator: META_KEY + '+P',
+                },
+                {
+                    label: t('Command Palette'),
+                    click: () => {
+                        main_window.webContents.send('commandPalette')
+                    },
+                    accelerator: META_KEY + '+Shift+P',
+                },
+            ],
+        },
+    ])
+    return menuList;
+}
+
 const createWindow = () => {
-    const { t } = useTranslation()
+    const { t } = i18n
+    const settings = store.get('settings') as Settings
+    initI18n(settings.language)
     const width = 1500,
         height = 800
     // Create the browser window.
@@ -141,7 +296,13 @@ const createWindow = () => {
 
     if (!app.isPackaged) {
         main_window.webContents.openDevTools()
-    }
+    }    
+
+    ipcMain.handle('changeLanguage', (event: Event, lang: string) => {
+        i18n.changeLanguage(lang);
+        var menu = Menu.buildFromTemplate(getMenuTemplate(t, main_window))
+        Menu.setApplicationMenu(menu)
+    })
 
     ipcMain.handle('maximize', () => {
         // First check if this is maximized
@@ -185,155 +346,8 @@ const createWindow = () => {
             detail: 'The app will not work properly if it is not in the Applications folder',
         })
     }
-    let menuList: any[] = []
-    const quitApp = {
-        label: t('Quit App?'),
-        click: () => {
-            app.quit()
-        },
-        accelerator: META_KEY + '+Q',
-    }
-    if (process.platform === 'darwin') {
-        menuList.push({
-            label: process.platform === 'darwin' ? 'Custom Menu' : 'Cursor',
-            submenu: [quitApp],
-        })
-    }
-    menuList = menuList.concat([
-        {
-            label: 'File',
-            submenu: [
-                {
-                    label: 'New File',
-                    click: () => {
-                        main_window.webContents.send('new_file_click')
-                    },
-                    accelerator: META_KEY + '+N',
-                },
-                {
-                    label: 'Open Folder',
-                    click: () => {
-                        main_window.webContents.send('open_folder_triggered')
-                    },
-                    accelerator: META_KEY + '+O',
-                },
-                {
-                    label: 'Open Remote Folder',
-                    click: () => {
-                        main_window.webContents.send('openRemotePopup')
-                    },
-                },
-                {
-                    label: 'Save File',
-                    click: () => {
-                        main_window.webContents.send('saved')
-                    },
-                    accelerator: META_KEY + '+S',
-                },
-                {
-                    label: 'Close Tab',
-                    click: () => {
-                        main_window.webContents.send('close_tab')
-                    },
-                    accelerator: META_KEY + '+W',
-                },
-                ...(process.platform === 'darwin'
-                    ? []
-                    : [{ type: 'separator' }, quitApp]),
-            ],
-        },
-        {
-            label: 'Edit',
-            submenu: [
-                {
-                    label: 'Undo',
-                    accelerator: META_KEY + '+Z',
-                    selector: 'undo:',
-                },
-                {
-                    label: 'Redo',
-                    accelerator: META_KEY + '+Shift+Z',
-                    selector: 'redo:',
-                },
-                { type: 'separator' },
-                {
-                    label: 'Cut',
-                    accelerator: META_KEY + '+X',
-                    selector: 'cut:',
-                },
-                {
-                    label: 'Copy',
-                    accelerator: META_KEY + '+C',
-                    selector: 'copy:',
-                },
-                {
-                    label: 'Paste',
-                    accelerator: META_KEY + '+V',
-                    selector: 'paste:',
-                },
-                {
-                    label: 'Select All',
-                    accelerator: META_KEY + '+A',
-                    selector: 'selectAll:',
-                },
-            ],
-        } as MenuItemConstructorOptions,
-        {
-            label: 'View',
-            submenu: [
-                {
-                    label: 'Zoom In',
-                    click: () => {
-                        main_window.webContents.send('zoom_in')
-                    },
-                    accelerator: META_KEY + '+Plus',
-                },
-                {
-                    label: 'Zoom In',
-                    click: () => {
-                        main_window.webContents.send('zoom_in')
-                    },
-                    accelerator: META_KEY + '+=',
-                },
-                {
-                    label: 'Zoom Out',
-                    click: () => {
-                        main_window.webContents.send('zoom_out')
-                    },
-                    accelerator: META_KEY + '+-',
-                },
-                {
-                    label: 'Reset Zoom',
-                    click: () => {
-                        main_window.webContents.send('zoom_reset')
-                    },
-                    accelerator: META_KEY + '+0',
-                },
-                {
-                    label: 'Search',
-                    click: () => {
-                        main_window.webContents.send('search')
-                    },
-                    accelerator: META_KEY + '+Shift+F',
-                },
-                {
-                    label: 'File Search',
-                    click: () => {
-                        main_window.webContents.send('fileSearch')
-                    },
-                    accelerator: META_KEY + '+P',
-                },
-                {
-                    label: 'Command Palette',
-                    click: () => {
-                        main_window.webContents.send('commandPalette')
-                    },
-                    accelerator: META_KEY + '+Shift+P',
-                },
-            ],
-        },
-    ])
-    var menu = Menu.buildFromTemplate(menuList)
+    
+    var menu = Menu.buildFromTemplate(getMenuTemplate(t, main_window))
     Menu.setApplicationMenu(menu)
 
     globalShortcut.register(META_KEY + '+M', () => {
@@ -357,7 +371,7 @@ const createWindow = () => {
 
     ipcMain.handle('initSettings', (event: Event) => {
         if (store.has('settings')) {
-            log.info('found settings')
+            log.info('found settings:');
             return store.get('settings')
         } else {
             return {}

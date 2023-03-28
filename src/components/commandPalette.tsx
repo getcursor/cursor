@@ -616,7 +616,7 @@ export function CommandResult({
 
             {command.hint && (
                 <div className="text-xs text-white truncate flex items-end mb-0.5">
-                    {command.hint}
+                    {t(command.hint)}
                 </div>
             )}
             <div className="file__shortcuts ml-auto whitespace-nowrap">
@@ -648,6 +648,7 @@ export function AICommandResult({
     dataTestId: string
 }) {
     const dispatch = useAppDispatch()
+    const { t } = useTranslation()
     const executeCommand = useCallback(
         (e: { stopPropagation: () => void }) => {
             if (isClickable) {
@@ -689,10 +690,10 @@ export function AICommandResult({
 
             {clickable
                 ? command.hint && (
-                      <div className="file__path">{command.hint}</div>
+                      <div className="file__path">{t(command.hint)}</div>
                   )
                 : command.error && (
-                      <div className="file__path">{command.error}</div>
+                      <div className="file__path">{t(command.error)}</div>
                   )}
             <div className="file__shortcuts ml-auto whitespace-nowrap">
                 {command.shortcut?.map((key, index) => (

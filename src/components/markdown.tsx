@@ -6,6 +6,7 @@ import React, {
     ReactNode,
     useMemo,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
 import { Message } from '../features/window/state'
@@ -387,6 +388,7 @@ export function MarkdownPopup({
     last: boolean
     onApply: () => void
 }) {
+    const { t } = useTranslation()
     // const lastBotMessage = useAppSelector(csel.getLastMarkdownMessage);
     const reactMarkdownRef = useRef<HTMLDivElement>(null)
 
@@ -456,7 +458,7 @@ export function MarkdownPopup({
                                     className="apply-button"
                                     onClick={onApply}
                                 >
-                                    Attempt Change
+                                    {t("Attempt Change")}
                                 </button>
                             )}
                         </div>
@@ -566,6 +568,7 @@ const Loading = ({ data }: { data: any }) => <div>Loading</div>
 
 export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     const dispatch = useAppDispatch()
+    const { t } = useTranslation()
     const currentDraft = useAppSelector(csel.getCurrentDraftMessage)
     const repoId = useAppSelector((state) => state.global.repoId)
     const textareaRef = useRef<{ value: HTMLTextAreaElement | null }>({
@@ -628,7 +631,7 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
     return (
         <ReactTextareaAutocomplete
             className="commandBar__input"
-            placeholder={placeholder}
+            placeholder={t(placeholder) ?? ''}
             loadingComponent={Loading}
             scrollToItem={(container, item) => {
                 if (item) {
@@ -807,7 +810,8 @@ export function CommandBar({
     parentCaller: 'chat' | 'commandBar'
 }) {
     const dispatch = useAppDispatch()
-
+    const { t } = useTranslation()
+    
     const customStyles = {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -847,7 +851,7 @@ export function CommandBar({
                     style={customStyles}
                 >
                     <div className="tipArea">
-                        Previous
+                        {t('Previous')}
                         <div className="tipKeyCommand">
                             Ctrl+Shift+
                             <FontAwesomeIcon icon={faArrowUp} />

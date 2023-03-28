@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FileTree, getIconElement } from './filetree'
 import { getConnections } from '../features/lsp/languageServerSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -37,7 +38,6 @@ import {
 import { openFile } from '../features/globalSlice'
 import { getRootPath } from '../features/selectors'
 import _ from 'lodash'
-import { useTranslation } from 'react-i18next'
 type LeftTab = 'search' | 'filetree'
 
 import Modal from 'react-modal'
@@ -257,6 +257,7 @@ const handleSearch = async (query: string, setResults: any, rootPath: any) => {
 
 // A simple functional react component that performs a search and displays the results
 function SearchComponent() {
+    const { t } = useTranslation()
     // A state variable to store the search query
     const [query, setQuery] = useState('')
     const leftTabActive = useAppSelector(getLeftTabActive)
@@ -332,7 +333,7 @@ function SearchComponent() {
             {/* A div to display the search results */}
             <div className="search-results">
                 {/* A conditional rendering to show a message if there are no results */}
-                {results.length === 0 && <div>No results found</div>}
+                {results.length === 0 && <div>{t('No results found')}</div>}
                 {/* A map function to render a list of the search result components */}
                 {(() => {
                     //

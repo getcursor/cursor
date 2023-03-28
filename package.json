@@ -143,6 +143,7 @@
         "fork-ts-checker-webpack-plugin": "^7.2.14",
         "gunzip-file": "^0.1.1",
         "i18next": "^22.4.13",
+        "i18next-http-backend": "^2.2.0",
         "line-diff": "^2.1.1",
         "lodash.debounce": "^4.0.8",
         "markdown-it": "^13.0.1",

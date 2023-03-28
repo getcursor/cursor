@@ -170,6 +170,7 @@ export function SettingsPopup() {
                                     options={Object.keys(localeOptions)}
                                     onChange={(e) => {
                                         const lang = e.value as Languages
+                                        connector.changeLanguage(localeOptions[lang])
                                         i18n.changeLanguage(localeOptions[lang])
                                         dispatch(                                            
                                             changeSettings({
