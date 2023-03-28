@@ -157,7 +157,7 @@ const createWindow = () => {
     })
     // add minimize and close functionality to the window buttons
     ipcMain.handle('close', () => {
-        app.quit()
+        main_window.close()
     })
 
     ipcMain.handle(
@@ -205,7 +205,7 @@ const createWindow = () => {
     const quitApp = {
         label: 'Quit App',
         click: () => {
-            app.quit()
+            main_window.close()
         },
         accelerator: META_KEY + '+Q',
     }
@@ -1013,9 +1013,26 @@ app.on('ready', function () {
 })
 
 app.on('ready', modifyHeaders)
-app.on('ready', createWindow)
+
+app.on('ready', () => {
+    createWindow()
+
+    // The activate event only exists on macOS
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow()
+        }
+    })
+})
+
 app.on('window-all-closed', () => {
-    app.quit()
+    if (process.platform !== 'darwin') {
+        app.quit()
+    }
+})
+
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
 })
 
 export {}
