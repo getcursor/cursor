@@ -10,7 +10,7 @@ import {
     highlightActiveLine,
     keymap,
 } from '@codemirror/view'
-import { EditorState, Extension, Prec } from '@codemirror/state'
+import { EditorState, Extension , Prec } from '@codemirror/state'
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import {

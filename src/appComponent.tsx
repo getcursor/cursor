@@ -26,6 +26,7 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
+
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
 import { FeedbackArea, LeftSide } from './components/search'

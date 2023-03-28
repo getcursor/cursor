@@ -1,6 +1,6 @@
 import * as ss from '../features/settings/settingsSlice'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect,  useState } from 'react'
 import { copilotStatus } from '../features/lsp/languageServerSelector'
 import {
     copilotChangeEnable,

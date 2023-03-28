@@ -1,4 +1,6 @@
-import { FullState } from '../window/state'
+import {
+    FullState,
+} from '../window/state'
 
 export const getFeedbackMessage = (state: FullState) =>
     state.loggingState.feedbackMessage

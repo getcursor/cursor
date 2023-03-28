@@ -6,8 +6,7 @@ import {
     TransactionSpec,
     StateEffect,
     Text,
-    Annotation,
-} from '@codemirror/state'
+ Annotation } from '@codemirror/state'
 import { useAppDispatch } from '../../app/hooks'
 import { flushTransactions } from '../../features/globalSlice'
 import { ReduxTransaction, LineChange } from '../../features/window/state'

@@ -161,7 +161,7 @@ function runHistoryCommand(cm: CodeMirror, revert: boolean) {
     if (cm.curOp) {
         cm.curOp.$changeStart = undefined
     }
-    ;(revert ? undo : redo)(cm.cm6)
+    (revert ? undo : redo)(cm.cm6)
     const changeStartIndex = cm.curOp?.$changeStart
     // vim mode expects the changed text to be either selected or cursor placed at the start
     if (changeStartIndex != null) {
@@ -568,7 +568,7 @@ export class CodeMirror {
             caseSensitive: !/i/.test(query.flags),
         })
         if (cm6Query.valid) {
-            ;(cm6Query as any).forVim = true
+            (cm6Query as any).forVim = true
             this.cm6Query = cm6Query
             const effect = setSearchQuery.of(cm6Query)
             this.cm6.dispatch({ effects: effect })
@@ -784,7 +784,7 @@ export class CodeMirror {
         this.refresh()
     }
     refresh() {
-        ;(this.cm6 as any).measure()
+        (this.cm6 as any).measure()
     }
 
     // event listeners

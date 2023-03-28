@@ -1,4 +1,8 @@
-import { EditorView, ViewPlugin, ViewUpdate } from '@codemirror/view'
+import {
+    EditorView,
+    ViewPlugin,
+    ViewUpdate,
+} from '@codemirror/view'
 import { getDiagnostics, lintState } from '../linter/lint'
 
 function getDiagnosticsPositions(

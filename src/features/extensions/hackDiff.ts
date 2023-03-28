@@ -4,7 +4,13 @@ This is a codemirror v6 implementation of inline diffs.
 There are state fields that store the information for the diffs present in a 
 block of code. 
 */
-import { StateField, StateEffect, Extension } from '@codemirror/state'
+import {
+    StateField,
+    StateEffect,
+    Extension,
+} from '@codemirror/state'
+
+
 
 export interface EditBoundary {
     start: number

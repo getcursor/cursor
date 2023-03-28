@@ -8,8 +8,7 @@ import React, {
 } from 'react'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
-import {
-    Message,
+import { Message ,
     CodeBlock as CodeBlockType,
     CodeSymbolType,
 } from '../features/window/state'
@@ -330,7 +329,7 @@ export function ChatPopup() {
 
     function handleMouseDown() {
         if (document.activeElement) {
-            ;(document.activeElement as HTMLElement).blur()
+            (document.activeElement as HTMLElement).blur()
         }
     }
     return (
