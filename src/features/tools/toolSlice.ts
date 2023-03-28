@@ -1,7 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction  } from '@reduxjs/toolkit'
 import { FullState, ToolState } from '../window/state'
-import { API_ROOT } from '../../utils'
-import { current } from '@reduxjs/toolkit'
 
 const initialState: ToolState = {
     openLeftTab: 'filetree',
@@ -22,7 +20,7 @@ const untriggerAll = (state: ToolState) => {
 export const refreshLoginDetails = createAsyncThunk(
     'tool/refreshLoginDetails',
     async (arg: null, { dispatch }) => {
-        let newUserCreds = await connector.getUserCreds()
+        const newUserCreds = await connector.getUserCreds()
         dispatch(login(newUserCreds))
         console.log('FINISHED REFRESH LOGIN HERE')
     }
@@ -115,7 +113,7 @@ export const toolSlice = createSlice({
             state.commandPaletteTriggered = true
         },
         triggerAICommandPalette: (state: ToolState) => {
-            let newAICommandPaletteTriggered = !state.aiCommandPaletteTriggered
+            const newAICommandPaletteTriggered = !state.aiCommandPaletteTriggered
             untriggerAll(state)
             state.aiCommandPaletteTriggered = newAICommandPaletteTriggered
         },

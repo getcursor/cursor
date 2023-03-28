@@ -4,7 +4,7 @@ import * as pty from 'node-pty'
 import { ipcMain } from 'electron'
 
 export function setupTerminal(mainWindow: any, rootPath?: string) {
-    let shells =
+    const shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
     const filteredEnv: { [key: string]: string } = Object.entries(
         process.env
@@ -16,7 +16,7 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
     }, {} as { [key: string]: string })
 
     let ptyProcess: any = null
-    for (var i = 0; i < shells.length; i++) {
+    for (let i = 0; i < shells.length; i++) {
         const shell = shells[i]
         try {
             if (process.platform !== 'win32')
@@ -30,7 +30,9 @@ export function setupTerminal(mainWindow: any, rootPath?: string) {
             })
             ptyProcess = res
             break
-        } catch (e) {}
+        } catch (e) {
+            // ignore errors
+        }
     }
 
     if (ptyProcess == null) return

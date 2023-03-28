@@ -1,20 +1,11 @@
 import {
     State,
-    Pane,
-    Tab,
     CachedTab,
-    CachedFile,
-    ReduxTransaction,
     ReduxEditorState,
-    Folder,
-    File,
-    FolderData,
     HoverState,
-    PaneState,
     nextTabID,
     nextPaneID,
 } from './state'
-import { current } from '@reduxjs/toolkit'
 
 import { doDeleteFile, setSelectedFile } from './fileUtils'
 
@@ -151,7 +142,7 @@ export function insertNewPaneExceptSplit(state: State) {
 }
 
 type Atom = number
-interface NestedArray extends Array<NestedArray | Atom> {}
+type NestedArray = Array<NestedArray | Atom>
 //type AtomOrArray = Atom | NestedArray;
 
 export function findSplitOfPane(state: State, paneId: number) {
@@ -271,7 +262,7 @@ export function doMoveTabToPane(
     const oldPane = state.paneState.byIds[oldPaneId]
     if (tab.isActive && oldPane.tabIds.length > 1) {
         const index = oldPane.tabIds.indexOf(tabId)
-        let newIndex = index === 0 ? 1 : index - 1
+        const newIndex = index === 0 ? 1 : index - 1
         setActiveTab(state, oldPane.tabIds[newIndex])
     }
     oldPane.tabIds.splice(oldPane.tabIds.indexOf(tabId), 1)
@@ -389,9 +380,6 @@ export function doCloseTab(state: State, tabId: number) {
 
 export function doMoveToAdjacentPane(state: State, paneDirection: string) {
     const currentPaneId = getActivePaneID(state)!
-    const tabId = getActiveTabId(state)!
-    const tab = state.tabs[tabId]
-    // const currentPaneId = tab.paneId;
 
     // paneDirection is one of 'left', 'right', 'up', 'down'
     // find the adjacent pane in the given direction
@@ -431,7 +419,7 @@ export function doMoveToAdjacentPane(state: State, paneDirection: string) {
 
             if (newIndex >= 0 && newIndex < parentSplits.length) {
                 // get the new splits array
-                let potentialIndex = parentSplits[newIndex]
+                const potentialIndex = parentSplits[newIndex]
                 if (Array.isArray(potentialIndex)) {
                     const roughIndex =
                         (index / splits.length) * potentialIndex.length
@@ -463,7 +451,7 @@ function getParentFolderIds(
     globalState: State,
     folderId: number | null
 ): number[] {
-    let parentFolderIds: number[] = []
+    const parentFolderIds: number[] = []
     let currentFolderId = folderId
     while (currentFolderId !== null) {
         parentFolderIds.push(currentFolderId)
@@ -487,45 +475,42 @@ export function doSelectFile(state: State, fileid: number) {
     setActiveTab(state, tabid)
     setSelectedFile(state, fileid)
 
+    function computeFirstIndents(candidateIndents: string[]) {
+        // convert all preceding tabs to spaces
+        const indentLengths = candidateIndents.map((line) => {
+            const indent = line.match(/^\s*/)
+            if (indent != null) {
+                return indent[0]
+            } else {
+                return ''
+            }
+        })
+
+        // compute the indent difference between the previous line and the current line
+        const firstIndents = indentLengths
+            .map((indent, index) => {
+                if (index === 0) {
+                    return null
+                }
+                const lastIndent = indentLengths[index - 1] as string
+                if (lastIndent.length == indent.length) {
+                    return null
+                } else if (lastIndent.length > indent.length) {
+                    return lastIndent.slice(
+                        -(lastIndent.length - indent.length)
+                    )
+                } else {
+                    return indent.slice(0, indent.length - lastIndent.length)
+                }
+            })
+            .filter((indent) => indent != null)
+
+        return firstIndents as string[]
+    }
+
     // the indenting logic
     if (file.indentUnit == null) {
         const contents = state.fileCache[fileid].contents
-
-        function computeFirstIndents(candidateIndents: string[]) {
-            // convert all preceding tabs to spaces
-            const indentLengths = candidateIndents.map((line) => {
-                let indent = line.match(/^\s*/)
-                if (indent != null) {
-                    return indent[0]
-                } else {
-                    return ''
-                }
-            })
-
-            // compute the indent difference between the previous line and the current line
-            const firstIndents = indentLengths
-                .map((indent, index) => {
-                    if (index === 0) {
-                        return null
-                    }
-                    const lastIndent = indentLengths[index - 1] as string
-                    if (lastIndent.length == indent.length) {
-                        return null
-                    } else if (lastIndent.length > indent.length) {
-                        return lastIndent.slice(
-                            -(lastIndent.length - indent.length)
-                        )
-                    } else {
-                        return indent.slice(
-                            0,
-                            indent.length - lastIndent.length
-                        )
-                    }
-                })
-                .filter((indent) => indent != null)
-
-            return firstIndents as string[]
-        }
 
         const lines = contents.split('\n')
         const numFromEitherEnd = 50

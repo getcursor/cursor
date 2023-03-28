@@ -1,28 +1,20 @@
-import { useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react'
-import { EditorState, StateEffect, Transaction } from '@codemirror/state'
+import { useEffect, useState, useMemo, useLayoutEffect } from 'react'
+import { EditorState, StateEffect,  Prec } from '@codemirror/state'
 import { indentWithTab } from '@codemirror/commands'
 import { EditorView, keymap, ViewUpdate, placeholder } from '@codemirror/view'
 import { basicSetup } from './setup'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { getStatistics } from './utils'
-import { Prec } from '@codemirror/state'
 import { ReactCodeMirrorProps } from '.'
-import {
-    diagnosticsField,
-    openLintPanel,
-    setDiagnostics,
-} from '../../features/linter/lint'
-import { globalViews } from '../globalViews'
-import { updatePaneId } from '../../features/extensions/storePane'
+
+
 
 import {
     getCodeMirrorView,
-    removeEditor,
     upsertEditor,
 } from '../../features/codemirror/codemirrorSlice'
 import { getViewId } from '../../features/codemirror/codemirrorSelectors'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { machine } from 'os'
 
 export interface UseCodeMirror extends ReactCodeMirrorProps {
     container?: HTMLDivElement | null

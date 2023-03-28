@@ -5,9 +5,7 @@ import cx from 'classnames'
 import {
     openRemotePopup,
     openTerminal,
-    setDraggingTab,
     splitCurrentPane,
-    splitCurrentPaneUnselected,
 } from '../features/globalSlice'
 import { HoverState } from '../features/window/state'
 import {
@@ -18,7 +16,6 @@ import {
     untriggerAICommandPalette,
 } from '../features/tools/toolSlice'
 import { toggleSettings } from '../features/settings/settingsSlice'
-import { getIconElement } from './filetree'
 import {
     aiCommandPaletteTriggeredSelector,
     commandPaletteTriggeredSelector,
@@ -26,14 +23,10 @@ import {
 import { Combobox } from '@headlessui/react'
 import { toggleFeedback } from '../features/logging/loggingSlice'
 import {
-    getCurrentTab,
-    getFocusedTab,
     selectFocusedTabId,
 } from '../features/selectors'
-import { getActiveTabId } from '../features/window/paneUtils'
 import {
     getViewId,
-    hasSelection,
 } from '../features/codemirror/codemirrorSelectors'
 import { getCodeMirrorView } from '../features/codemirror/codemirrorSlice'
 import { toggleChatHistory } from '../features/chat/chatSlice'
@@ -530,7 +523,7 @@ export function InnerCommandPalette({
                                         index: number
                                     ) => {
                                         const command = allCommands[obj.id]
-                                        let toret = null
+                                        const toret = null
                                         if (obj.clickable === null) {
                                             return (
                                                 <CommandResult

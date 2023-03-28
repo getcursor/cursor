@@ -9,7 +9,7 @@ import { spawn, ChildProcessWithoutNullStreams } from 'child_process'
 import { promisify } from 'util'
 import { PLATFORM_INFO } from './utils'
 
-var escapeShell = function (cmd: string) {
+const escapeShell = function (cmd: string) {
     let to_ret = '' + cmd.replace(/(["'$`\\])/g, '\\$1') + ''
     to_ret = to_ret.replace(/%/g, '%%')
     return to_ret
@@ -50,7 +50,7 @@ class SSHClient {
                 seen = true
             } else if (this.callback != null) {
                 // remove 'cursordone' from the end of the string
-                let ret = data.toString()
+                const ret = data.toString()
                 if (ret.trim().endsWith('cursordone')) {
                     out += ret.slice(0, -' cursordone'.length)
                     this.callback(null, out)
@@ -134,7 +134,7 @@ export class FileSystem {
     async writeFileSync(path: string, data: string) {
         if (this.isRemote) {
             // child.execSync(`echo '${data}' | ${this.sshCommand} -T "cat > ${path}"`)
-            let command = `printf "${escapeShell(data)}" > ${path}`
+            const command = `printf "${escapeShell(data)}" > ${path}`
             await this.client!.runCommandPromise(command)
         } else {
             fs.writeFileSync(path, data)
@@ -398,7 +398,7 @@ export class FileSystem {
 
             childProcess.on('exit', function (code) {})
         } else {
-            var watcher = new Watcher(rootDir, {
+            const watcher = new Watcher(rootDir, {
                 ignore,
                 ignoreInitial: true,
                 persistent: true,

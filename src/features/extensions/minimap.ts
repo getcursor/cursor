@@ -1,7 +1,6 @@
 import {
     EditorView,
     ViewPlugin,
-    PluginValue,
     ViewUpdate,
 } from '@codemirror/view'
 import { getDiagnostics, lintState } from '../linter/lint'

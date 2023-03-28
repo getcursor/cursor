@@ -32,8 +32,8 @@ interface CM5Range {
     head: Pos
 }
 function indexFromPos(doc: Text, pos: Pos): number {
-    var ch = pos.ch
-    var lineNumber = pos.line + 1
+    let ch = pos.ch
+    let lineNumber = pos.line + 1
     if (lineNumber < 1) {
         lineNumber = 1
         ch = 0
@@ -42,11 +42,11 @@ function indexFromPos(doc: Text, pos: Pos): number {
         lineNumber = doc.lines
         ch = Number.MAX_VALUE
     }
-    var line = doc.line(lineNumber)
+    const line = doc.line(lineNumber)
     return Math.min(line.from + Math.max(0, ch), line.to)
 }
 function posFromIndex(doc: Text, offset: number): Pos {
-    let line = doc.lineAt(offset)
+    const line = doc.lineAt(offset)
     return { line: line.number - 1, ch: offset - line.from }
 }
 class Pos {
@@ -60,7 +60,7 @@ function on(emitter: any, type: string, f: Function) {
     if (emitter.addEventListener) {
         emitter.addEventListener(type, f, false)
     } else {
-        var map = emitter._handlers || (emitter._handlers = {})
+        const map = emitter._handlers || (emitter._handlers = {})
         map[type] = (map[type] || []).concat(f)
     }
 }
@@ -69,10 +69,10 @@ function off(emitter: any, type: string, f: Function) {
     if (emitter.removeEventListener) {
         emitter.removeEventListener(type, f, false)
     } else {
-        var map = emitter._handlers,
+        const map = emitter._handlers,
             arr = map && map[type]
         if (arr) {
-            var index = arr.indexOf(f)
+            const index = arr.indexOf(f)
             if (index > -1) {
                 map[type] = arr.slice(0, index).concat(arr.slice(index + 1))
             }
@@ -81,21 +81,21 @@ function off(emitter: any, type: string, f: Function) {
 }
 
 function signal(emitter: any, type: string, ...args: any[]) {
-    var handlers = emitter._handlers?.[type]
+    const handlers = emitter._handlers?.[type]
     if (!handlers) return
-    for (var i = 0; i < handlers.length; ++i) {
+    for (let i = 0; i < handlers.length; ++i) {
         handlers[i](...args)
     }
 }
 
 function signalTo(handlers: any, ...args: any[]) {
     if (!handlers) return
-    for (var i = 0; i < handlers.length; ++i) {
+    for (let i = 0; i < handlers.length; ++i) {
         handlers[i](...args)
     }
 }
 
-var specialKey: any = {
+const specialKey: any = {
     Return: 'CR',
     Backspace: 'BS',
     Delete: 'Del',
@@ -108,7 +108,7 @@ var specialKey: any = {
     Enter: 'CR',
     ' ': 'Space',
 }
-var ignoredKeys: any = {
+const ignoredKeys: any = {
     Shift: 1,
     Alt: 1,
     Command: 1,
@@ -138,8 +138,8 @@ interface Operation {
 
 // workaround for missing api for merging transactions
 function dispatchChange(cm: CodeMirror, transaction: any) {
-    var view = cm.cm6
-    var type = 'input.type.compose'
+    const view = cm.cm6
+    let type = 'input.type.compose'
     if (cm.curOp) {
         if (!cm.curOp.lastChange) type = 'input.type.compose.start'
     }
@@ -161,8 +161,8 @@ function runHistoryCommand(cm: CodeMirror, revert: boolean) {
     if (cm.curOp) {
         cm.curOp.$changeStart = undefined
     }
-    ;(revert ? undo : redo)(cm.cm6)
-    let changeStartIndex = cm.curOp?.$changeStart
+    (revert ? undo : redo)(cm.cm6)
+    const changeStartIndex = cm.curOp?.$changeStart
     // vim mode expects the changed text to be either selected or cursor placed at the start
     if (changeStartIndex != null) {
         cm.cm6.dispatch({ selection: { anchor: changeStartIndex } })
@@ -218,7 +218,7 @@ export class CodeMirror {
         e?.preventDefault?.()
     }
     static keyName = function (e: KeyboardEvent) {
-        var key = e.key
+        let key = e.key
         if (ignoredKeys[key]) return
         if (key == 'Escape') key = 'Esc'
         if (key == ' ') key = 'Space'
@@ -226,7 +226,7 @@ export class CodeMirror {
             key = key.replace(/Numpad|Arrow/, '')
         }
         if (key.length == 1) key = key.toUpperCase()
-        var name = ''
+        let name = ''
         if (e.ctrlKey) {
             name += 'Ctrl-'
         }
@@ -240,13 +240,13 @@ export class CodeMirror {
         return name
     }
     static vimKey = function vimKey(e: KeyboardEvent) {
-        var key = e.key
+        let key = e.key
         if (ignoredKeys[key]) return
         if (key.length > 1 && key[0] == 'n') {
             key = key.replace('Numpad', '')
         }
         key = specialKey[key] || key
-        var name = ''
+        let name = ''
         if (e.ctrlKey) {
             name += 'C-'
         }
@@ -278,7 +278,7 @@ export class CodeMirror {
         map: string,
         handle: Function
     ) {
-        var result = CodeMirror.keys[key]
+        const result = CodeMirror.keys[key]
         if (result) handle(result)
     }
 
@@ -337,11 +337,11 @@ export class CodeMirror {
     }
 
     foldCode(pos: Pos) {
-        let view = this.cm6
-        let ranges = view.state.selection.ranges
-        let doc = this.cm6.state.doc
-        let index = indexFromPos(doc, pos)
-        let tmpRanges = EditorSelection.create(
+        const view = this.cm6
+        const ranges = view.state.selection.ranges
+        const doc = this.cm6.state.doc
+        const index = indexFromPos(doc, pos)
+        const tmpRanges = EditorSelection.create(
             [EditorSelection.range(index, index)],
             0
         ).ranges
@@ -365,7 +365,7 @@ export class CodeMirror {
             ch = line.ch
             line = line.line
         }
-        var offset = indexFromPos(this.cm6.state.doc, { line, ch })
+        const offset = indexFromPos(this.cm6.state.doc, { line, ch })
         this.cm6.dispatch(
             { selection: { anchor: offset } },
             { scrollIntoView: !this.curOp }
@@ -373,9 +373,9 @@ export class CodeMirror {
         if (this.curOp && !this.curOp.isVimOp) this.onBeforeEndOperation()
     }
     getCursor(p?: 'head' | 'anchor' | 'start' | 'end'): Pos {
-        var sel = this.cm6.state.selection.main
+        const sel = this.cm6.state.selection.main
 
-        var offset =
+        const offset =
             p == 'head' || !p
                 ? sel.head
                 : p == 'anchor'
@@ -390,7 +390,7 @@ export class CodeMirror {
     }
 
     listSelections() {
-        var doc = this.cm6.state.doc
+        const doc = this.cm6.state.doc
         return this.cm6.state.selection.ranges.map((r) => {
             return {
                 anchor: posFromIndex(doc, r.anchor),
@@ -399,8 +399,8 @@ export class CodeMirror {
         })
     }
     setSelections(p: CM5Range[], primIndex?: number) {
-        var doc = this.cm6.state.doc
-        var ranges = p.map((x) => {
+        const doc = this.cm6.state.doc
+        const ranges = p.map((x) => {
             return EditorSelection.range(
                 indexFromPos(doc, x.anchor),
                 indexFromPos(doc, x.head)
@@ -411,8 +411,8 @@ export class CodeMirror {
         })
     }
     setSelection(anchor: Pos, head: Pos, options?: any) {
-        var doc = this.cm6.state.doc
-        var ranges = [
+        const doc = this.cm6.state.doc
+        const ranges = [
             EditorSelection.range(
                 indexFromPos(doc, anchor),
                 indexFromPos(doc, head)
@@ -426,7 +426,7 @@ export class CodeMirror {
         }
     }
     getLine(row: number): string {
-        var doc = this.cm6.state.doc
+        const doc = this.cm6.state.doc
         if (row < 0 || row >= doc.lines) return ''
         return this.cm6.state.doc.line(row + 1).text
     }
@@ -437,7 +437,7 @@ export class CodeMirror {
         return handle.row
     }
     getRange(s: Pos, e: Pos) {
-        var doc = this.cm6.state.doc
+        const doc = this.cm6.state.doc
         return this.cm6.state.sliceDoc(
             indexFromPos(doc, s),
             indexFromPos(doc, e)
@@ -445,17 +445,17 @@ export class CodeMirror {
     }
     replaceRange(text: string, s: Pos, e: Pos) {
         if (!e) e = s
-        var doc = this.cm6.state.doc
-        var from = indexFromPos(doc, s)
-        var to = indexFromPos(doc, e)
+        const doc = this.cm6.state.doc
+        const from = indexFromPos(doc, s)
+        const to = indexFromPos(doc, e)
         dispatchChange(this, { changes: { from, to, insert: text } })
     }
     replaceSelection(text: string) {
         dispatchChange(this, this.cm6.state.replaceSelection(text))
     }
     replaceSelections(replacements: string[]) {
-        var ranges = this.cm6.state.selection.ranges
-        var changes = ranges.map((r, i) => {
+        const ranges = this.cm6.state.selection.ranges
+        const changes = ranges.map((r, i) => {
             return { from: r.from, to: r.to, insert: replacements[i] || '' }
         })
         dispatchChange(this, { changes })
@@ -464,7 +464,7 @@ export class CodeMirror {
         return this.getSelections().join('\n')
     }
     getSelections() {
-        var cm = this.cm6
+        const cm = this.cm6
         return cm.state.selection.ranges.map((r) =>
             cm.state.sliceDoc(r.from, r.to)
         )
@@ -477,9 +477,9 @@ export class CodeMirror {
         return this.cm6.contentDOM
     }
     clipPos(p: Pos) {
-        var doc = this.cm6.state.doc
-        var ch = p.ch
-        var lineNumber = p.line + 1
+        const doc = this.cm6.state.doc
+        let ch = p.ch
+        let lineNumber = p.line + 1
         if (lineNumber < 1) {
             lineNumber = 1
             ch = 0
@@ -488,7 +488,7 @@ export class CodeMirror {
             lineNumber = doc.lines
             ch = Number.MAX_VALUE
         }
-        var line = doc.line(lineNumber)
+        const line = doc.line(lineNumber)
         ch = Math.min(Math.max(0, ch), line.to - line.from)
         return new Pos(lineNumber - 1, ch)
     }
@@ -497,7 +497,7 @@ export class CodeMirror {
         return this.cm6.state.doc.toString()
     }
     setValue(text: string) {
-        var cm = this.cm6
+        const cm = this.cm6
         return cm.dispatch({
             changes: { from: 0, to: cm.state.doc.length, insert: text },
             selection: EditorSelection.range(0, 0),
@@ -515,9 +515,9 @@ export class CodeMirror {
     }
 
     findMatchingBracket(pos: Pos) {
-        var state = this.cm6.state
-        var offset = indexFromPos(state.doc, pos)
-        var m = matchBrackets(state, offset + 1, -1)
+        const state = this.cm6.state
+        const offset = indexFromPos(state.doc, pos)
+        let m = matchBrackets(state, offset + 1, -1)
         if (m && m.end) {
             return { to: posFromIndex(state.doc, m.end.from) }
         }
@@ -554,23 +554,23 @@ export class CodeMirror {
     }
 
     setBookmark(cursor: Pos, options?: { insertLeft: boolean }) {
-        var assoc = options?.insertLeft ? 1 : -1
-        var offset = this.indexFromPos(cursor)
-        var bm = new Marker(this, offset, assoc)
+        const assoc = options?.insertLeft ? 1 : -1
+        const offset = this.indexFromPos(cursor)
+        const bm = new Marker(this, offset, assoc)
         return bm
     }
 
     cm6Query?: SearchQuery
     addOverlay({ query }: { query: RegExp }) {
-        let cm6Query = new SearchQuery({
+        const cm6Query = new SearchQuery({
             regexp: true,
             search: query.source,
             caseSensitive: !/i/.test(query.flags),
         })
         if (cm6Query.valid) {
-            ;(cm6Query as any).forVim = true
+            (cm6Query as any).forVim = true
             this.cm6Query = cm6Query
-            let effect = setSearchQuery.of(cm6Query)
+            const effect = setSearchQuery.of(cm6Query)
             this.cm6.dispatch({ effects: effect })
             return cm6Query
         }
@@ -578,21 +578,21 @@ export class CodeMirror {
     removeOverlay(overlay?: any) {
         if (!this.cm6Query) return
         ;(this.cm6Query as any).forVim = false
-        let effect = setSearchQuery.of(this.cm6Query)
+        const effect = setSearchQuery.of(this.cm6Query)
         this.cm6.dispatch({ effects: effect })
     }
 
     getSearchCursor(query: RegExp, pos: Pos) {
-        var cm = this
+        const cm = this
         type CM6Result = { from: number; to: number; match: string[] } | null
         type CM5Result = { from: Pos; to: Pos; match: string[] } | null
-        var last: CM6Result = null
-        var lastCM5Result: CM5Result = null
+        let last: CM6Result = null
+        let lastCM5Result: CM5Result = null
 
         if (pos.ch == undefined) pos.ch = Number.MAX_VALUE
-        var firstOffset = indexFromPos(cm.cm6.state.doc, pos)
+        const firstOffset = indexFromPos(cm.cm6.state.doc, pos)
 
-        var source = query.source.replace(
+        const source = query.source.replace(
             /(\\.|{(?:\d+(?:,\d*)?|,\d+)})|[{}]/g,
             function (a, b) {
                 if (!b) return '\\' + a
@@ -611,17 +611,17 @@ export class CodeMirror {
         }
 
         function nextMatch(from: number) {
-            var doc = cm.cm6.state.doc
+            const doc = cm.cm6.state.doc
             if (from > doc.length) return null
-            let res = rCursor(doc, from).next()
+            const res = rCursor(doc, from).next()
             return res.done ? null : res.value
         }
 
-        var ChunkSize = 10000
+        const ChunkSize = 10000
         function prevMatchInRange(from: number, to: number) {
-            var doc = cm.cm6.state.doc
+            const doc = cm.cm6.state.doc
             for (let size = 1; ; size++) {
-                let start = Math.max(from, to - size * ChunkSize)
+                const start = Math.max(from, to - size * ChunkSize)
                 let cursor = rCursor(doc, start, to),
                     range: CM6Result = null
                 while (!cursor.next().done) range = cursor.value
@@ -638,16 +638,16 @@ export class CodeMirror {
                 return this.find(true)
             },
             find: function (back?: boolean): string[] | null | undefined {
-                var doc = cm.cm6.state.doc
+                const doc = cm.cm6.state.doc
                 if (back) {
-                    let endAt = last
+                    const endAt = last
                         ? last.from == last.to
                             ? last.to - 1
                             : last.from
                         : firstOffset
                     last = prevMatchInRange(0, endAt)
                 } else {
-                    let startFrom = last
+                    const startFrom = last
                         ? last.from == last.to
                             ? last.to + 1
                             : last.to
@@ -689,13 +689,13 @@ export class CodeMirror {
         unit: 'page' | 'line',
         goalColumn?: number
     ) {
-        let { cm6 } = this
+        const { cm6 } = this
         const doc = cm6.state.doc
-        let pixels = unit == 'page' ? cm6.dom.clientHeight : 0
+        const pixels = unit == 'page' ? cm6.dom.clientHeight : 0
 
         const startOffset = indexFromPos(doc, start)
         let range = EditorSelection.range(startOffset, startOffset, goalColumn)
-        let count = Math.round(Math.abs(amount))
+        const count = Math.round(Math.abs(amount))
         for (let i = 0; i < count; i++) {
             if (unit == 'page') {
                 range = cm6.moveVertically(range, amount > 0, pixels)
@@ -704,7 +704,7 @@ export class CodeMirror {
             }
         }
 
-        let pos = posFromIndex(doc, range.head) as Pos & { hitSide: boolean }
+        const pos = posFromIndex(doc, range.head) as Pos & { hitSide: boolean }
         // set hitside to true if there was no place to move and cursor was clipped to the edge
         // of document. Needed for gj/gk
         if (
@@ -723,10 +723,10 @@ export class CodeMirror {
         return pos
     }
     charCoords(pos: Pos, mode: 'div' | 'local') {
-        var rect = this.cm6.contentDOM.getBoundingClientRect()
-        var offset = indexFromPos(this.cm6.state.doc, pos)
-        var coords = this.cm6.coordsAtPos(offset)
-        var d = -rect.top
+        const rect = this.cm6.contentDOM.getBoundingClientRect()
+        const offset = indexFromPos(this.cm6.state.doc, pos)
+        const coords = this.cm6.coordsAtPos(offset)
+        const d = -rect.top
         return {
             left: (coords?.left || 0) - rect.left,
             top: (coords?.top || 0) + d,
@@ -734,9 +734,9 @@ export class CodeMirror {
         }
     }
     coordsChar(coords: { left: number; top: number }, mode: 'div' | 'local') {
-        var rect = this.cm6.contentDOM.getBoundingClientRect()
+        const rect = this.cm6.contentDOM.getBoundingClientRect()
 
-        var offset =
+        const offset =
             this.cm6.posAtCoords({
                 x: coords.left + rect.left,
                 y: coords.top + rect.top,
@@ -745,7 +745,7 @@ export class CodeMirror {
     }
 
     getScrollInfo() {
-        var scroller = this.cm6.scrollDOM
+        const scroller = this.cm6.scrollDOM
         return {
             left: scroller.scrollLeft,
             top: scroller.scrollTop,
@@ -761,7 +761,7 @@ export class CodeMirror {
     }
     scrollIntoView(pos?: Pos, margin?: number) {
         if (pos) {
-            var offset = this.indexFromPos(pos)
+            const offset = this.indexFromPos(pos)
             this.cm6.dispatch({
                 effects: EditorView.scrollIntoView(offset),
             })
@@ -784,7 +784,7 @@ export class CodeMirror {
         this.refresh()
     }
     refresh() {
-        ;(this.cm6 as any).measure()
+        (this.cm6 as any).measure()
     }
 
     // event listeners
@@ -814,8 +814,8 @@ export class CodeMirror {
     $lastChangeEndOffset = 0
 
     onChange(update: ViewUpdate) {
-        for (let i in this.marks) {
-            let m = this.marks[i]
+        for (const i in this.marks) {
+            const m = this.marks[i]
             m.update(update.changes)
         }
         if (this.virtualSelection) {
@@ -824,7 +824,7 @@ export class CodeMirror {
                 //this.virtualSelection.ranges[i] = this.virtualSelection.ranges[i].map(update.changes)
             }
         }
-        var curOp = (this.curOp = this.curOp || ({} as Operation))
+        const curOp = (this.curOp = this.curOp || ({} as Operation))
         update.changes.iterChanges(
             (
                 fromA: number,
@@ -836,7 +836,7 @@ export class CodeMirror {
                 if (curOp.$changeStart == null || curOp.$changeStart > fromB)
                     curOp.$changeStart = fromB
                 this.$lastChangeEndOffset = toB
-                var change = { text: text.toJSON() }
+                const change = { text: text.toJSON() }
                 if (!curOp.lastChange) {
                     curOp.lastChange = curOp.change = change
                 } else {
@@ -850,7 +850,7 @@ export class CodeMirror {
                 this._handlers['change'] && this._handlers['change'].slice()
     }
     onSelectionChange() {
-        var curOp = (this.curOp = this.curOp || ({} as Operation))
+        const curOp = (this.curOp = this.curOp || ({} as Operation))
         if (!curOp.cursorActivityHandlers)
             curOp.cursorActivityHandlers =
                 this._handlers['cursorActivity'] &&
@@ -871,8 +871,8 @@ export class CodeMirror {
         return result
     }
     onBeforeEndOperation() {
-        var op = this.curOp
-        var scrollIntoView = false
+        const op = this.curOp
+        let scrollIntoView = false
         if (op) {
             if (op.change) {
                 signalTo(op.changeHandlers, this, op.change)
@@ -888,7 +888,7 @@ export class CodeMirror {
     moveH(increment: number, unit: string) {
         if (unit == 'char') {
             // todo
-            var cur = this.getCursor()
+            const cur = this.getCursor()
             this.setCursor(cur.line, cur.ch + increment)
         }
     }
@@ -926,21 +926,21 @@ export class CodeMirror {
     }
     getTokenTypeAt(pos: Pos) {
         // only comment|string are needed
-        var offset = this.indexFromPos(pos)
-        var tree = ensureSyntaxTree(this.cm6.state, offset)
-        var node = tree?.resolve(offset)
-        var type = node?.type?.name || ''
+        const offset = this.indexFromPos(pos)
+        const tree = ensureSyntaxTree(this.cm6.state, offset)
+        const node = tree?.resolve(offset)
+        const type = node?.type?.name || ''
         if (/comment/i.test(type)) return 'comment'
         if (/string/i.test(type)) return 'string'
         return ''
     }
 
     overWriteSelection(text: string) {
-        var doc = this.cm6.state.doc
-        var sel = this.cm6.state.selection
-        var ranges = sel.ranges.map((x) => {
+        const doc = this.cm6.state.doc
+        const sel = this.cm6.state.selection
+        const ranges = sel.ranges.map((x) => {
             if (x.empty) {
-                var ch =
+                const ch =
                     x.to < doc.length ? doc.sliceString(x.from, x.to + 1) : ''
                 if (ch && !/\n/.test(ch))
                     return EditorSelection.range(x.from, x.to + 1)
@@ -962,13 +962,13 @@ export class CodeMirror {
     }
     virtualSelection: EditorSelection | null = null
     forEachSelection(command: Function) {
-        var selection = this.cm6.state.selection
+        const selection = this.cm6.state.selection
         this.virtualSelection = EditorSelection.create(
             selection.ranges,
             selection.mainIndex
         )
-        for (var i = 0; i < this.virtualSelection.ranges.length; i++) {
-            var range = this.virtualSelection.ranges[i]
+        for (let i = 0; i < this.virtualSelection.ranges.length; i++) {
+            const range = this.virtualSelection.ranges[i]
             if (!range) continue
             this.cm6.dispatch({ selection: EditorSelection.create([range]) })
             command()
@@ -983,7 +983,7 @@ export class CodeMirror {
 /************* dialog *************/
 
 function dialogDiv(cm: CodeMirror, template: Node, bottom?: boolean) {
-    var dialog = document.createElement('div')
+    const dialog = document.createElement('div')
     dialog.appendChild(template)
     return dialog
 }
@@ -1002,10 +1002,10 @@ function openNotification(
     options: NotificationOptions
 ) {
     closeNotification(cm, close)
-    var dialog = dialogDiv(cm, template, options && options.bottom)
-    var closed = false
-    var doneTimer: any
-    var duration =
+    const dialog = dialogDiv(cm, template, options && options.bottom)
+    let closed = false
+    let doneTimer: any
+    const duration =
         options && typeof options.duration !== 'undefined'
             ? options.duration
             : 5000
@@ -1031,7 +1031,7 @@ function openNotification(
 }
 
 function showDialog(cm: CodeMirror, dialog: Element) {
-    var oldDialog = cm.state.dialog
+    const oldDialog = cm.state.dialog
     cm.state.dialog = dialog
 
     if (dialog && oldDialog !== dialog) {
@@ -1062,8 +1062,8 @@ function openDialog(
 
     closeNotification(me, undefined)
 
-    var dialog = dialogDiv(me, template, options.bottom)
-    var closed = false
+    const dialog = dialogDiv(me, template, options.bottom)
+    let closed = false
     showDialog(me, dialog)
 
     function close(newVal?: string) {
@@ -1128,7 +1128,7 @@ function openDialog(
     return close
 }
 
-var matching: any = {
+const matching: any = {
     '(': ')>',
     ')': '(<',
     '[': ']>',
@@ -1150,29 +1150,29 @@ function scanForBracket(
     style: any,
     config: any
 ) {
-    var maxScanLen = (config && config.maxScanLineLength) || 10000
-    var maxScanLines = (config && config.maxScanLines) || 1000
+    const maxScanLen = (config && config.maxScanLineLength) || 10000
+    const maxScanLines = (config && config.maxScanLines) || 1000
 
-    var stack = []
-    var re = bracketRegex(config)
-    var lineEnd =
+    const stack = []
+    const re = bracketRegex(config)
+    const lineEnd =
         dir > 0
             ? Math.min(where.line + maxScanLines, cm.lastLine() + 1)
             : Math.max(cm.firstLine() - 1, where.line - maxScanLines)
     for (var lineNo = where.line; lineNo != lineEnd; lineNo += dir) {
-        var line = cm.getLine(lineNo)
+        const line = cm.getLine(lineNo)
         if (!line) continue
-        var pos = dir > 0 ? 0 : line.length - 1,
+        let pos = dir > 0 ? 0 : line.length - 1,
             end = dir > 0 ? line.length : -1
         if (line.length > maxScanLen) continue
         if (lineNo == where.line) pos = where.ch - (dir < 0 ? 1 : 0)
         for (; pos != end; pos += dir) {
-            var ch = line.charAt(pos)
+            const ch = line.charAt(pos)
             if (
                 re.test(ch) /*&& (style === undefined ||
                           (cm.getTokenTypeAt(new Pos(lineNo, pos + 1)) || "") == (style || ""))*/
             ) {
-                var match = matching[ch]
+                const match = matching[ch]
                 if (match && (match.charAt(1) == '>') == dir > 0) stack.push(ch)
                 else if (!stack.length)
                     return { pos: new Pos(lineNo, pos), ch: ch }
@@ -1186,9 +1186,9 @@ function scanForBracket(
 }
 
 function findMatchingTag(cm: CodeMirror, pos: Pos) {
-    var state = cm.cm6.state
-    var offset = cm.indexFromPos(pos)
-    var m = matchBrackets(state, offset + 1, -1, { brackets: '\n\n' })
+    const state = cm.cm6.state
+    const offset = cm.indexFromPos(pos)
+    let m = matchBrackets(state, offset + 1, -1, { brackets: '\n\n' })
     if (m) {
         if (!m.end || !m.start) return
         return {
@@ -1214,12 +1214,12 @@ function convertRange(doc: Text, cm6Range: { from: number; to: number }) {
 }
 
 function findEnclosingTag(cm: CodeMirror, pos: Pos) {
-    var state = cm.cm6.state
-    var offset = cm.indexFromPos(pos)
-    var text = state.sliceDoc(0, offset)
-    var i = offset
+    const state = cm.cm6.state
+    const offset = cm.indexFromPos(pos)
+    const text = state.sliceDoc(0, offset)
+    let i = offset
     while (i > 0) {
-        var m = matchBrackets(state, i, 1, { brackets: '\n\n' })
+        const m = matchBrackets(state, i, 1, { brackets: '\n\n' })
         if (m && m.start && m.end) {
             return {
                 open: convertRange(state.doc, m.start),
