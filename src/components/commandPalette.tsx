@@ -22,12 +22,8 @@ import {
 } from '../features/tools/toolSelectors'
 import { Combobox } from '@headlessui/react'
 import { toggleFeedback } from '../features/logging/loggingSlice'
-import {
-    selectFocusedTabId,
-} from '../features/selectors'
-import {
-    getViewId,
-} from '../features/codemirror/codemirrorSelectors'
+import { selectFocusedTabId } from '../features/selectors'
+import { getViewId } from '../features/codemirror/codemirrorSelectors'
 import { getCodeMirrorView } from '../features/codemirror/codemirrorSlice'
 import { toggleChatHistory } from '../features/chat/chatSlice'
 import { pressAICommand } from '../features/chat/chatThunks'
