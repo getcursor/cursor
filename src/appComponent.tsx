@@ -278,7 +278,14 @@ export function App() {
     const rootPath = useAppSelector(getRootPath)
     const folders = useAppSelector(getFolders)
     const leftSideExpanded = useAppSelector(tsel.getLeftSideExpanded)
+    const handleExpandLeftSideClick = () => {
+        dispatch(ts.expandLeftSide())
+    }
 
+    const handleCollapseClick = () => {
+        dispatch(ts.leftTabInactive())
+        dispatch(ts.collapseLeftSide())
+    }
     const paneSplits = useAppSelector(getPaneStateBySplits)
 
     const zoomFactor = useAppSelector(getZoomFactor)
@@ -366,6 +373,7 @@ export function App() {
 
     const [dragging, setDragging] = useState(false)
     const [leftSideWidth, setLeftSideWidth] = useState(250)
+    const [leftSideWidthTemp, setLeftSideWidthTemp] = useState(250)
     useEffect(() => {
         const throttledMouseMove = throttleCallback((event: any) => {
             if (dragging) {
@@ -374,7 +382,13 @@ export function App() {
 
                 const diff = event.clientX
 
-                setLeftSideWidth(diff)
+                if (diff >= 169) {
+                    setLeftSideWidth(diff)
+                    handleExpandLeftSideClick()
+                } else if (diff <= 50) {
+                    handleCollapseClick()
+                    setLeftSideWidth(leftSideWidthTemp)
+                }
             }
         }, 10)
         document.addEventListener('mousemove', throttledMouseMove)
@@ -423,6 +437,7 @@ export function App() {
                             }`}
                             onMouseDown={() => {
                                 setDragging(true)
+                                setLeftSideWidthTemp(leftSideWidth)
                             }}
                         ></div>
                         <div className="app__righttopwrapper">
