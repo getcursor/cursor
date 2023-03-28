@@ -22,7 +22,6 @@ import { BotMessageType, FullState } from '../window/state'
 import {
     activateDiffFromEditor,
     appendResponse,
-    changeDraftMsgType,
     changeMsgType,
     doSetChatState,
     dummySubmitCommandBar,
@@ -37,6 +36,7 @@ import {
     resumeGeneration,
     setChatOpen,
     setGenerating,
+    setHitTokenLimit,
     toggleChatHistory,
     tokenLimitInterrupt,
     updateLastUserMessageMsgType,
@@ -270,9 +270,10 @@ export async function getPayload({
     // hack
     dispatch(updateLastUserMessageMsgType(null))
 
-    let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
+    let oaiKey: string | undefined | null =
+        state.settingsState.settings.openAIKey
     if (oaiKey == null || oaiKey === '') {
-       oaiKey = null; 
+        oaiKey = null
     }
     const userRequest = {
         // Core request
@@ -515,6 +516,7 @@ export const continueGeneration = createAsyncThunk(
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
             }
+            dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))
         }
     }
 )
@@ -532,7 +534,7 @@ export const finishResponse = createAsyncThunk(
 
 export const initializeChatState = createAsyncThunk(
     'chat/getResponse',
-    async (payload: null, { getState, dispatch }) => {
+    async (payload: null, { dispatch }) => {
         // const userMessages = await connector.getStore('userMessages');
         // const botMessages = await connector.getStore('botMessages');
         const chatState = await connector.getStore('chatState')
@@ -793,9 +795,14 @@ export const streamResponse = createAsyncThunk(
             }
 
             const processResponse = async () => {
-                const { value, buffer } = await getVariable('', 'type')
+                const { value } = await getVariable('', 'type')
                 checkSend()
-                dispatch(newResponse({ type: value.trim() as BotMessageType, useDiagnostics }))
+                dispatch(
+                    newResponse({
+                        type: value.trim() as BotMessageType,
+                        useDiagnostics,
+                    })
+                )
                 await sendBody(''!, value.trim())
                 if (value.trim() == 'location') {
                     const state = <FullState>getState()
@@ -915,7 +922,7 @@ export const streamResponse = createAsyncThunk(
                 dispatch(openRateLimit())
                 dispatch(interruptGeneration(null))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
             }
         }
@@ -951,7 +958,7 @@ export const continueUntilEnd = createAsyncThunk(
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             }
@@ -968,7 +975,8 @@ export const diffResponse = createAsyncThunk(
 
             const getFullState = () => getState() as FullState
             const lastBotMessage = getLastBotMessage(getFullState().chatState)
-            const useDiagnostics = lastBotMessage?.useDiagnostics || type == 'lsp'
+            const useDiagnostics =
+                lastBotMessage?.useDiagnostics || type == 'lsp'
 
             const data = await getPayload({
                 getState: getFullState,
@@ -1066,6 +1074,7 @@ export const diffResponse = createAsyncThunk(
             const usedChunks = []
             for await (const chunk of generator) {
                 if (!isGenerating() || isInterrupted()) {
+                    // todo
                 }
                 // checkSend()
                 // chunk will n
@@ -1181,7 +1190,7 @@ export const diffResponse = createAsyncThunk(
             console.error(e)
             dispatch(setGenerating(false))
             if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             }
@@ -1318,13 +1327,13 @@ export const pressAICommand = createAsyncThunk(
                 }
                 return
             case 'k':
-                if (chatState.chatIsOpen && lastBotMessage?.finished) {
-                    if (editorView) {
-                        // When there is an editorView, we dispatch something
-                        dispatch(changeMsgType('chat_edit'))
-                        dispatch(changeDraftMsgType('chat_edit'))
-                    }
-                } else if (editorView) {
+                // if (chatState.chatIsOpen && lastBotMessage?.finished) {
+                //     if (editorView) {
+                //         // When there is an editorView, we dispatch something
+                //         dispatch(changeMsgType('chat_edit'))
+                //         dispatch(changeDraftMsgType('chat_edit'))
+                //     }
+                if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({

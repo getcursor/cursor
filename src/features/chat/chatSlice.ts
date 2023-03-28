@@ -104,8 +104,8 @@ export const chatSlice = createSlice({
         newResponse(
             chatState: ChatState,
             action: PayloadAction<{
-                type: BotMessageType,
-                useDiagnostics?: boolean | number,
+                type: BotMessageType
+                useDiagnostics?: boolean | number
             }>
         ) {
             if (action.payload.type === 'markdown') {
@@ -491,6 +491,19 @@ export const chatSlice = createSlice({
             // Bad - I added lots of tech debt today and will fix later
             lastBotMessage.maxOrigLine = action.payload
         },
+        setHitTokenLimit(
+            chatState: ChatState,
+            action: PayloadAction<{
+                conversationId: string
+                hitTokenLimit: boolean
+            }>
+        ) {
+            const lastBotMessage = getLastBotMessage(
+                chatState,
+                action.payload.conversationId
+            )!
+            lastBotMessage.hitTokenLimit = action.payload.hitTokenLimit
+        },
         moveCommandBarHistory(
             chatState: ChatState,
             action: PayloadAction<'up' | 'down'>
@@ -560,6 +573,7 @@ export const {
     startNewMessage,
     doSetMessages,
     doSetChatState,
+    setHitTokenLimit,
     _submitCommandBar: dummySubmitCommandBar,
     // Bad - I added tech debt and will fix later
     setMaxOrigLine,
