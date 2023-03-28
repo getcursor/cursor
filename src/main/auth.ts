@@ -32,7 +32,7 @@ const STRIPE_FAILURE_URL = 'http://localhost:8000/failure/'
 const AUTH0_CALLBACK_URL = `${API_ROOT}/auth/auth0_callback`
 const redirectUri = AUTH0_CALLBACK_URL
 const DUMMY_URL = `${API_ROOT}/dummy/*`
-const API_AUDIENCE = 'https://cursor.us.auth0.com/api/v2/'
+const API_AUDIENCE = `https://${auth0Domain}/api/v2/`
 
 const storeWrapper = {
     get: async (key: string) => {
