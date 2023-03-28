@@ -40,6 +40,7 @@ import {
     setChatOpen,
     setCurrentDraftMessage,
     setGenerating,
+    setHitTokenLimit,
     startNewMessage,
     toggleChatHistory,
     tokenLimitInterrupt,
@@ -519,6 +520,7 @@ export const continueGeneration = createAsyncThunk(
                 dispatch(openError(null))
                 dispatch(interruptGeneration(null))
             }
+            dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))
         }
     }
 )
@@ -799,7 +801,12 @@ export const streamResponse = createAsyncThunk(
             const processResponse = async () => {
                 let { value, buffer } = await getVariable('', 'type')
                 checkSend()
-                dispatch(newResponse({ type: value.trim() as BotMessageType, useDiagnostics }))
+                dispatch(
+                    newResponse({
+                        type: value.trim() as BotMessageType,
+                        useDiagnostics,
+                    })
+                )
                 await sendBody(''!, value.trim())
                 if (value.trim() == 'location') {
                     const state = <FullState>getState()
@@ -1322,13 +1329,13 @@ export const pressAICommand = createAsyncThunk(
                 }
                 return
             case 'k':
-                if (chatState.chatIsOpen && lastBotMessage?.finished) {
-                    if (editorView) {
-                        // When there is an editorView, we dispatch something
-                        dispatch(changeMsgType('chat_edit'))
-                        dispatch(changeDraftMsgType('chat_edit'))
-                    }
-                } else if (editorView) {
+                // if (chatState.chatIsOpen && lastBotMessage?.finished) {
+                //     if (editorView) {
+                //         // When there is an editorView, we dispatch something
+                //         dispatch(changeMsgType('chat_edit'))
+                //         dispatch(changeDraftMsgType('chat_edit'))
+                //     }
+                if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({
