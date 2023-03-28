@@ -37,11 +37,13 @@ import {
 import { openFile } from '../features/globalSlice'
 import { getRootPath } from '../features/selectors'
 import _ from 'lodash'
+import { useTranslation } from 'react-i18next'
 type LeftTab = 'search' | 'filetree'
 
 import Modal from 'react-modal'
 
 export function FeedbackArea() {
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
     const feedbackMessage = useAppSelector(getFeedbackMessage)
     const isOpen = useAppSelector(getIsOpen)
@@ -57,10 +59,10 @@ export function FeedbackArea() {
             textareaRef.current!.scrollHeight + 'px'
     }
     const placeholders = [
-        'Least favorite thing about Cursor...',
-        'Favorite thing about Cursor is...',
-        'What would you like to see in Cursor?',
-        'What should we fix about Cursor?',
+        t('Least favorite thing about Cursor...'),
+        t('Favorite thing about Cursor is...'),
+        t('What would you like to see in Cursor?'),
+        t('What should we fix about Cursor?'),
     ]
     const randomPlaceholder =
         placeholders[Math.floor(Math.random() * placeholders.length)]
@@ -100,7 +102,7 @@ export function FeedbackArea() {
                         autoFocus={true}
                         value={feedbackMessage}
                         placeholder={
-                            'Tell us anything! E.g. ' + randomPlaceholder
+                            t('Tell us anything! E.g. ') + randomPlaceholder
                         }
                         onChange={handleTextareaChange}
                         onKeyDown={(e) => {

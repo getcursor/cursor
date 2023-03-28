@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import * as ssel from '../features/settings/settingsSelectors'
 import {
@@ -29,12 +29,12 @@ import {
 } from '../features/lsp/languageServerSelector'
 import { State } from '../features/window/state'
 
-import { localeOptions, Languages } from '../i18n';
+import { localeOptions, Languages } from '../i18n'
 
 import Modal from 'react-modal'
 
 export function SettingsPopup() {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation()
     const dispatch = useAppDispatch()
     const settings = useAppSelector(ssel.getSettings)
     const isSettingsOpen = useAppSelector(ssel.getSettingsIsOpen)
@@ -120,7 +120,7 @@ export function SettingsPopup() {
                             </div>
 
                             <div className="settings__item">
-                                <div className="settings__item_title">                                    
+                                <div className="settings__item_title">
                                     {t("Tab Size")}
                                 </div>
                                 <div className="settings__item_description">
@@ -140,7 +140,7 @@ export function SettingsPopup() {
                             </div>
 
                             <div className="settings__item">
-                                <div className="settings__item_title">                                    
+                                <div className="settings__item_title">
                                     {t("Text Wrapping")}
                                 </div>
                                 <div className="settings__item_description">
@@ -169,8 +169,8 @@ export function SettingsPopup() {
                                 <Dropdown
                                     options={Object.keys(localeOptions)}
                                     onChange={(e) => {
-                                        const lang = e.value as Languages;
-                                        i18n.changeLanguage(localeOptions[lang]);
+                                        const lang = e.value as Languages
+                                        i18n.changeLanguage(localeOptions[lang])
                                         dispatch(                                            
                                             changeSettings({
                                                 language: lang,
@@ -200,7 +200,7 @@ export function SettingsPopup() {
 }
 
 function CopilotPanel() {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
     const { signedIn, enabled } = useAppSelector(copilotStatus)
     const [localState, setLocalState] = useState<
@@ -264,21 +264,21 @@ function CopilotPanel() {
         )
     } else if (localState == 'signingIn') {
         currentPanel = (
-            <div className="copilot__signin">                
+            <div className="copilot__signin">
                 {t("Please click this link:")}&nbsp;&nbsp;
                 <a href={localData?.url} target="_blank">
                     {localData?.url}
                 </a>
                 <br />
                 {t("Enter this code:")} {localData?.code}
-                <br />                
+                <br />
                 {t("Click here when done:")}
                 <button onClick={tryFinishSignIn}>{t("Done")}</button>
             </div>
         )
     } else if (localState == 'signInFailed') {
         currentPanel = (
-            <div className="copilot__signin">                
+            <div className="copilot__signin">
                 {t("Sign in failed. Please try again.")}
                 {loading ? (
                     <p>{t("Loading...")}</p>
@@ -379,7 +379,7 @@ function CopilotPanel() {
 // }
 
 function LanguageServerPanel({ languageName }: { languageName: string }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
     const languageState = useAppSelector(languageServerStatus(languageName))
 

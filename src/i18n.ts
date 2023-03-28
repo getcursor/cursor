@@ -1,19 +1,20 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
 
-import en from './locales/en.json';
-import ja from './locales/ja.json';
-import zh from './locales/zh.json';
+import en from './locales/en.json'
+import zh from './locales/zh.json'
+import hi from './locales/hi.json'
 
 export const localeOptions = {
     'English': 'en',
     '中文': 'zh',
-    '日本語': 'ja'
+    'हिंदी': 'hi',
 }
 
 export type Languages = keyof typeof localeOptions
 
-export function init (lng: string) {
+export function init (locale: Languages) {
+    const lng = localeOptions[locale];
     i18n
     .use(initReactI18next)
     .init({
@@ -23,10 +24,10 @@ export function init (lng: string) {
             escapeValue: false,
         },
         resources: {
-            en: { translation: en },
-            ja: { translation: ja },
+            en: { translation: en },            
             zh: { translation: zh },
+            hi: { translation: hi },
         }
-    });
+    })
 }
 

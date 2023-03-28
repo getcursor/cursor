@@ -38,6 +38,7 @@ import {
 import { getCodeMirrorView } from '../features/codemirror/codemirrorSlice'
 import { toggleChatHistory } from '../features/chat/chatSlice'
 import { pressAICommand } from '../features/chat/chatThunks'
+import { useTranslation } from 'react-i18next'
 
 const commandKey = connector.PLATFORM_META_KEY + ''
 
@@ -583,6 +584,7 @@ export function CommandResult({
     dataTestId: string
     closeTrigger: () => void
 }) {
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
 
     const executeCommand = useCallback(

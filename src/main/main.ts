@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import fetch from 'node-fetch'
 import { Settings } from '../features/window/state'
 
@@ -108,6 +109,7 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
+    const { t } = useTranslation()
     const width = 1500,
         height = 800
     // Create the browser window.
@@ -185,7 +187,7 @@ const createWindow = () => {
     }
     let menuList: any[] = []
     const quitApp = {
-        label: 'Quit App',
+        label: t('Quit App?'),
         click: () => {
             app.quit()
         },

@@ -1,10 +1,7 @@
 {
-    "SETTINGS": "SETTINGS",
+    "SETTINGS": "स्थापित करना",
     "Key Bindings": "Key Bindings",
     "Controls whether to use vim, emacs, or none": "Controls whether to use vim, emacs, or none",
-    "none": "none",
-    "vim": "vim",
-    "emacs": "emacs",
     "Tab Size": "Tab Size",
     "Controls the tab size": "Controls the tab size",
     "Text Wrapping": "Text Wrapping",

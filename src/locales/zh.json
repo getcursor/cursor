@@ -2,9 +2,6 @@
     "SETTINGS": "设置",
     "Key Bindings": "按键绑定",
     "Controls whether to use vim, emacs, or none": "控制是否使用 vim, emacs 或不使用",
-    "none": "none",
-    "vim": "vim",
-    "emacs": "emacs",
     "Tab Size": "选项卡大小",
     "Controls the tab size": "控制选项卡大小",
     "Text Wrapping": "文字环绕",
@@ -25,5 +22,15 @@
     "Stop": "停止",
     "Run": "运行",
     "Install": "安装",
-    "Language Server": "语言服务器"
+    "Language Server": "语言服务器",
+
+    "Tell us anything! E.g. ": "告诉我们任何事情！例如：",
+    "Least favorite thing about Cursor...": "最不喜欢 Cursor 的地方......",
+    "Favorite thing about Cursor is...": "最喜欢 Cursor 的一点是......",
+    "What would you like to see in Cursor?": "您希望在 Cursor 中看到什么？",
+    "What should we fix about Cursor?": "我们应该如何修复 Cursor 中的问题？",
+
+    "Enter command...": "输入命令...",
+
+    "Quit App": "退出程序"
 }

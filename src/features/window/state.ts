@@ -1,7 +1,7 @@
 import { Action } from '@reduxjs/toolkit'
 import { TransactionSpec } from '@codemirror/state'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
-import { Languages } from '../../i18n';
+import { Languages } from '../../i18n'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface File {

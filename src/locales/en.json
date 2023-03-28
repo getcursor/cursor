@@ -2,9 +2,6 @@
     "SETTINGS": "SETTINGS",
     "Key Bindings": "Key Bindings",
     "Controls whether to use vim, emacs, or none": "Controls whether to use vim, emacs, or none",
-    "none": "none",
-    "vim": "vim",
-    "emacs": "emacs",
     "Tab Size": "Tab Size",
     "Controls the tab size": "Controls the tab size",
     "Text Wrapping": "Text Wrapping",
@@ -25,5 +22,16 @@
     "Stop": "Stop",
     "Run": "Run",
     "Install": "Install",
-    "Language Server": "Language Server"
+    "Language Server": "Language Server",
+    
+    "Tell us anything! E.g. ": "Tell us anything! E.g. ",
+    "Least favorite thing about Cursor...": "Least favorite thing about Cursor...",
+    "Favorite thing about Cursor is...": "Favorite thing about Cursor is...",
+    "What would you like to see in Cursor?": "What would you like to see in Cursor?",
+    "What should we fix about Cursor?": "What should we fix about Cursor?",
+
+
+    "Enter command...": "Enter command...",
+
+    "Quit App": "Quit App"
 }
