@@ -172,10 +172,10 @@ const createWindow = () => {
     })
 
     globalShortcut.register(META_KEY + '+Shift+Space', () => {
-        if (main_window.isFocused()) {
-            main_window.minimize()
-        } else {
+        if (!main_window.isFocused()) {
             main_window.show()
+        } else {
+            main_window.minimize()
         }
     })
 
