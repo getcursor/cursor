@@ -468,7 +468,7 @@ export function MarkdownPopup({
                             </ReactMarkdown>
                         </div>
                         <div className={'apply-button-holder'}>
-{/*                             {last && (
+                            {/*                             {last && (
                                 <button
                                     className="apply-button"
                                     onClick={onApply}
