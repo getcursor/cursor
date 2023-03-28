@@ -418,7 +418,9 @@ export function App() {
                             <LeftSide />
                         </div>
                         <div
-                            className="leftDrag"
+                            className={`leftDrag ${
+                                leftSideExpanded ? 'ioio' : 'folded'
+                            }`}
                             onMouseDown={() => {
                                 setDragging(true)
                             }}

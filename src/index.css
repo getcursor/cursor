@@ -1219,10 +1219,10 @@ input[type='file']::before {
 }
 
 /* .cm-subdiff-accept {
-   color: green 
+   color: green
 }
 .cm-subdiff-reject {
-   color: red 
+   color: red
 } */
 
 .not-windows-platform-shotcut-span-sm {
@@ -2435,7 +2435,10 @@ free servers .disabled_command .shortcut__block {
     height: 100%;
     width: 5px;
     cursor: ew-resize;
-    background: var(--left-pane-background);
+}
+
+.leftDrag.folded{
+    width:0;
 }
 
 .apply-button-holder {
