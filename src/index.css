@@ -2442,14 +2442,14 @@ free servers .disabled_command .shortcut__block {
 .terminal-content {
     display: flex;
     height: 100%;
-  }
-  
+}
+
 .terminal-tabs {
     width: 150px;
     flex-shrink: 0;
     margin-top: 10px;
 }
-  
+
 .terminal-tab {
     display: flex;
     align-items: center;
@@ -2465,7 +2465,7 @@ free servers .disabled_command .shortcut__block {
 }
 
 .terminal-tab:hover {
-    background-color: var(--tab-not-active)
+    background-color: var(--tab-not-active);
 }
 
 .close-tab-btn {
@@ -2475,7 +2475,7 @@ free servers .disabled_command .shortcut__block {
     font-size: 12px;
     cursor: pointer;
 }
-  
+
 .createButton {
     color: #bbb;
     font-size: 18px;
