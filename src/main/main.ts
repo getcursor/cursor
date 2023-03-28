@@ -137,35 +137,59 @@ const createWindow = () => {
         },
     })
 
-    main_window.on('minimize', () => {
-        globalShortcut.unregisterAll()
+    let shortcutRegistered = false
 
-        globalShortcut.register(META_KEY + '+Shift+Space', () => {
-            if (main_window.isMinimized()) {
-                main_window.show()
-            } else {
+    main_window.on('focus', () => {
+        if (!shortcutRegistered) {
+            globalShortcut.register(META_KEY + '+M', () => {
                 main_window.minimize()
-            }
-        })
+            })
+    
+            globalShortcut.register(META_KEY + '+Shift+M', () => {
+                if (main_window.isMaximized()) {
+                    main_window.unmaximize()
+                } else {
+                    main_window.maximize()
+                }
+            })
+    
+            globalShortcut.register(META_KEY + '+=', () => {
+                main_window.webContents.send('zoom_in')
+            })
+
+            shortcutRegistered = true
+        }
+    })
+    
+    main_window.on('blur', () => {
+        if (shortcutRegistered) {
+            globalShortcut.unregister(META_KEY + '+M')
+            globalShortcut.unregister(META_KEY + '+Shift+M')
+            globalShortcut.unregister(META_KEY + '+=')
+
+            shortcutRegistered = false
+        }
     })
 
-    main_window.on('restore', () => {
-        globalShortcut.register(META_KEY + '+M', () => {
+    globalShortcut.register(META_KEY + '+Shift+Space', () => {
+        if (main_window.isFocused()) {
             main_window.minimize()
-        })
-
-        globalShortcut.register(META_KEY + '+Shift+M', () => {
-            if (main_window.isMaximized()) {
-                main_window.unmaximize()
-            } else {
-                main_window.maximize()
-            }
-        })
-
-        globalShortcut.register(META_KEY + '+=', () => {
-            main_window.webContents.send('zoom_in')
-        })
+        } else {
+            main_window.show()
+        }
     })
+
+    // main_window.on('minimize', () => {
+    //     globalShortcut.unregisterAll()
+
+    //     globalShortcut.register(META_KEY + '+Shift+Space', () => {
+    //         if (main_window.isMinimized()) {
+    //             main_window.show()
+    //         } else {
+    //             main_window.minimize()
+    //         }
+    //     })
+    // })
 
     main_window.webContents.setWindowOpenHandler(({ url }) => {
         shell.openExternal(url)
@@ -375,30 +399,6 @@ const createWindow = () => {
     ])
     var menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
-
-    globalShortcut.register(META_KEY + '+M', () => {
-        main_window.minimize()
-    })
-
-    globalShortcut.register(META_KEY + '+Shift+M', () => {
-        if (main_window.isMaximized()) {
-            main_window.unmaximize()
-        } else {
-            main_window.maximize()
-        }
-    })
-
-    globalShortcut.register(META_KEY + '+Shift+Space', () => {
-        if (main_window.isMinimized()) {
-            main_window.show()
-        } else {
-            main_window.minimize()
-        }
-    })
-
-    globalShortcut.register(META_KEY + '+=', () => {
-        main_window.webContents.send('zoom_in')
-    })
 
     ipcMain.handle('changeSettings', (event: Event, settings: Settings) => {
         log.info('STORING SETTINGS')
