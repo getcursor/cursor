@@ -2,7 +2,8 @@ import {
     findFileIdFromPath,
     getPathForFileId,
     getPathForFolderId,
- getContentsIfNeeded } from '../window/fileUtils'
+    getContentsIfNeeded,
+} from '../window/fileUtils'
 import { FullState } from '../window/state'
 import { joinAdvanced } from '../../utils'
 import { badWords } from './badWords'

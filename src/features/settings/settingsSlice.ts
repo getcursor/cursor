@@ -1,12 +1,5 @@
-import {
-    createAsyncThunk,
-    createSlice,
-    PayloadAction,
-} from '@reduxjs/toolkit'
-import {
-    SettingsState,
-    initialSettingsState,
-} from '../window/state'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { SettingsState, initialSettingsState } from '../window/state'
 
 export const changeSettings = createAsyncThunk(
     'settings/changeSettings',

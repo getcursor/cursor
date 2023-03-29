@@ -1,6 +1,6 @@
 // import keybinding and keymap
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { EditorView , ViewUpdate } from '@codemirror/view'
+import { EditorView, ViewUpdate } from '@codemirror/view'
 import { vimStateField } from './codemirror-vim/index'
 import { historyField } from '@codemirror/commands'
 import { EditorState } from '@codemirror/state'

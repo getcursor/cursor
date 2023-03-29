@@ -3,9 +3,7 @@ import {
     faHistory,
     IconDefinition,
 } from '@fortawesome/free-solid-svg-icons'
-import {
-    faChevronsLeft,
-} from '@fortawesome/pro-regular-svg-icons'
+import { faChevronsLeft } from '@fortawesome/pro-regular-svg-icons'
 import { setChatOpen, toggleChatHistory } from '../features/chat/chatSlice'
 import { store } from './store'
 
