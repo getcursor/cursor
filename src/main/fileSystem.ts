@@ -223,14 +223,18 @@ export class FileSystem {
             // do the same as above but just use the fs module
             const files = fs.readdirSync(path)
             return files.map((fileName) => {
-                const isDir = fs
-                    .lstatSync(
-                        path + PLATFORM_INFO.PLATFORM_DELIMITER + fileName
-                    )
-                    .isDirectory()
-                const size = fs.lstatSync(
-                    path + PLATFORM_INFO.PLATFORM_DELIMITER + fileName
-                ).size
+                const filePath = path + PLATFORM_INFO.PLATFORM_DELIMITER + fileName
+                let isDir: boolean, size: number
+                if (!fs.existsSync(filePath)) {
+                    // when using windows access symlink in wsl, fs.statSync may not recognize it
+                    // and raise "no such file or directory" error
+                    isDir = false
+                    size = 0
+                    return { fileName, isDir, size }
+                }
+                const stat = fs.statSync(filePath)
+                isDir = stat.isDirectory()
+                size = stat.size
                 return { fileName, isDir, size }
             })
         }
@@ -391,12 +395,12 @@ export class FileSystem {
                             if (isDir) callbacks.unlinkDir(filePath)
                             else callbacks.unlink(filePath)
                         }
-                    } catch (err) {}
+                    } catch (err) { }
                 }
             })
-            childProcess.stderr.on('data', function (data) {})
+            childProcess.stderr.on('data', function (data) { })
 
-            childProcess.on('exit', function (code) {})
+            childProcess.on('exit', function (code) { })
         } else {
             var watcher = new Watcher(rootDir, {
                 ignore,
