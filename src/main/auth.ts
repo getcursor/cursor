@@ -7,6 +7,7 @@ import {
     BrowserWindow,
     ipcMain,
     IpcMainInvokeEvent,
+    webContents,
 } from 'electron'
 import { API_ROOT } from '../utils'
 import crypto from 'crypto'
@@ -17,11 +18,14 @@ const store = new Store()
 
 let win: BrowserWindow | null = null
 
-// const auth0Domain = 'cursor.us.auth0.com'
-// const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
-
 const auth0Domain = 'cursor.us.auth0.com'
 const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
+const cursorHome = 'https://cursor.so'
+
+// Test domain/client
+// const auth0Domain = 'dev-27d5cph2nbetfllb.us.auth0.com'
+// const clientId = 'OzaBXLClY5CAGxNzUhQ2vlknpi07tGuE'
+// const cursorHome = 'http://localhost:4000'
 
 let accessToken: string | null = null
 let profile: any | null = null
@@ -38,12 +42,15 @@ const redirectUri = AUTH0_CALLBACK_URL
 const DUMMY_URL = `${API_ROOT}/dummy/*`
 const API_AUDIENCE = `https://${auth0Domain}/api/v2/`
 
-const loginUrl = `${API_ROOT}/auth/login`
-const signUpUrl = `${API_ROOT}/auth/signUp`
-const logoutUrl = `${API_ROOT}/auth/logout`
-const settingsUrl = `${API_ROOT}/auth/settings`
+// These are routes that exist on our homepage
+const loginUrl = `${cursorHome}/api/auth/loginDeep`
+const signUpUrl = `${cursorHome}/api/auth/loginDeep`
+const settingsUrl = `${cursorHome}/settings`
 const supportUrl = `${API_ROOT}/auth/support`
-const payUrl = `${API_ROOT}/auth/pay`
+
+// These are api routes
+const logoutUrl = `${API_ROOT}/api/auth/logout`
+const payUrl = `${API_ROOT}/api/auth/checkoutDeep`
 
 const storeWrapper = {
     get: async (key: string) => {
@@ -79,34 +86,6 @@ function sha256(buffer: Buffer) {
     return crypto.createHash('sha256').update(buffer).digest()
 }
 
-export function getAuthenticationURL() {
-    verifier = base64URLEncode(crypto.randomBytes(32))
-    const challenge = base64URLEncode(sha256(Buffer.from(verifier)))
-
-    const state = Math.random().toString(36).substring(2, 18)
-    const scope = 'openid profile offline_access'
-    const responseType = 'code'
-
-    const queryParams = {
-        audience: API_AUDIENCE,
-        client_id: clientId,
-        redirect_uri: AUTH0_CALLBACK_URL,
-        state,
-        scope,
-        response_type: responseType,
-        code_challenge: challenge,
-        code_challenge_method: 'S256', // SHA-256
-    }
-
-    return {
-        url: `${loginUrl}?${new URLSearchParams(
-            queryParams
-        )}`,
-        state,
-        verifier,
-    }
-}
-
 export async function stripeUrlRequest(window: BrowserWindow) {
     const response = await fetch(`${API_ROOT}/auth/create-checkout-session`, {
         method: 'POST',
@@ -124,8 +103,9 @@ export async function stripeUrlRequest(window: BrowserWindow) {
     window.loadURL(newUrl)
 }
 
-export async function refreshTokens(event: IpcMainInvokeEvent) {
+export async function refreshTokens(event?: IpcMainInvokeEvent) {
     const refreshToken = await storeWrapper.get('refreshToken')
+    console.log('retrieving refreshToken', refreshToken)
 
     if (refreshToken) {
         const refreshOptions = {
@@ -136,7 +116,7 @@ export async function refreshTokens(event: IpcMainInvokeEvent) {
                 client_id: clientId,
                 refresh_token: refreshToken,
                 // audience: API_AUDIENCE,
-                state: 'thisisatest',
+                // state: 'thisisatest',
             }),
         }
         try {
@@ -144,12 +124,17 @@ export async function refreshTokens(event: IpcMainInvokeEvent) {
                 `https://${auth0Domain}/oauth/token`,
                 refreshOptions
             )
-            const data = (await response.json()) as {
+            console.log('resp', response)
+            console.log(response.status)
+            const origData = await response.json()
+            console.log('Orig data', origData)
+            const data = origData as {
                 access_token: string
                 id_token: string
             }
 
             accessToken = data.access_token
+            console.log('GETTING BACK PROFILE', data.id_token)
             profile = jwtDecode(data.id_token)
         } catch (error) {
             // await logout(parentWindow)
@@ -161,57 +146,34 @@ export async function refreshTokens(event: IpcMainInvokeEvent) {
     }
 
     console.log('UPDATING AUTH STATUS IN refresh tokens')
-    event.sender.send('updateAuthStatus', { accessToken, profile })
+    if (event) {
+        event.sender.send('updateAuthStatus', { accessToken, profile })
+    }
 }
 
-export async function loadTokens(
+export async function setupTokens(
     callbackURL: string,
-    window: BrowserWindow
+    // window: BrowserWindow
 ) {
     const urlParts = url.parse(callbackURL, true)
     const query = urlParts.query
+    const host = urlParts.host
+    //
+    if (host?.toLowerCase() === 'changetokens') {
+        console.log('settings access and refresh')
+        accessToken = query.accessToken as string
+        refreshToken = query.refreshToken as string
+        console.log('storing refreshToken', refreshToken)
 
-    const exchangeOptions = {
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        code: query.code,
-        redirect_uri: redirectUri,
-        code_verifier: verifier,
-        // audience: API_AUDIENCE,
+        await storeWrapper.set('refreshToken', refreshToken)
     }
+    // Get the profile id from this
+    await refreshTokens()
+    await loadStripeProfile()
+    webContents.getAllWebContents().forEach((wc) => {
+        wc.send('updateAuthStatus', { accessToken, profile, stripeProfile })
+    })
 
-    const options = {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify(exchangeOptions),
-    }
-
-    try {
-        const response = await fetch(
-            `https://${auth0Domain}/oauth/token`,
-            options
-        )
-
-        const data = (await response.json()) as {
-            access_token: string
-            id_token: string
-            refresh_token?: string
-        }
-        accessToken = data.access_token
-        profile = jwtDecode(data.id_token)
-        refreshToken = data.refresh_token!
-
-        if (refreshToken) {
-            await storeWrapper.set('refreshToken', refreshToken)
-        }
-    } catch (error) {
-        await logout(window)
-        // destroyAuthWin(window)
-
-        throw error
-    }
 }
 
 export async function loadStripeProfile() {

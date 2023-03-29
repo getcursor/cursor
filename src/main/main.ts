@@ -35,13 +35,43 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { authPackage, refreshTokens } from './auth'
+import { authPackage, setupTokens } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
 
 const store = new Store()
+
+let main_window: Electron.BrowserWindow
+
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient('electron-fiddle', process.execPath, [path.resolve(process.argv[1])])
+    }
+} else {
+    app.setAsDefaultProtocolClient('electron-fiddle')
+}
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (main_window) {
+      if (main_window.isMinimized()) main_window.restore()
+      main_window.focus()
+    }
+    console.log('second instance')
+    const url = commandLine.pop()?.slice(0,-1)
+    // dialog.showErrorBox('Welcome Back (in app already)', `You arrived from: ${url}`)
+    if (url) {
+        setupTokens(url)
+    }
+  })
+}
 
 type Event = IpcMainInvokeEvent
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -50,8 +80,14 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 if (require('electron-squirrel-startup')) {
     app.quit()
 }
+    
+app.on('open-url', (event, url) => {
+    // dialog.showErrorBox('Welcome (first time i think)', `You arrived from: ${url}`)
+    if (url) {
+        setupTokens(url)
+    }
+})
 
-let main_window: Electron.BrowserWindow
 
 // Remove holded defaults
 if (process.platform === 'darwin')

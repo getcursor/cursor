@@ -1,4 +1,5 @@
-export const API_ROOT = 'https://aicursor.com'
+// export const API_ROOT = 'https://aicursor.com'
+export const API_ROOT = 'http://localhost:8000'
 
 export class NoAuthRateLimitError extends Error {
     constructor(
