@@ -49,10 +49,6 @@ export function XTermComponent({ height }: { height: number }) {
             connector.terminalInto(e)
         })
 
-        terminal.current.onData((e) => {
-            connector.terminalInto(e)
-        })
-
         connector.registerIncData(handleIncomingData)
 
         // Make the terminal's size and geometry fit the size of #terminal-container
