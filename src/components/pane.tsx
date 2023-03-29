@@ -50,6 +50,8 @@ export function Pane({ paneId }: { paneId: number }) {
     const draggingTabId = useAppSelector(getDraggingTabId)
     const paneDiv = React.useRef<HTMLDivElement>(null)
     const [hoverState, setHoverState] = useState(HoverState.None)
+    const [initialSelectPaneMousePosition, setInitialSelectPaneMousePosition] =
+        useState<{ x: number; y: number } | null>(null)
 
     let paneHoverClassName = 'pane__hover'
     if (hoverState == HoverState.Left) paneHoverClassName += ' pane__hover_left'
@@ -62,17 +64,44 @@ export function Pane({ paneId }: { paneId: number }) {
 
     function xyToPaneHoverState(x: number, y: number) {
         if (!paneDiv.current) return HoverState.None
-        let rect = paneDiv.current!.getBoundingClientRect()
-        let horizMargin = rect.width / 4
-        let vertMargin = rect.height / 4
-        let xInDiv = x - rect.left
-        let yInDiv = y - rect.top
+        const rect = paneDiv.current!.getBoundingClientRect()
 
-        if (xInDiv < horizMargin) return HoverState.Left
-        if (xInDiv > rect.width - horizMargin) return HoverState.Right
-        if (yInDiv < vertMargin) return HoverState.Top
-        if (yInDiv > rect.height - vertMargin) return HoverState.Bottom
+        const horizMargin = rect.width / 4
+        const vertMargin = rect.height / 4
+        const xInDiv = x - rect.left
+        const yInDiv = y - rect.top
+
+        // take into account the title-bar height and the position of the mouse when start dragging the tab
+        const titleBarHeightPx = 47
+        const yCalculated =
+            y - (initialSelectPaneMousePosition?.y as number) - titleBarHeightPx
+        if (yCalculated > 0) {
+            if (xInDiv < horizMargin) return HoverState.Left
+            if (xInDiv > rect.width - horizMargin) return HoverState.Right
+            if (yInDiv < vertMargin) return HoverState.Top
+            if (yInDiv > rect.height - vertMargin) return HoverState.Bottom
+        }
         return HoverState.Full
+    }
+
+    function xyToTabPosition(x: number, y: number) {
+        const paneRect = paneDiv.current!.getBoundingClientRect()
+        const tabs = paneDiv.current?.getElementsByClassName('tab') || []
+        let totalWidth = 0
+        const relativePosX = x - paneRect.left
+        let tabPosition = null
+        for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i]
+            totalWidth += tab.clientWidth
+            if (relativePosX < totalWidth) {
+                tabPosition = i
+                break
+            }
+        }
+        if (tabPosition === null) {
+            tabPosition = tabs.length - 1
+        }
+        return tabPosition
     }
 
     const isDraggingTabInPane =
@@ -96,11 +125,17 @@ export function Pane({ paneId }: { paneId: number }) {
                 event.clientX,
                 event.clientY
             )
+            const newTabPosition = xyToTabPosition(event.clientX, event.clientY)
             dispatch(
                 moveDraggingTabToPane({
                     paneId: paneId,
                     hoverState: newHoverState,
+                    tabPosition: newTabPosition,
                 })
+                // moveDraggingTabToPane({
+                //     paneId: paneId,
+                //     hoverState: newHoverState,
+                // })
             )
             setHoverState(HoverState.None)
         }
@@ -126,6 +161,17 @@ export function Pane({ paneId }: { paneId: number }) {
             />
             <div
                 className="pane__content"
+                onDragStart={(event) => {
+                    if (initialSelectPaneMousePosition === null) {
+                        setInitialSelectPaneMousePosition({
+                            x: event.clientX,
+                            y: event.clientY,
+                        })
+                    }
+                }}
+                onDragEnd={() => {
+                    setInitialSelectPaneMousePosition(null)
+                }}
                 onDragOver={onDragCallback}
                 onDrop={onDropCallback}
                 onDragLeave={onDragLeave}
@@ -157,14 +203,14 @@ export function PaneHolder({
     width?: number
 }) {
     // dragging state
-    let [draggingIndex, setDraggingIndex] = useState<number | null>(null)
-    let [widths, setWidths] = useState<number[]>([1])
-    let paneHolderDiv = React.useRef<HTMLDivElement>(null)
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
+    const [widths, setWidths] = useState<number[]>([1])
+    const paneHolderDiv = React.useRef<HTMLDivElement>(null)
 
-    let horiz = depth % 2 == 0
-    let className = horiz ? 'paneholder__horizontal' : 'paneholder__vertical'
-    let hasBorder = paneIndex != null && paneIndex > 0
-    let afterClassname = horiz
+    const horiz = depth % 2 == 0
+    const className = horiz ? 'paneholder__horizontal' : 'paneholder__vertical'
+    const hasBorder = paneIndex != null && paneIndex > 0
+    const afterClassname = horiz
         ? 'paneholder__vertical_split'
         : 'paneholder__horizontal_split'
 
@@ -206,25 +252,25 @@ export function PaneHolder({
                     event.stopPropagation()
 
                     // adjust the widths
-                    let newWidths = [...widths]
+                    const newWidths = [...widths]
                     // get the x coord of the mouse
-                    let x = horiz ? event.clientX : event.clientY
+                    const x = horiz ? event.clientX : event.clientY
 
                     // get the x coord within the paneholderdiv
-                    let rect = paneHolderDiv.current!.getBoundingClientRect()
-                    let xInDiv = horiz ? x - rect.left : x - rect.top
+                    const rect = paneHolderDiv.current!.getBoundingClientRect()
+                    const xInDiv = horiz ? x - rect.left : x - rect.top
 
                     // get the percentage of the x coord within the paneholderdiv
-                    let clickXPercent = horiz
+                    const clickXPercent = horiz
                         ? xInDiv / rect.width
                         : xInDiv / rect.height
 
                     // get the current xpercent of the dragging index - 1
 
-                    let currentLeftXPercent = widths
+                    const currentLeftXPercent = widths
                         .slice(0, draggingIndex)
                         .reduce((a, b) => a + b, 0)
-                    let deltaXPercent = clickXPercent - currentLeftXPercent
+                    const deltaXPercent = clickXPercent - currentLeftXPercent
                     newWidths[draggingIndex - 1] += deltaXPercent
                     newWidths[draggingIndex] -= deltaXPercent
 

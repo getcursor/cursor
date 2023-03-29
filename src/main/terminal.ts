@@ -6,11 +6,8 @@ import log from 'electron-log'
 import Store from 'electron-store'
 
 const store = new Store()
-
-export function setupTerminal(mainWindow: any) {
-    const opened_folder_path = store.get("projectRoot") as string;
-
-    let shells =
+export function setupTerminal(mainWindow: any, rootPath?: string) {
+    const shells =
         os.platform() === 'win32' ? ['powershell.exe'] : ['zsh', 'bash']
     const filteredEnv: { [key: string]: string } = Object.entries(
         process.env
@@ -22,7 +19,7 @@ export function setupTerminal(mainWindow: any) {
     }, {} as { [key: string]: string })
 
     let ptyProcess: any = null
-    for (var i = 0; i < shells.length; i++) {
+    for (let i = 0; i < shells.length; i++) {
         const shell = shells[i]
         try {
             if (process.platform !== 'win32')
@@ -31,13 +28,15 @@ export function setupTerminal(mainWindow: any) {
                 name: 'xterm-color',
                 cols: 80,
                 rows: 24,
-                cwd: opened_folder_path,
+                cwd: rootPath || process.env.HOME, // Use the rootPath or default to the home directory
                 env: filteredEnv,
             })
             ptyProcess = res
             
             break
-        } catch (e) {}
+        } catch (e) {
+            // ignore errors
+        }
     }
 
     if (ptyProcess == null) return
@@ -49,14 +48,8 @@ export function setupTerminal(mainWindow: any) {
         mainWindow.webContents.send('terminal-incData', data)
     })
 
-    ipcMain.handle("terminal-resize", (event, size) => {
-      ptyProcess.resize(size.cols, size.rows);
-    });
-
-    ipcMain.handle('terminal-path', (event, data) => {
-        const opened_folder_path = store.get("projectRoot") as string;
-        ptyProcess.write(`cd "${opened_folder_path}"\n`);
-        ptyProcess.write(`clear\n`);
+    ipcMain.handle('terminal-resize', (event, size) => {
+        ptyProcess.resize(size.cols, size.rows)
     })
 }
 

@@ -104,11 +104,13 @@ export const chatSlice = createSlice({
         newResponse(
             chatState: ChatState,
             action: PayloadAction<{
-                type: string
+                type: BotMessageType
                 useDiagnostics?: boolean | number
             }>
         ) {
-            chatState.chatIsOpen = true
+            if (action.payload.type === 'markdown') {
+                chatState.chatIsOpen = true
+            }
 
             const lastUserMessage = chatState.userMessages.at(-1)!
             const type = action.payload.type
@@ -252,7 +254,7 @@ export const chatSlice = createSlice({
             chatState: ChatState,
             action: PayloadAction<{ currentFile?: string; message?: string }>
         ) {
-            let newConversationId = uuidv4()
+            const newConversationId = uuidv4()
             const { currentFile, message } = action.payload
             chatState.currentConversationId = newConversationId
             chatState.draftMessages[newConversationId] = blankDraftMessage(
@@ -417,7 +419,7 @@ export const chatSlice = createSlice({
             chatState.msgType = action.payload.messageType || 'freeform'
 
             const newUserMessage: UserMessage = {
-                sender: 'user' as 'user',
+                sender: 'user' as const,
                 sentAt: Date.now(),
                 message: action.payload.userMessage,
                 conversationId: newConversationId,
@@ -502,6 +504,19 @@ export const chatSlice = createSlice({
             // Bad - I added lots of tech debt today and will fix later
             lastBotMessage.maxOrigLine = action.payload
         },
+        setHitTokenLimit(
+            chatState: ChatState,
+            action: PayloadAction<{
+                conversationId: string
+                hitTokenLimit: boolean
+            }>
+        ) {
+            const lastBotMessage = getLastBotMessage(
+                chatState,
+                action.payload.conversationId
+            )!
+            lastBotMessage.hitTokenLimit = action.payload.hitTokenLimit
+        },
         moveCommandBarHistory(
             chatState: ChatState,
             action: PayloadAction<'up' | 'down'>
@@ -572,6 +587,7 @@ export const {
     doSetMessages,
     doSetChatState,
     doDeleteMessage,
+    setHitTokenLimit,
     _submitCommandBar: dummySubmitCommandBar,
     // Bad - I added tech debt and will fix later
     setMaxOrigLine,

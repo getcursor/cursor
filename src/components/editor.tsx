@@ -1,8 +1,7 @@
 // import keybinding and keymap
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { EditorView } from '@codemirror/view'
+import { EditorView , ViewUpdate } from '@codemirror/view'
 import { vimStateField } from './codemirror-vim/index'
-import { ViewUpdate } from '@codemirror/view'
 import { historyField } from '@codemirror/commands'
 import { EditorState } from '@codemirror/state'
 import { vscodeDark } from '../vscodeTheme'
@@ -41,9 +40,7 @@ import {
 } from './codemirrorHooks/dispatch'
 import { getSettings } from '../features/settings/settingsSelectors'
 import { useExtensions } from './codemirrorHooks/extensions'
-import * as cs from '../features/chat/chatSlice'
 import { useSetDiff } from './codemirrorHooks/diffHook'
-import { diffResponse } from '../features/chat/chatThunks'
 
 export function getPrecedingLines(view: EditorView, numLines: number) {
     return view.state.doc.sliceString(0, view.state.selection.main.from)
@@ -237,7 +234,7 @@ export default function Editor({ tabId }: { tabId: number }) {
 
     const updateRemoteState = () => {
         if (oldEditorRef.current?.view?.state != null && oldTabId != null) {
-            let view = oldEditorRef.current.view
+            const view = oldEditorRef.current.view
             dispatch(
                 codeUpdate({
                     code: view.state.doc.toString(),
@@ -308,6 +305,13 @@ export default function Editor({ tabId }: { tabId: number }) {
                                     }
                                 ),
                             })
+                        } else {
+                            view.dispatch({
+                                effects: EditorView.scrollIntoView(0, {
+                                    y: 'start',
+                                    yMargin: 0,
+                                }),
+                            })
                         }
                         transactionDispatcher(view, transactions)
                         view.scrollDOM.addEventListener(
@@ -330,7 +334,7 @@ export default function Editor({ tabId }: { tabId: number }) {
                     }}
                     onChange={throttleCallback(
                         (code: string, update: ViewUpdate) => {
-                            let start = performance.now()
+                            const start = performance.now()
                             // do any of the transactiosn contain the dontshow annotation
                             const canMarkNotSaved = !update.transactions.some(
                                 (t) => {
@@ -352,6 +356,8 @@ export default function Editor({ tabId }: { tabId: number }) {
                         100
                     )}
                     value={cachedContent}
+                    fileName={fileName}
+                    filePath={filePath}
                     extensions={extensions}
                     initialState={initialState}
                 />
@@ -364,7 +370,7 @@ export function Page({ tid }: { tid: number }) {
     const pageType = useAppSelector(getPageType(tid))
 
     let page
-    let randomId = String(Math.random())
+    const randomId = String(Math.random())
     if (pageType == 'editor') {
         page = <Editor tabId={tid} />
     } else {

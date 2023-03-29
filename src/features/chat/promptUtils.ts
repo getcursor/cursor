@@ -2,10 +2,8 @@ import {
     findFileIdFromPath,
     getPathForFileId,
     getPathForFolderId,
-} from '../window/fileUtils'
+ getContentsIfNeeded } from '../window/fileUtils'
 import { FullState } from '../window/state'
-import { getContentsIfNeeded } from '../window/fileUtils'
-import { current } from '@reduxjs/toolkit'
 import { joinAdvanced } from '../../utils'
 import { badWords } from './badWords'
 
@@ -22,17 +20,17 @@ export function splitIntoWords(e: string) {
 function compareWords(a: string[], b: string[]) {
     let intersection = 0
     let union = 0
-    let aSet = new Set(a)
-    let bSet = new Set(b)
-    let cSet = new Set()
-    for (let word of aSet) {
+    const aSet = new Set(a)
+    const bSet = new Set(b)
+    const cSet = new Set()
+    for (const word of aSet) {
         if (bSet.has(word)) {
             intersection++
             cSet.add(word)
         }
         union++
     }
-    for (let word of bSet) {
+    for (const word of bSet) {
         if (!aSet.has(word)) union++
     }
     const fairUnion = Math.min(union, aSet.size, bSet.size)
@@ -59,7 +57,7 @@ async function loadContentsOfFileIds(
 ): Promise<FileContents> {
     // keyed by number
     const contentsArr: { [key: number]: string } = {}
-    for (let fileId of fileIds) {
+    for (const fileId of fileIds) {
         contentsArr[fileId] = await getContentsIfNeeded(state.global, fileId)
     }
     return contentsArr
@@ -79,15 +77,15 @@ function getFileIdsNotInForbidden(
     forbiddenFolders: string[]
 ) {
     // start at root folder (id 1) and then recursively find files, make sure to not go into forbidden folders
-    let fileIds: number[] = []
-    let foldersToVisit: number[] = [1]
+    const fileIds: number[] = []
+    const foldersToVisit: number[] = [1]
     while (foldersToVisit.length > 0) {
-        let folderId = foldersToVisit.pop()!
-        let folder = state.global.folders[folderId]
-        for (let fileId of folder.fileIds) {
+        const folderId = foldersToVisit.pop()!
+        const folder = state.global.folders[folderId]
+        for (const fileId of folder.fileIds) {
             fileIds.push(fileId)
         }
-        for (let subFolderId of folder.folderIds) {
+        for (const subFolderId of folder.folderIds) {
             const subFolderName = state.global.folders[subFolderId].name
             if (
                 !forbiddenFolders.includes(subFolderName) &&
@@ -151,27 +149,27 @@ interface PromptSnippet {
 export async function getCopilotSnippets(
     state: FullState,
     fileId: number,
-    slidingWindow: number = 50,
-    maxSnippets: number = 5,
-    thresholdSimilarity: number = 0.2
+    slidingWindow = 50,
+    maxSnippets = 5,
+    thresholdSimilarity = 0.2
 ): Promise<PromptSnippet[]> {
-    let words = splitIntoWords(state.global.fileCache[fileId].contents)
-    let snippets: { score: number; fileId: number; text: string }[] = []
+    const words = splitIntoWords(state.global.fileCache[fileId].contents)
+    const snippets: { score: number; fileId: number; text: string }[] = []
 
     // get the 20 most recent fileids
-    let recentFileContents = await getMostRecentFileIds(state, fileId)
+    const recentFileContents = await getMostRecentFileIds(state, fileId)
     let maxSim = 0
     let maxSnippet = null
-    for (let fidStr of Object.keys(recentFileContents)) {
-        let fileId = parseInt(fidStr)
+    for (const fidStr of Object.keys(recentFileContents)) {
+        const fileId = parseInt(fidStr)
         const path = getPathForFileId(state.global, fileId)
-        let contents = recentFileContents[fileId]
-        let lines = contents.split('\n')
+        const contents = recentFileContents[fileId]
+        const lines = contents.split('\n')
 
         for (let i = 0; i < Math.max(1, lines.length - slidingWindow); i++) {
-            let window = lines.slice(i, i + slidingWindow).join('\n')
-            let windowWords = splitIntoWords(window)
-            let similarity = compareWords(words, windowWords)
+            const window = lines.slice(i, i + slidingWindow).join('\n')
+            const windowWords = splitIntoWords(window)
+            const similarity = compareWords(words, windowWords)
             if (similarity > thresholdSimilarity) {
                 snippets[fileId] = {
                     score: similarity,
@@ -186,7 +184,7 @@ export async function getCopilotSnippets(
         }
     }
 
-    let sortedSnippets = Object.values(snippets)
+    const sortedSnippets = Object.values(snippets)
         .sort((a, b) => b.score - a.score)
         .slice(0, maxSnippets)
         .map((e) => {
@@ -215,7 +213,7 @@ export async function getIntellisenseSymbols(
         state.global,
         state.global.files[fileId].parentFolderId
     )
-    for (let line of lines) {
+    for (const line of lines) {
         // find function name in any line that begins with function
         const match = line.match(/^\s*(export )?function ([a-zA-Z0-9_]+)/)
         if (match) {
@@ -227,7 +225,7 @@ export async function getIntellisenseSymbols(
     const importRegex = /import .* from ['"](.*)['"]/g
     const importMatches = fileContents.matchAll(importRegex)
     const moduleRegex = /import \* as ([a-zA-Z0-9_]+) from/
-    for (let match of importMatches) {
+    for (const match of importMatches) {
         const importPath = match[1]
         const moduleMatch = match[0].match(moduleRegex)
         const moduleName =
@@ -235,7 +233,7 @@ export async function getIntellisenseSymbols(
         // maerge current folder path with import path
         const fullPath = joinAdvanced(currentFolderPath, importPath)
         let foundFile = false
-        for (let ext of ['ts', 'tsx', 'js', 'jsx']) {
+        for (const ext of ['ts', 'tsx', 'js', 'jsx']) {
             const fileId = findFileIdFromPath(
                 state.global,
                 fullPath + '.' + ext
@@ -247,9 +245,9 @@ export async function getIntellisenseSymbols(
                     fileId
                 )
                 const lines = fileContents.split('\n')
-                for (let line of lines) {
+                for (const line of lines) {
                     // match exported function statem
-                    let match = line.match(
+                    const match = line.match(
                         /^\s*export (type )?(enum )?(interface )?(const )?(async )?(function )?([a-zA-Z0-9_]+)/
                     )
                     if (match) {
@@ -277,7 +275,7 @@ export async function getAllExportedFunctionSymbols(
     const fileContents = await getContentsIfNeeded(state.global, fileId)
     const lines = fileContents.split('\n')
     const symbols: string[] = []
-    for (let line of lines) {
+    for (const line of lines) {
         // find function name in any line that begins with function
         const match = line.match(/^\s*(export )?function ([a-zA-Z0-9_]+)/)
         if (match) {

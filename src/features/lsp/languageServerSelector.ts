@@ -1,5 +1,5 @@
 import { getIdentifier } from './languageServerSlice'
-import { FullState, LanguageServerState } from '../window/state'
+import { LanguageServerState } from '../window/state'
 import { createSelector } from '@reduxjs/toolkit'
 
 export const getLanguages = createSelector(

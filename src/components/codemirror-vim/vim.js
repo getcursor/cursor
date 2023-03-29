@@ -252,12 +252,12 @@ export function initVim(CodeMirror) {
             motion: 'moveBySentence',
             motionArgs: { forward: true },
         },
-        // {
-        //     keys: '<C-f>',
-        //     type: 'motion',
-        //     motion: 'moveByPage',
-        //     motionArgs: { forward: true },
-        // },
+        {
+            keys: '<C-f>',
+            type: 'motion',
+            motion: 'moveByPage',
+            motionArgs: { forward: true },
+        },
         {
             keys: '<C-b>',
             type: 'motion',

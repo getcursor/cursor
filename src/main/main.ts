@@ -1,12 +1,10 @@
 import fetch from 'node-fetch'
-import { Settings } from '../features/window/state'
+import { Settings, File, Folder } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
-import { setupLSPs } from './lsp'
+import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
-
-import _, { uniqueId } from 'lodash'
 
 import {
     app,
@@ -18,14 +16,14 @@ import {
     session,
     systemPreferences,
     globalShortcut,
+    dialog,
+    clipboard,
+    MenuItemConstructorOptions,
 } from 'electron'
 
 import { API_ROOT } from '../utils'
 import * as path from 'path'
 import * as fs from 'fs'
-import { dialog, clipboard } from 'electron'
-import { MenuItemConstructorOptions } from 'electron'
-import { File, Folder } from '../features/window/state'
 import Store from 'electron-store'
 import log from 'electron-log'
 import { machineIdSync } from 'node-machine-id'
@@ -34,6 +32,8 @@ import { fileSystem, setFileSystem, FileSystem } from './fileSystem'
 import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
+
+import { authPackage } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
@@ -44,15 +44,12 @@ const store = new Store()
 type Event = IpcMainInvokeEvent
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-// Add electron-reloader
-try {
-    require('electron-reloader')(module)
-} catch (_) {}
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
     app.quit()
 }
+
+let main_window: Electron.BrowserWindow
 
 // Remove holded defaults
 if (process.platform === 'darwin')
@@ -92,7 +89,7 @@ function logError(error: any) {
             'utf8'
         )
         const body = {
-            name: app.getPath('userData'),
+            name: app.getPath('userData').replace(/ /g, '\\ '),
             log: encodeURIComponent(logFile),
             error: error.toString(),
         }
@@ -113,9 +110,10 @@ process.on('unhandledRejection', (error) => {
 })
 
 const createWindow = () => {
-    const width = 1500, height = 800;
+    const width = 1500,
+        height = 800
     // Create the browser window.
-    const main_window = new BrowserWindow({
+    main_window = new BrowserWindow({
         ...(process.platform === 'darwin'
             ? {
                   titleBarStyle: 'hidden',
@@ -159,6 +157,17 @@ const createWindow = () => {
     ipcMain.handle('close', () => {
         app.quit()
     })
+
+    ipcMain.handle(
+        'setCookies',
+        async (
+            event: IpcMainInvokeEvent,
+            cookieObject: { url: string; name: string; value: string }
+        ) => {
+            await main_window.webContents.session.cookies.set(cookieObject)
+        }
+    )
+
     ipcMain.handle('minimize', () => {
         main_window.minimize()
     })
@@ -166,6 +175,9 @@ const createWindow = () => {
     ipcMain.handle('return_home_dir', () => {
         return machineIdSync()
     })
+
+    // Sets up auth stuff here
+    authPackage()
 
     // check if store has uploadPreferences, if not, then ask the user for them
     if (store.get('uploadPreferences') == undefined) {
@@ -254,7 +266,7 @@ const createWindow = () => {
                 },
                 {
                     label: 'Redo',
-                    accelerator: META_KEY+'Shift+Z',
+                    accelerator: META_KEY + '+Shift+Z',
                     selector: 'redo:',
                 },
                 { type: 'separator' },
@@ -280,7 +292,6 @@ const createWindow = () => {
                 },
             ],
         } as MenuItemConstructorOptions,
-        // add a zoom
         {
             label: 'View',
             submenu: [
@@ -289,7 +300,14 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+plus',
+                    accelerator: META_KEY + '+Plus',
+                },
+                {
+                    label: 'Zoom In',
+                    click: () => {
+                        main_window.webContents.send('zoom_in')
+                    },
+                    accelerator: META_KEY + '+=',
                 },
                 {
                     label: 'Zoom Out',
@@ -310,39 +328,35 @@ const createWindow = () => {
                     click: () => {
                         main_window.webContents.send('search')
                     },
-                    accelerator: META_KEY + '+shift+f',
+                    accelerator: META_KEY + '+Shift+F',
                 },
                 {
                     label: 'File Search',
                     click: () => {
                         main_window.webContents.send('fileSearch')
                     },
-                    accelerator: META_KEY + '+p',
+                    accelerator: META_KEY + '+P',
                 },
                 {
                     label: 'Command Palette',
                     click: () => {
                         main_window.webContents.send('commandPalette')
                     },
-                    accelerator: META_KEY + '+shift+p',
+                    accelerator: META_KEY + '+Shift+P',
                 },
             ],
         },
     ])
-    var menu = Menu.buildFromTemplate(menuList)
+    const menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
 
-    globalShortcut.register(META_KEY + '+=', () => {
-        main_window.webContents.send('zoom_in')
-    })
-    
-    globalShortcut.register('CommandOrControl+M', () => {
+    globalShortcut.register(META_KEY + '+M', () => {
         main_window.minimize()
     })
 
-    globalShortcut.register('CommandOrControl+Shift+M', () => {
+    globalShortcut.register(META_KEY + '+Shift+M', () => {
         if (main_window.isMaximized()) {
-            main_window.restore();
+            main_window.restore()
         } else {
             main_window.maximize()
         }
@@ -355,7 +369,7 @@ const createWindow = () => {
         store.set('settings', settings)
     })
 
-    ipcMain.handle('initSettings', (event: Event) => {
+    ipcMain.handle('initSettings', (_event: Event) => {
         if (store.has('settings')) {
             log.info('found settings')
             return store.get('settings')
@@ -364,7 +378,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('get_platform', function (event: any, arg: null) {
+    ipcMain.handle('get_platform', function (_event: any) {
         return process.platform
     })
 
@@ -387,8 +401,8 @@ const createWindow = () => {
                 dirName: string,
                 depth: number
             ) {
-                let name = path.basename(dirName)
-                let newFolder: Folder = {
+                const name = path.basename(dirName)
+                const newFolder: Folder = {
                     name,
                     fileIds: [],
                     folderIds: [],
@@ -397,11 +411,11 @@ const createWindow = () => {
                     renameName: null,
                     isOpen: false,
                 }
-                var newFolderId = Object.keys(folders).length + 1
+                const newFolderId = Object.keys(folders).length + 1
                 folders[newFolderId] = newFolder
 
                 if (depth < origDepth && !badDirectories.includes(name)) {
-                    let fileNameList = await fileSystem.readdirSyncWithIsDir(
+                    const fileNameList = await fileSystem.readdirSyncWithIsDir(
                         dirName
                     )
                     for (let i = 0; i < fileNameList.length; i++) {
@@ -421,14 +435,14 @@ const createWindow = () => {
                             newFolder.folderIds.push(res.newFolderId)
                             res.newFolder.parentFolderId = newFolderId
                         } else {
-                            var newSubFile: File = {
+                            const newSubFile: File = {
                                 parentFolderId: newFolderId,
                                 saved: true,
                                 name: path.basename(newName),
                                 renameName: null as any,
                                 isSelected: false,
                             }
-                            var newSubFileId = Object.keys(files).length + 1
+                            const newSubFileId = Object.keys(files).length + 1
                             files[newSubFileId] = newSubFile
 
                             newFolder.fileIds.push(newSubFileId)
@@ -445,8 +459,8 @@ const createWindow = () => {
     )
 
     log.info('setting up handle getClipboard')
-    ipcMain.handle('getClipboard', function (event: any, arg: null) {
-        var clip = clipboard.readText()
+    ipcMain.handle('getClipboard', function (_event: any) {
+        const clip = clipboard.readText()
         return clip
     })
 
@@ -454,7 +468,7 @@ const createWindow = () => {
         store.set('uploadPreferences', arg)
     })
 
-    ipcMain.handle('getUploadPreference', function (event: any, arg: null) {
+    ipcMain.handle('getUploadPreference', function (_event: any) {
         if (store.has('uploadPreferences')) {
             return store.get('uploadPreferences')
         } else {
@@ -462,7 +476,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('createTutorDir', function (event: any) {
+    ipcMain.handle('createTutorDir', function (_event: any) {
         const toCopyFrom = path.join(resourcesDir, 'tutor')
         const toCopyTo = path.join(app.getPath('home'), 'cursor-tutor')
 
@@ -481,7 +495,7 @@ const createWindow = () => {
     ipcMain.handle('checkSave', function (event: Event, filePath: string) {
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
         const basename = path.basename(filePath)
-        var options = {
+        const options = {
             type: 'question',
             buttons: ['&Go Back', '&Overwrite'],
             message: `Overwrite ${basename}?`,
@@ -508,7 +522,7 @@ const createWindow = () => {
                 'icon128.png'
             )
             const basename = path.basename(filePath)
-            var options = {
+            const options = {
                 type: 'question',
                 buttons: ['&Save', "&Don't Save", '&Cancel'],
                 message: `Do you want to save the changes you made to ${basename}`,
@@ -531,10 +545,17 @@ const createWindow = () => {
 
     log.info('setting up handle get_file')
     ipcMain.handle('get_file', async function (event: Event, filePath: string) {
-        // read the file and return the contents
-        var data = ''
+        // Check if the file is an image
+        const extension = filePath.split('.').pop()?.toLowerCase()
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(
+            extension || ''
+        )
+
+        // Read the file using the binary encoding if it's an image
+        const encoding = isImage ? 'binary' : 'utf8'
+        let data = ''
         try {
-            data = await fileSystem.readFileSync(filePath, 'utf8')
+            data = await fileSystem.readFileSync(filePath, encoding)
         } catch {
             data = ''
         }
@@ -545,7 +566,7 @@ const createWindow = () => {
         clipboard.writeText(arg)
     })
 
-    ipcMain.handle('getProject', function (event: Event) {
+    ipcMain.handle('getProject', function (_event: Event) {
         if (store.has('projectPath')) {
             const res = store.get('projectPath') as any
             return res
@@ -554,8 +575,8 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('getRemote', function (event: Event) {
-        let ret = {
+    ipcMain.handle('getRemote', function (_event: Event) {
+        const ret = {
             remoteCommand: store.has('remoteCommand')
                 ? store.get('remoteCommand')
                 : null,
@@ -604,7 +625,7 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('get_version', function (event: Event) {
+    ipcMain.handle('get_version', function (_event: Event) {
         return app.getVersion()
     })
 
@@ -651,10 +672,10 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('check_learn_codebase', function (event: Event, arg: any) {
+    ipcMain.handle('check_learn_codebase', function (event: Event) {
         // ask the user if we can learn their codebase, if yes, send back true
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
-        var options = {
+        const options = {
             type: 'question',
             buttons: ['&Yes', '&No'],
             title: 'Index this folder?',
@@ -676,10 +697,10 @@ const createWindow = () => {
                     // do nothing
                 }
             })
-            .catch((err: any) => {})
+            .catch((_err: any) => {})
     })
 
-    ipcMain.handle('right_click_file', function (event: Event, arg: null) {
+    ipcMain.handle('right_click_file', function (event: Event) {
         const template: MenuItemConstructorOptions[] = [
             {
                 label: 'Rename',
@@ -698,6 +719,19 @@ const createWindow = () => {
                 label: 'Open Containing Folder',
                 click: () => {
                     event.sender.send('open_containing_folder_click')
+                },
+            },
+        ]
+        const menu = Menu.buildFromTemplate(template)
+        menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
+    })
+
+    ipcMain.handle('right_click_tab', function (event: Event) {
+        const template: MenuItemConstructorOptions[] = [
+            {
+                label: 'Close All',
+                click: () => {
+                    event.sender.send('close_all_tabs_click')
                 },
             },
         ]
@@ -740,7 +774,7 @@ const createWindow = () => {
                             'icon',
                             'icon128.png'
                         )
-                        var options = {
+                        const options = {
                             type: 'question',
                             buttons: ['&!Delete!', '&Cancel'],
                             title: `DANGER: Do you want to delete`,
@@ -759,7 +793,7 @@ const createWindow = () => {
                                     event.sender.send('delete_folder_click')
                                 }
                             })
-                            .catch((err: any) => {})
+                            .catch((_err: any) => {})
                     },
                 },
             ]
@@ -857,7 +891,7 @@ const createWindow = () => {
     )
 
     // show the open folder dialog
-    ipcMain.handle('open_folder', function (event: any, arg: null) {
+    ipcMain.handle('open_folder', function (_event: any, _arg: null) {
         showingDialog = true
         const result = dialog.showOpenDialogSync(main_window, {
             properties: ['openDirectory'],
@@ -872,8 +906,29 @@ const createWindow = () => {
         }
         return null
     })
+
+    // click on the terminal link
+    ipcMain.handle('terminal-click-link', (event, data) => {
+        shell.openExternal(data)
+    })
+
     setupLSPs(store)
-    setupTerminal(main_window)
+    const projectPathObj = store.get('projectPath')
+    if (
+        typeof projectPathObj === 'object' &&
+        projectPathObj !== null &&
+        'defaultFolder' in projectPathObj
+    ) {
+        const projectPath = projectPathObj.defaultFolder
+        if (typeof projectPath === 'string') {
+            setupTerminal(main_window, projectPath)
+        } else {
+            setupTerminal(main_window)
+        }
+    } else {
+        setupTerminal(main_window)
+    }
+
     setupSearch()
     log.info('setting up index')
     setupCommentIndexer()
@@ -893,7 +948,7 @@ const modifyHeaders = () => {
                     {
                         ...details.responseHeaders,
                         'Content-Security-Policy': [
-                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
+                            "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: file: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';",
                         ],
                     },
                     details.responseHeaders
@@ -902,6 +957,60 @@ const modifyHeaders = () => {
         }
     )
 }
+
+todesktop.autoUpdater.on('update-downloaded', (_ev, _info) => {
+    function check() {
+        if (showingDialog) {
+            setTimeout(check, 1000)
+        } else {
+            showingDialog = true
+            // ask the user if they want to update
+            const iconPath = path.join(
+                __dirname,
+                'assets',
+                'icon',
+                'icon128.png'
+            )
+            const options = {
+                type: 'question',
+                buttons: ['&Accept', '&Cancel'],
+                message: `Accept update?`,
+                icon: iconPath,
+                normalizeAccessKeys: true,
+                detail: `New update available for Cursor! New features and bug fixes (only takes 10-20 seconds)`,
+            }
+
+            const win = BrowserWindow.getFocusedWindow()!
+            dialog
+                .showMessageBox(win, options)
+                .then((choice: any) => {
+                    showingDialog = false
+                    if (choice.response == 0) {
+                        setTimeout(() => {
+                            // First we clear the lsp store
+                            lspStore(store).clear()
+
+                            // Then we quit and install
+                            todesktop.autoUpdater.restartAndInstall()
+                        }, 100)
+                    }
+                })
+                .catch((_err: any) => {})
+        }
+    }
+
+    check()
+})
+app.on('ready', function () {
+    if (isAppInApplicationsFolder) {
+        if (app.isPackaged) {
+            todesktop.autoUpdater.checkForUpdates()
+            setInterval(() => {
+                todesktop.autoUpdater.checkForUpdates()
+            }, 1000 * 60 * 15)
+        }
+    }
+})
 
 app.on('ready', modifyHeaders)
 app.on('ready', createWindow)
