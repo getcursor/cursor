@@ -1,24 +1,8 @@
-import { javascript } from '@codemirror/lang-javascript'
-import { python } from '@codemirror/lang-python'
-import { html } from '@codemirror/lang-html'
-import { css } from '@codemirror/lang-css'
-import { json } from '@codemirror/lang-json'
-import { markdown } from '@codemirror/lang-markdown'
-import { rust } from '@codemirror/lang-rust'
-import { java } from '@codemirror/lang-java'
-import { php } from '@codemirror/lang-php'
 // import { sql } from '@codemirror/lang-sql'
-import { cpp } from '@codemirror/lang-cpp'
-import { xml } from '@codemirror/lang-xml'
 import { languages } from '@codemirror/language-data'
-import {
-    LanguageSupport,
-    LanguageDescription,
-    StreamParser,
-    StreamLanguage,
-} from '@codemirror/language'
+
+
 import { colorPicker } from '@replit/codemirror-css-color-picker'
-import { machine } from 'os'
 
 // TODO - when you have time to write a script or something
 export const codeMirrorLanguages = {

@@ -1,33 +1,19 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
-import { getLanguageFromFilename } from '../extensions/utils'
-import { Text } from '@codemirror/state'
-import { PayloadAction } from '@reduxjs/toolkit'
-import { getContentsIfNeeded, loadFileIfNeeded } from '../window/fileUtils'
-import {
-    FullState,
-    LanguageServerState,
-    State,
-    nextId,
-    nextValue,
-} from '../window/state'
-import { URI } from 'vscode-uri'
-import { createSlice } from '@reduxjs/toolkit'
-import { EditorView, EditorViewConfig } from '@codemirror/view'
-import { Transaction, TransactionSpec } from '@codemirror/state'
-import { setDiff } from '../extensions/diff'
-import {
-    useDispatchHook,
-    customDispatch,
-    dontShowAnnotation,
-    syncDispatch,
-} from '../../components/codemirrorHooks/dispatch'
-import {
+import { createAsyncThunk , PayloadAction , createSlice } from '@reduxjs/toolkit'
+import {  Transaction, TransactionSpec ,
     EditorState,
     StateField,
     Extension,
     EditorSelection,
 } from '@codemirror/state'
-import { CodeMirror } from '../../components/codemirror-vim'
+import {
+    FullState,
+    State,
+} from '../window/state'
+import { EditorView } from '@codemirror/view'
+import {
+    customDispatch,
+    syncDispatch,
+} from '../../components/codemirrorHooks/dispatch'
 
 interface UpsertEditor {
     tabId: number
@@ -53,7 +39,7 @@ interface UpsertEditor {
 // THESSE CANNOT be exported, because it must only be modifiable
 // on state transitions
 // Technically, I think you can sub out things in the middle
-var codeMirrorViews: ReadonlyArray<[number, EditorView]> = []
+let codeMirrorViews: ReadonlyArray<[number, EditorView]> = []
 
 function cleanViews(state: CodeMirrorState) {
     // When we clean the views, we destroy the views that we have deleted from state

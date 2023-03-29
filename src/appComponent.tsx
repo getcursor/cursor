@@ -5,7 +5,7 @@ import {
     useState,
     useCallback,
 } from 'react'
-import { faClose, faCog } from '@fortawesome/pro-regular-svg-icons'
+import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
@@ -26,7 +26,6 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
-import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
@@ -66,7 +65,7 @@ function ErrorPopup() {
         <Modal
             isOpen={showError}
             onRequestClose={() => {
-                dispatch(gs.closeError(null))
+                dispatch(gs.closeError())
             }}
             style={customStyles}
         >
@@ -77,7 +76,7 @@ function ErrorPopup() {
                     </div>
                     <div
                         className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError(null))}
+                        onClick={() => dispatch(gs.closeError())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>
@@ -111,7 +110,7 @@ function RateLimitPopup() {
                     </div>
                     <div
                         className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError(null))}
+                        onClick={() => dispatch(gs.closeError())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>
@@ -191,7 +190,7 @@ function SSHPopup() {
         <Modal
             isOpen={showRemotePopup}
             onRequestClose={() => {
-                dispatch(gs.closeRemotePopup(null))
+                dispatch(gs.closeRemotePopup())
             }}
             style={customStyles}
         >
@@ -202,7 +201,7 @@ function SSHPopup() {
                     </div>
                     <div
                         className="remotePopup__title_close"
-                        onClick={() => dispatch(gs.closeRemotePopup(null))}
+                        onClick={() => dispatch(gs.closeRemotePopup())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>
