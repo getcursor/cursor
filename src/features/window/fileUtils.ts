@@ -9,11 +9,10 @@ import {
     initialState,
 } from './state'
 
-import { Dispatch } from 'redux'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 // Returns a new CachedFile object with the given contents and a counter of 0.
-export function newCachedFile(contents: string = ''): CachedFile {
+export function newCachedFile(contents = ''): CachedFile {
     return {
         contents,
         counter: 0,
@@ -23,7 +22,7 @@ export function newCachedFile(contents: string = ''): CachedFile {
 export function createCachedFileIfNotExists(
     state: State,
     fileId: number,
-    contents: string = ''
+    contents = ''
 ) {
     if (!(fileId in state.fileCache)) {
         state.fileCache[fileId] = newCachedFile(contents)
@@ -116,14 +115,14 @@ export function getVeryRootFolder(state: State) {
 }
 
 export function getNameFromPath(path: string) {
-    let splitPath = path.split(connector.PLATFORM_DELIMITER)!
+    const splitPath = path.split(connector.PLATFORM_DELIMITER)!
     return splitPath.pop()!
 }
 
 export function getPathForFolderId(
     state: State,
     folderid: number,
-    includeRoot: boolean = true
+    includeRoot = true
 ): string {
     const folder = state.folders[folderid]
     if (folder.parentFolderId == null) {
@@ -144,7 +143,7 @@ export function getPathForFolderId(
 export function getPathForFileId(
     state: State,
     fileid: number,
-    includeRoot: boolean = true
+    includeRoot = true
 ): string {
     const file = state.files[fileid]
     return (
@@ -280,7 +279,7 @@ export function sortFolder(state: State, folderid: number) {
 }
 
 export function sortAllFolders(state: State) {
-    for (let folderid in state.folders) {
+    for (const folderid in state.folders) {
         sortFolder(state, parseInt(folderid))
     }
 }
@@ -376,7 +375,7 @@ export async function getContentsIfNeeded(state: State, fileid: number) {
     if (cachedFile) {
         return cachedFile.contents
     } else {
-        let path = getPathForFileId(state, fileid)
+        const path = getPathForFileId(state, fileid)
         // @ts-ignore
         const contents = await connector.getFile(path)
         return contents
@@ -430,7 +429,7 @@ export const loadFileIfNeeded = createAsyncThunk(
         let fileId: number | null
         fileId = findFileIdFromPath((<FullState>getState()).global, path)
         if (!fileId) {
-            let response = await dispatch(addExistingFile(path))
+            const response = await dispatch(addExistingFile(path))
             // Check that the dispatch worked
             if (addExistingFile.fulfilled.match(response)) {
                 fileId = response.payload
@@ -493,7 +492,7 @@ export const fileSlice = createSlice({
         })
     },
     reducers: {
-        addExistingFolder: (stobj: Object, action: PayloadAction<string>) => {
+        addExistingFolder: (stobj: object, action: PayloadAction<string>) => {
             const _addExistingFolder = (state: State, path: string) => {
                 const folderid = nextFolderID(state)
                 const name = getNameFromPath(path)!
@@ -527,7 +526,7 @@ export const fileSlice = createSlice({
             _addExistingFolder(<State>stobj, action.payload)
         },
         addFileToState: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 fileid: number
                 file: File

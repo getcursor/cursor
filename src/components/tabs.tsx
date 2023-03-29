@@ -58,7 +58,7 @@ function Tab({ tid }: { tid: number }) {
             }}
             onDragEnd={(e) => {
                 revertTabsChildrenEvents() // revert for current pane
-                dispatch(stopDraggingTab(null))
+                dispatch(stopDraggingTab())
             }}
             className={`tab ${tab.isActive ? 'tab__is_active' : ''} ${
                 file.deleted == true ? 'tab__is_deleted' : ''

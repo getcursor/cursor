@@ -49,10 +49,6 @@ export function XTermComponent({ height }: { height: number }) {
             connector.terminalInto(e)
         })
 
-        terminal.current.onData((e) => {
-            connector.terminalInto(e)
-        })
-
         connector.registerIncData(handleIncomingData)
 
         // Make the terminal's size and geometry fit the size of #terminal-container
@@ -96,7 +92,7 @@ export const BottomTerminal: React.FC = () => {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === '`' && event.ctrlKey) {
-                dispatch(gs.toggleTerminal(null))
+                dispatch(gs.toggleTerminal())
             }
         }
 
@@ -165,7 +161,7 @@ export const BottomTerminal: React.FC = () => {
                             <button
                                 className="closeButton"
                                 onClick={() => {
-                                    dispatch(gs.closeTerminal(null))
+                                    dispatch(gs.closeTerminal())
                                 }}
                             >
                                 <FontAwesomeIcon icon={faTimes} />

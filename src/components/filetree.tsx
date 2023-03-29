@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import React, {  useEffect } from 'react'
 
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import {
-    faFolder,
     faChevronDown,
     faChevronRight,
     faFile,
@@ -13,7 +11,6 @@ import {
     faCodeMerge,
     faEyeSlash,
     faGear,
-    faComputer,
     faInfoCircle,
 } from '@fortawesome/sharp-solid-svg-icons'
 import * as gs from '../features/globalSlice'
@@ -23,10 +20,8 @@ import {
     getFile,
     getFolder,
     getFolderOpen,
-    getFolders,
     getNotDeletedFiles,
 } from '../features/selectors'
-import { useEffect } from 'react'
 import {
     faFileCirclePlus,
     faFolderPlus,
@@ -139,10 +134,10 @@ export function getIconElement(fname: string) {
     const isMatch = (exts: string[]) => {
         return exts.some((ext) => fname.endsWith('.' + ext))
     }
-    var iconTextValue = null
+    let iconTextValue = null
 
-    var iconClassValue = null
-    var iconElement = null
+    let iconClassValue = null
+    let iconElement = null
     if (isMatch(['js'])) {
         iconTextValue = 'js'
         iconClassValue = 'js'
@@ -181,7 +176,7 @@ export function getIconElement(fname: string) {
     }
 
     if (iconElement == null) {
-        var icon = faFile
+        let icon = faFile
 
         if (isMatch(CONFIG_EXTENSIONS)) {
             icon = faGear
