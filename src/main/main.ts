@@ -385,7 +385,7 @@ const createWindow = () => {
 
     ipcMain.handle('initSettings', (_event: Event) => {
         if (store.has('settings')) {
-            log.info('found settings');
+            log.info('found settings')
             return store.get('settings')
         } else {
             return {}
