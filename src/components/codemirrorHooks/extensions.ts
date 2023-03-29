@@ -1,11 +1,16 @@
 import { useEffect, useMemo } from 'react'
-import { EditorState,  Prec, Extension, Compartment , RangeSetBuilder } from '@codemirror/state'
+import {
+    EditorState,
+    Prec,
+    Extension,
+    Compartment,
+    RangeSetBuilder,
+} from '@codemirror/state'
 import {
     closeHoverTooltips,
     EditorView,
     keymap,
     scrollPastEnd,
-
     ViewPlugin,
     ViewUpdate,
     Decoration,
@@ -14,12 +19,8 @@ import {
 import { syntaxBundle } from '../../features/extensions/syntax'
 import { indentationMarkers } from '../../features/extensions/indentLines'
 // import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import {
-    diffExtension,
-} from '../../features/extensions/diff'
-import {
-    hackExtension,
-} from '../../features/extensions/hackDiff'
+import { diffExtension } from '../../features/extensions/diff'
+import { hackExtension } from '../../features/extensions/hackDiff'
 import { diagnosticsField, lintGutter } from '../../features/linter/lint'
 import { autocompleteView } from '../../features/extensions/autocomplete'
 import { acceptCompletion } from '@codemirror/autocomplete'
@@ -29,7 +30,7 @@ import * as ssel from '../../features/settings/settingsSelectors'
 import { Tab } from '../../features/window/state'
 import { ReactCodeMirrorRef } from '../react-codemirror'
 import { getFileIndentUnit } from '../../features/selectors'
-import { indentUnit , syntaxTree } from '@codemirror/language'
+import { indentUnit, syntaxTree } from '@codemirror/language'
 import { vim } from '../codemirror-vim'
 import { moveToPane, saveFile } from '../../features/globalSlice'
 import { closeTab } from '../../features/globalThunks'
