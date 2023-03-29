@@ -311,6 +311,8 @@ const electronConnector = {
 
     registerCloseAllTabs: (callback: Callback) =>
         ipcRenderer.on('close_all_tabs_click', callback),
+    openFolderOn: (callback: (path:string)=>void) =>
+    ipcRenderer.on('open_folder', (_event, path) => callback(path)),
     openFolder: () => ipcRenderer.invoke('open_folder', null),
     registerOpenFolder: (callback: Callback) =>
         ipcRenderer.on('open_folder_triggered', callback),
