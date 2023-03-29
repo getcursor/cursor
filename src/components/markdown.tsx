@@ -9,7 +9,7 @@ import React, {
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
 import { Message } from '../features/window/state'
-import { faArrowUp, faClose } from '@fortawesome/pro-regular-svg-icons'
+import { faArrowUp, faClose, faTimes } from '@fortawesome/pro-regular-svg-icons'
 import { getIconElement } from '../components/filetree'
 import * as gs from '../features/globalSlice'
 
@@ -140,18 +140,18 @@ export function CodeBlock({
                         startLine == null
                             ? []
                             : lineNumbers({
-                                  formatNumber: (
-                                      n: number,
-                                      state: EditorState
-                                  ) => String(n + startLine),
-                              }),
+                                formatNumber: (
+                                    n: number,
+                                    state: EditorState
+                                ) => String(n + startLine),
+                            }),
                         EditorView.editable.of(isEditable),
                         isEditable
                             ? [
-                                  vim(),
-                                  highlightActiveLine(),
-                                  highlightActiveLineGutter(),
-                              ]
+                                vim(),
+                                highlightActiveLine(),
+                                highlightActiveLineGutter(),
+                            ]
                             : [],
                         await syntaxBundle(`text.${language}`),
                         extension,
@@ -320,7 +320,7 @@ export function ChatPopup() {
 
     function handleMouseDown() {
         if (document.activeElement) {
-            ;(document.activeElement as HTMLElement).blur()
+            ; (document.activeElement as HTMLElement).blur()
         }
     }
     return (
@@ -753,7 +753,7 @@ function ChatHistory(props: {
     const conversationPrompts = useAppSelector(
         csel.getConversationPrompts(conversationIds, 'reverse')
     )
-
+    const dispatch = useAppDispatch()
     return (
         <div className="flex flex-col items-center w-80 select-none">
             <button className="w-full" onClick={props.onClose}>
@@ -781,6 +781,16 @@ function ChatHistory(props: {
                                 <span className="text-neutral-400 text-xs">
                                     {formatPromptTime(msg.sentAt)}
                                 </span>
+
+                                <button
+                                    className="closeButton"
+                                    onClick={() => {
+                                        dispatch(cs.doDeleteMessage({ conversationId: msg.conversationId }));
+
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                </button>
                             </div>
                         </button>
                     )

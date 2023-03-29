@@ -167,6 +167,19 @@ export const chatSlice = createSlice({
                 chatState.botMessages = botMessages
             }
         },
+        doDeleteMessage(
+            chatState: ChatState,
+            action: PayloadAction<{ conversationId: string }>
+          ) {
+            const { conversationId } = action.payload;
+          
+            // Remove message from userMessages
+            chatState.userMessages = chatState.userMessages.filter(
+              (message) => message.conversationId !== conversationId
+            );
+          
+          }
+          ,
         doSetChatState(chatState: ChatState, action: PayloadAction<ChatState>) {
             const newState = action.payload
             chatState.userMessages = newState.userMessages
@@ -558,6 +571,7 @@ export const {
     startNewMessage,
     doSetMessages,
     doSetChatState,
+    doDeleteMessage,
     _submitCommandBar: dummySubmitCommandBar,
     // Bad - I added tech debt and will fix later
     setMaxOrigLine,
