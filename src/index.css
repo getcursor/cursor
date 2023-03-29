@@ -8,6 +8,7 @@
     --active-text: #fafafa;
 
     --title-bar-background: #484747;
+    --title-bar-border: rgb(255, 255, 255, 0.1);
 
     --left-pane-background: #252526;
     --left-pane-hover: #404040;
@@ -19,6 +20,7 @@
     --tab-not-active: #2d2d2d;
     --tab-bar-background: #252526;
     --tab-inactive-font: #616876;
+    --tab-close-hover: rgba(255, 255, 255, 0.5);
 
     --button: #666;
 
@@ -203,6 +205,7 @@ body {
     border-bottom: 1px solid var(--pane-border);
 
     text-align: right;
+    border: 2px solid var(--title-bar-border);
 
     display: flex;
     align-items: center;
@@ -741,6 +744,10 @@ li.rta__item--selected mark {
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
     box-sizing: border-box;
+}
+
+.tab__close:hover {
+    color: var(--tab-close-hover);
 }
 
 .app__righttopwrapper {
