@@ -35,6 +35,7 @@ import { WelcomeScreen } from './components/welcomeScreen'
 import { TitleBar } from './components/titlebar'
 import { BottomTerminal } from './components/terminal'
 import { throttleCallback } from './components/componentUtils'
+import { ErrorPopup } from './components/errors'
 
 const customStyles = {
     overlay: {
@@ -55,116 +56,6 @@ const customStyles = {
         marginRight: 'auto',
         maxWidth: '700px',
     },
-}
-
-function ErrorPopup() {
-    const showError = useAppSelector(gsel.getShowErrors)
-    const dispatch = useAppDispatch()
-
-    return (
-        <Modal
-            isOpen={showError}
-            onRequestClose={() => {
-                dispatch(gs.closeError())
-            }}
-            style={customStyles}
-        >
-            <div className="errorPopup">
-                <div className="errorPopup__title">
-                    <div className="errorPopup__title_text">
-                        We ran into a problem
-                    </div>
-                    <div
-                        className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError())}
-                    >
-                        <FontAwesomeIcon icon={faClose} />
-                    </div>
-                </div>
-                <div className="errorPopup__body">
-                    Something unexpected happened. Please try again later. If
-                    this continues, please contact michael@cursor.so.
-                    <br />
-                </div>
-            </div>
-        </Modal>
-    )
-}
-
-function RateLimitPopup() {
-    const showError = useAppSelector(gsel.getShowRateLimit)
-    const dispatch = useAppDispatch()
-
-    return (
-        <Modal
-            isOpen={showError}
-            onRequestClose={() => {
-                dispatch(gs.closeRateLimit())
-            }}
-            style={customStyles}
-        >
-            <div className="errorPopup">
-                <div className="errorPopup__title">
-                    <div className="errorPopup__title_text">
-                        You're going a bit fast...
-                    </div>
-                    <div
-                        className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError())}
-                    >
-                        <FontAwesomeIcon icon={faClose} />
-                    </div>
-                </div>
-                <div className="errorPopup__body">
-                    It seems like you're making a high rate of requests. Please
-                    slow down and try again in a minute or so. If you believe
-                    this is an error, contact us at michael@cursor.so
-                    <br />
-                </div>
-            </div>
-        </Modal>
-    )
-}
-
-function NoAuthRateLimitPopup() {
-    const showError = useAppSelector(gsel.getShowNoAuthRateLimit)
-    const dispatch = useAppDispatch()
-
-    return (
-        <Modal
-            isOpen={showError}
-            onRequestClose={() => {
-                dispatch(gs.closeNoAuthRateLimit())
-            }}
-            style={customStyles}
-        >
-            <div className="errorPopup">
-                <div className="errorPopup__title">
-                    <div className="errorPopup__title_text">
-                        Maximum Capacity
-                    </div>
-                    <div
-                        className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeNoAuthRateLimit())}
-                    >
-                        <FontAwesomeIcon icon={faClose} />
-                    </div>
-                </div>
-                <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right now.
-                    Please try again in one minute. To avoid these limits, you
-                    can optionally upgrade to{' '}
-                    <a
-                        className="pay-link"
-                        onClick={() => dispatch(ts.upgradeCursor(null))}
-                    >
-                        pro
-                    </a>
-                    .
-                </div>
-            </div>
-        </Modal>
-    )
 }
 
 function SSHPopup() {
@@ -438,8 +329,6 @@ export function App() {
                         </div>
                         <ChatPopup />
                         <ErrorPopup />
-                        <RateLimitPopup />
-                        <NoAuthRateLimitPopup />
                         <SettingsPopup />
                         <FeedbackArea />
                         <SSHPopup />

@@ -9,10 +9,12 @@ import {
     AuthRateLimitError,
     BadModelError,
     BadOpenAIAPIKeyError,
+    ExpectedBackendError,
     NoAuthGlobalNewRateLimitError,
     NoAuthGlobalOldRateLimitError,
     NoAuthLocalRateLimitError,
     NoAuthRateLimitError,
+    NotLoggedInError,
     streamSource,
 } from '../../utils'
 import { getViewId } from '../codemirror/codemirrorSelectors'
@@ -276,6 +278,7 @@ export async function getPayload({
     dispatch(updateLastUserMessageMsgType(null))
 
     let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
+    let openAIModel = state.settingsState.settings.openAIModel;
     let useOpenAI = state.settingsState.settings.useOpenAIKey;
     if (oaiKey == null || oaiKey === '' || !useOpenAI) {
        oaiKey = null; 
@@ -332,7 +335,9 @@ export async function getPayload({
 
         rootPath: state.global.rootPath,
         apiKey: oaiKey,
+        customModel: openAIModel,
     }
+    console.log({data})
 
     // document.cookie = `repo_path=${state.global.rootPath}`
     return data
@@ -400,6 +405,8 @@ export const continueGeneration = createAsyncThunk(
                             throw new BadOpenAIAPIKeyError()
                         case 'BAD_MODEL':
                             throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
                         default:
                             break
                     }
@@ -518,14 +525,10 @@ export const continueGeneration = createAsyncThunk(
             }
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({error: e}))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
             }
             dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))
@@ -625,6 +628,8 @@ export const streamResponse = createAsyncThunk(
                             throw new BadOpenAIAPIKeyError()
                         case 'BAD_MODEL':
                             throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
                         default:
                             break
                     }
@@ -934,14 +939,10 @@ export const streamResponse = createAsyncThunk(
             dispatch(finishResponse())
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({error: e}))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
             }
         }
@@ -968,18 +969,11 @@ export const continueUntilEnd = createAsyncThunk(
             dispatch(finishResponse())
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({error: e}))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
             }
         }
     }
@@ -1068,6 +1062,8 @@ export const diffResponse = createAsyncThunk(
                             throw new BadOpenAIAPIKeyError()
                         case 'BAD_MODEL':
                             throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
                         default:
                             break
                     }
@@ -1213,12 +1209,12 @@ export const diffResponse = createAsyncThunk(
             checkSend()
             //debugger
         } catch (e) {
-            console.error(e)
             dispatch(setGenerating(false))
-            if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({error: e}))
+            } else if (!(e instanceof PromptCancelledError)) {
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
             }
         }
     }

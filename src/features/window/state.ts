@@ -1,6 +1,7 @@
 import { Action } from '@reduxjs/toolkit'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
 import { v4 as uuidv4 } from 'uuid'
+import { ExpectedError } from '../../utils'
 
 export interface File {
     parentFolderId: number
@@ -128,6 +129,7 @@ export interface State {
     showError: boolean
     showRateLimit: boolean
     showNoAuthRateLimit: boolean
+    errorValue: ExpectedError | null
     errorType: string
     errorInfo: string
 
@@ -302,6 +304,7 @@ export interface Settings {
     textWrapping: string
     openAIKey?: string
     useOpenAIKey?: boolean
+    openAIModel: 'gpt4' | 'gpt3.5'
     tabSize?: string
 }
 
@@ -409,6 +412,7 @@ export const initialSettingsState = {
         contextType: 'none',
         textWrapping: 'disabled',
         tabSize: undefined,
+        openAIModel: 'gpt3.5'
     },
 }
 
@@ -449,6 +453,7 @@ export const initialState = {
     showError: false,
     showNoAuthRateLimit: false,
     showRateLimit: false,
+    errorValue: null,
     errorType: 'server',
     errorInfo: '404, request bad',
 

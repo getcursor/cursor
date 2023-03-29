@@ -1,7 +1,13 @@
 // export const API_ROOT = 'https://aicursor.com'
-export const API_ROOT = 'http://localhost:8000'
+// export const API_ROOT = 'http://localhost:8000'
+export const API_ROOT = 'https://staging.aicursor.com'
 
-export class NoAuthRateLimitError extends Error {
+export class ExpectedBackendError extends Error {
+    public title: string | null = null;
+}
+
+
+export class NoAuthRateLimitError extends ExpectedBackendError {
     constructor(
         message = 'You have reached the rate limit for unauthenticated requests. Please authenticate to continue.'
     ) {
@@ -10,16 +16,15 @@ export class NoAuthRateLimitError extends Error {
     }
 }
 
-export class AuthRateLimitError extends Error {
+export class AuthRateLimitError extends ExpectedBackendError {
     constructor(
         message = 'You have reached the rate limit for authenticated requests. Please wait before making more requests.'
     ) {
         super(message)
         this.name = 'AuthRateLimitError'
-    }
-}
+    } }
 
-export class NoAuthLocalRateLimitError extends Error {
+export class NoAuthLocalRateLimitError extends ExpectedBackendError {
     constructor(
         message = 'You have reached the rate limit for unauthenticated local requests. Please authenticate to continue.'
     ) {
@@ -28,7 +33,7 @@ export class NoAuthLocalRateLimitError extends Error {
     }
 }
 
-export class NoAuthGlobalOldRateLimitError extends Error {
+export class NoAuthGlobalOldRateLimitError extends ExpectedBackendError {
     constructor(
         message = 'You have reached the rate limit for unauthenticated global requests. Please wait before making more requests.'
     ) {
@@ -37,7 +42,7 @@ export class NoAuthGlobalOldRateLimitError extends Error {
     }
 }
 
-export class NoAuthGlobalNewRateLimitError extends Error {
+export class NoAuthGlobalNewRateLimitError extends ExpectedBackendError {
     constructor(
         message = 'You have reached the rate limit for unauthenticated global requests. Please wait before making more requests.'
     ) {
@@ -46,7 +51,8 @@ export class NoAuthGlobalNewRateLimitError extends Error {
     }
 }
 
-export class BadOpenAIAPIKeyError extends Error {
+export class OpenAIError extends ExpectedBackendError {}
+export class BadOpenAIAPIKeyError extends OpenAIError {
     constructor(
         message = 'The provided OpenAI API key is invalid. Please provide a valid API key.'
     ) {
@@ -55,14 +61,25 @@ export class BadOpenAIAPIKeyError extends Error {
     }
 }
 
-export class BadModelError extends Error {
+export class BadModelError extends ExpectedBackendError {
     constructor(
         message = 'The provided model ID is invalid. Please provide a valid model ID.'
     ) {
         super(message)
-        this.name = 'BADModelError'
+        this.name = 'BadModelError'
     }
 }
+
+export class NotLoggedInError extends ExpectedBackendError {
+    constructor(
+        message = 'You are not logged in. Please log in to continue.'
+    ) {
+        super(message)
+        this.name = 'NotLoggedInError'
+    }
+}
+export type ExpectedError = NoAuthRateLimitError | AuthRateLimitError | NoAuthLocalRateLimitError | NoAuthGlobalOldRateLimitError |
+    NoAuthGlobalNewRateLimitError | BadOpenAIAPIKeyError | BadModelError | NotLoggedInError
 
 export async function fetchWithCookies(url: string, options: RequestInit = {}) {
     const response = await fetch(url, options)

@@ -10,7 +10,7 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import { changeSettingsNoSideffect } from './settings/settingsSlice'
 import { getLanguageFromFilename } from './extensions/utils'
 
-import { join } from '../utils'
+import { ExpectedError, join } from '../utils'
 import {
     State,
     FullState,
@@ -1394,9 +1394,15 @@ const globalSlice = createSlice({
         },
         closeError(state: State) {
             state.showError = false
+            state.errorValue = null;
         },
-        openError(state: State) {
+        openError(state: State, action: PayloadAction<{error?: ExpectedError}>) {
             state.showError = true
+            if (action.payload.error) {
+                state.errorValue = action.payload.error
+            } else {
+                state.errorValue = null;
+            }
         },
         setVersion(state: State, action: PayloadAction<string>) {
             state.version = action.payload

@@ -13,7 +13,7 @@ import {
     installLanguageServer,
     runLanguageServer,
     stopLanguageServer,
- getConnections } from '../features/lsp/languageServerSlice'
+    getConnections } from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 
@@ -87,7 +87,7 @@ export function SettingsPopup() {
                     dispatch(toggleSettings())
                 }}
                 style={customStyles}
-            >
+                >
                 <div className="settingsContainer">
                     <div className="settings">
                         <div
@@ -95,7 +95,7 @@ export function SettingsPopup() {
                             onClick={() => {
                                 dispatch(toggleSettings())
                             }}
-                        >
+                            >
                             <i className="fas fa-times"></i>
                         </div>
                         <div className="settings__title">SETTINGS</div>
@@ -117,7 +117,7 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.keyBindings}
-                                />
+                                    />
                             </div>
 
                             <div className="settings__item">
@@ -137,7 +137,7 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.textWrapping}
-                                />
+                                    />
                             </div>
 
                             <div className="settings__item">
@@ -157,61 +157,20 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.tabSize}
-                                />
-                            </div>
-
-                            <div className="settings__item">
-                                <div className="settings__item_title">
-                                    OpenAI API Key
-                                </div>
-                                <div className="settings__item_description">
-                                    We'll use your key for any requests to OpenAI. This will help you avoid "maximum capacity" limits.
-                                </div>
-                                <input
-                                    className="settings__item_textarea"
-                                    placeholder="Enter your OpenAI API Key"
-                                    type="password"
-                                    onChange={(e) => {
-                                        dispatch(
-                                            changeSettings({
-                                                openAIKey: e.target.value,
-                                            })
-                                        )
-                                    }}
-                                    value={settings.openAIKey || ""}
                                     />
-                                <div className="flex items-center">
-                                    <Switch
-                                        checked={settings.useOpenAIKey}
-                                        onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
-                                        className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
-                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                                        >
-                                        <span className="sr-only">Use setting</span>
-                                        <span
-                                            aria-hidden="true"
-                                            className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
-                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                                            />
-                                    </Switch>
-                                    {settings.useOpenAIKey ? (
-                
-                                        <span className="ml-2">Enabled</span>
-                                    ) : (
-                                        <span className="ml-2">Disabled</span>
-                                    )}
-                                </div>
                             </div>
 
+
+                            <OpenAIPanel/>
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
                             {languageServerNames.map((name) => (
-                                <LanguageServerPanel
-                                    key={name}
-                                    languageName={name}
-                                />
-                            ))}
+                    <LanguageServerPanel
+                        key={name}
+                        languageName={name}
+                        />
+                ))}
                             <CursorLogin />
                         </div>
                     </div>
@@ -222,7 +181,69 @@ export function SettingsPopup() {
     )
 }
 
-function CursorLogin() {
+export function OpenAIPanel() {
+    const settings = useAppSelector(ssel.getSettings)
+    const dispatch = useAppDispatch()
+    
+    return (
+        <div className="settings__item">
+            <div className="settings__item_title">
+                OpenAI API Key
+            </div>
+            <div className="settings__item_description">
+                We'll use your key for any requests to OpenAI. This will help you avoid "maximum capacity" limits.
+            </div>
+            <input
+                className="settings__item_textarea"
+                placeholder="Enter your OpenAI API Key"
+                onChange={(e) => {
+                    dispatch(
+                        changeSettings({
+                            openAIKey: e.target.value,
+                        })
+                    )
+                }}
+                value={settings.openAIKey || ""}
+                />
+            <div className="flex items-center">
+                <Switch
+                    checked={settings.useOpenAIKey}
+                    onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
+                    className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
+                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                    >
+                    <span className="sr-only">Use setting</span>
+                    <span
+                        aria-hidden="true"
+                        className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
+                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                        />
+                </Switch>
+                {settings.useOpenAIKey ? (
+
+            <span className="ml-2">Enabled</span>
+        ) : (
+            <span className="ml-2">Disabled</span>
+        )}
+            </div>
+            {settings.useOpenAIKey && 
+                <Dropdown
+                    options={['gpt4', 'gpt3.5']}
+                    onChange={(e) => {
+                        dispatch(
+                            changeSettings({
+                                openAIModel: e.value,
+                            })
+                        )
+                    }}
+                    value={settings.openAIModel}
+                    />
+            }
+        </div>
+    )
+}
+
+export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
     const dispatch = useAppDispatch()
 
     const { signedIn, proVersion } = useAppSelector(loginStatus)
@@ -236,6 +257,9 @@ function CursorLogin() {
 
     const upgrade = useCallback(() => {
         dispatch(upgradeCursor(null))
+    }, [])
+    const openAccountSettings = useCallback(() => {
+        window.open('https://cursor.so/settings', '_blank')
     }, [])
 
     let currentPanel
@@ -252,14 +276,30 @@ function CursorLogin() {
             currentPanel = (
                 <div className="copilot__signin">
                     <button onClick={signOut}>Log out</button>
+                    {showSettings &&
+                        (<>
+                            <br/> 
+                            <button onClick={openAccountSettings}>Manage settings</button>
+                        </>
+                        )
+                    }
                 </div>
             )
         } else {
             currentPanel = (
                 <div className="copilot__signin">
-                    <button onClick={upgrade}>Upgrade to Pro</button>
                     <br/>
                     <button onClick={signOut}>Log out</button>
+                    {showSettings &&
+                        (<>
+                            <br/> 
+                            <button onClick={openAccountSettings}>Manage settings</button>
+                        </>
+                        )
+                    }
+                    <br/>
+                    Upgrade for unlimited generations
+                    <button onClick={upgrade}>Upgrade to Pro</button>
                 </div>
             )
         }
@@ -267,21 +307,22 @@ function CursorLogin() {
 
     return (
         <div className="settings__item">
-            <div className="settings__item_title">Cursor Pro</div>
+            <div className="settings__item_title">Cursor Account</div>
             <div className="settings__item_description">
-                Optionally reserve capacity to avoid "maximum capacity" limits.
+                Login to use the AI without an API key
             </div>
             {currentPanel}
         </div>
     )
 }
 
+
 function CopilotPanel() {
     const dispatch = useAppDispatch()
     const { signedIn, enabled } = useAppSelector(copilotStatus)
     const [localState, setLocalState] = useState<
         'signedIn' | 'signingIn' | 'signInFailed' | 'signedOut'
-    >(signedIn ? 'signedIn' : 'signedOut')
+        >(signedIn ? 'signedIn' : 'signedOut')
     const [localData, setLocalData] = useState<{ url: string; code: string }>()
     const [loading, setLoading] = useState(false)
 
@@ -357,10 +398,10 @@ function CopilotPanel() {
             <div className="copilot__signin">
                 Sign in failed. Please try again.
                 {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <button onClick={trySignIn}>Sign in</button>
-                )}
+                <p>Loading...</p>
+            ) : (
+                <button onClick={trySignIn}>Sign in</button>
+            )}
             </div>
         )
     } else {
@@ -368,10 +409,10 @@ function CopilotPanel() {
             <div className="copilot__signin">
                 Currently signed in <br />
                 {enabled ? (
-                    <button onClick={disableCopilot}>Disable</button>
-                ) : (
-                    <button onClick={enableCopilot}>Enable</button>
-                )}
+                <button onClick={disableCopilot}>Disable</button>
+            ) : (
+                <button onClick={enableCopilot}>Enable</button>
+            )}
                 <br />
                 <button onClick={signOut}>Sign out</button>
             </div>
@@ -487,10 +528,10 @@ function LanguageServerPanel({ languageName }: { languageName: string }) {
                 </div>
                 <div className="copilot__signin">
                     {languageRunning ? (
-                        <button onClick={stopServer}>Stop</button>
-                    ) : (
-                        <button onClick={runServer}>Run</button>
-                    )}
+                <button onClick={stopServer}>Stop</button>
+            ) : (
+                <button onClick={runServer}>Run</button>
+            )}
                 </div>
             </div>
         )
