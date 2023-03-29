@@ -5,7 +5,6 @@ import {
     IpcRendererEvent,
 } from 'electron'
 import {
-    LSPProcess,
     LSPRequestMap,
     LSPNotifyMap,
     Language,
@@ -73,7 +72,7 @@ const addRemoveCallbacks = () => {
                 ) => {
                     // This was a bug that I fixed where we used to just use callback
                     // here rather than first check the language
-                    let result = requestCallbacks[data.language](data.data)
+                    const result = requestCallbacks[data.language](data.data)
                     ipcRenderer.invoke(
                         'responseCallbackLS' + data.identifier,
                         result
@@ -139,7 +138,7 @@ const electronConnector = {
     getFolder: (
         dir: string,
         children: string[] = [],
-        depth: number = 1,
+        depth = 1,
         badDirectories: string[] = []
     ) => ipcRenderer.invoke('get_folder', dir, children, depth, badDirectories),
     getFile: (dir: string) => ipcRenderer.invoke('get_file', dir),
@@ -189,6 +188,8 @@ const electronConnector = {
         ipcRenderer.removeListener('terminal-incData', callback)
     },
     terminalInto: (data: any) => ipcRenderer.invoke('terminal-into', data),
+    terminalClickLink: (data: any) =>
+        ipcRenderer.invoke('terminal-click-link', data),
     terminalResize: (data: any) => ipcRenderer.invoke('terminal-resize', data),
 
     registerFileWasAdded: (callback: Callback) =>
@@ -239,7 +240,7 @@ const electronConnector = {
         return ipcRenderer.invoke('loadTests', blob)
     },
     getProject: () => ipcRenderer.invoke('getProject'),
-    saveProject: (data: Object) => ipcRenderer.invoke('saveProject', data),
+    saveProject: (data: unknown) => ipcRenderer.invoke('saveProject', data),
 
     getClipboard: () => ipcRenderer.invoke('getClipboard', null),
 
@@ -382,6 +383,40 @@ const electronConnector = {
         ipcRenderer.on('addCodeToPrompt', (event, data) => {
             callback(data)
         })
+    },
+    setCookies: async (cookieObject: {
+        url: string
+        name: string
+        value: string
+    }) => {
+        await ipcRenderer.invoke('setCookies', cookieObject)
+    },
+    loginCursor: async () => {
+        await ipcRenderer.invoke('loginCursor')
+    },
+    logoutCursor: async () => {
+        await ipcRenderer.invoke('logoutCursor')
+    },
+    getUserCreds: async () => {
+        return await ipcRenderer.invoke('getUserCreds')
+    },
+    payCursor: async () => {
+        return await ipcRenderer.invoke('payCursor')
+    },
+    registerUpdateAuthStatus(
+        callback: (payload: {
+            accessToken?: string | null
+            profile?: any | null
+            stripeProfile?: string | null
+        }) => void
+    ) {
+        ipcRenderer.on('updateAuthStatus', (event, data) => {
+            console.log('UPDATING AUTH STATUS', data)
+            callback(data)
+        })
+    },
+    refreshTokens() {
+        ipcRenderer.invoke('refreshTokens')
     },
 }
 

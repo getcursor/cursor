@@ -9,25 +9,27 @@ import {
     copilotChangeEnable,
     copilotChangeSignin,
     installLanguageServer,
-    killConnection,
     runLanguageServer,
     stopLanguageServer,
-} from '../features/lsp/languageServerSlice'
-import { getConnections } from '../features/lsp/languageServerSlice'
+ getConnections } from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 
 import Dropdown from 'react-dropdown'
 import 'react-dropdown/style.css'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { setRepoId } from '../features/globalSlice'
-import { getProgress, getRootPath } from '../features/selectors'
 import {
     copilotStatus,
     getLanguages,
     languageServerStatus,
 } from '../features/lsp/languageServerSelector'
-import { State } from '../features/window/state'
+
+import {
+    signInCursor,
+    signOutCursor,
+    upgradeCursor,
+} from '../features/tools/toolSlice'
+import { loginStatus } from '../features/tools/toolSelectors'
 
 import { localeOptions, Languages } from '../i18n'
 
@@ -127,15 +129,15 @@ export function SettingsPopup() {
                                     {t("Controls the tab size")}
                                 </div>
                                 <Dropdown
-                                    options={['2', '4', '8']}
+                                    options={['enabled', 'disabled']}
                                     onChange={(e) => {
                                         dispatch(
                                             changeSettings({
-                                                tabSize: e.value,
+                                                textWrapping: e.value,
                                             })
                                         )
                                     }}
-                                    value={settings.tabSize}
+                                    value={settings.textWrapping}
                                 />
                             </div>
 
@@ -147,15 +149,15 @@ export function SettingsPopup() {
                                     {t("Controls whether text wrapping is enabled")}
                                 </div>
                                 <Dropdown
-                                    options={['enabled', 'disabled']}
+                                    options={['2', '4', '8']}
                                     onChange={(e) => {
                                         dispatch(
                                             changeSettings({
-                                                textWrapping: e.value,
+                                                tabSize: e.value,
                                             })
                                         )
                                     }}
-                                    value={settings.textWrapping}
+                                    value={settings.tabSize}
                                 />
                             </div>
 
@@ -197,6 +199,58 @@ export function SettingsPopup() {
                 </div>
             </Modal>
         </>
+    )
+}
+
+function CursorLogin() {
+    const dispatch = useAppDispatch()
+
+    const { signedIn, proVersion } = useAppSelector(loginStatus)
+
+    const signIn = useCallback(() => {
+        dispatch(signInCursor(null))
+    }, [])
+    const signOut = useCallback(() => {
+        dispatch(signOutCursor(null))
+    }, [])
+
+    const upgrade = useCallback(() => {
+        dispatch(upgradeCursor(null))
+    }, [])
+
+    let currentPanel
+    if (!signedIn) {
+        currentPanel = (
+            <div className="copilot__signin">
+                <button onClick={signIn}>Sign in</button>
+                <button onClick={signIn}>Sign up</button>
+            </div>
+        )
+    } else {
+        if (proVersion) {
+            currentPanel = (
+                <div className="copilot__signin">
+                    <button onClick={signOut}>Log out</button>
+                </div>
+            )
+        } else {
+            currentPanel = (
+                <div className="copilot__signin">
+                    <button onClick={upgrade}>Upgrade to Pro</button>
+                    <button onClick={signOut}>Log out</button>
+                </div>
+            )
+        }
+    }
+
+    return (
+        <div className="settings__item">
+            <div className="settings__item_title">Cursor Pro</div>
+            <div className="settings__item_description">
+                Optionally reserve capacity to avoid "maximum capacity" limits.
+            </div>
+            {currentPanel}
+        </div>
     )
 }
 

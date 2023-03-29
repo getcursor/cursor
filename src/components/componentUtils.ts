@@ -1,4 +1,4 @@
-export function throttleCallback(fn: Function, limit: number = 300) {
+export function throttleCallback(fn: Function, limit = 300) {
     let inThrottle: boolean,
         lastFn: ReturnType<typeof setTimeout>,
         lastTime: number
@@ -22,7 +22,7 @@ export function throttleCallback(fn: Function, limit: number = 300) {
     }
 }
 
-export function normalThrottleCallback(fn: Function, limit: number = 300) {
+export function normalThrottleCallback(fn: Function, limit = 300) {
     let inThrottle: boolean,
         lastFn: ReturnType<typeof setTimeout>,
         lastTime: number

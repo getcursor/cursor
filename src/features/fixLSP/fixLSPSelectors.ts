@@ -1,4 +1,4 @@
-import { FullState, FixLSPState, LineChange } from '../window/state'
+import { FullState, FixLSPState } from '../window/state'
 import { createSelector } from 'reselect'
 
 export const selectFixesByFileId = (fileId: number) =>

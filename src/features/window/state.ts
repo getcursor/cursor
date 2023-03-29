@@ -1,5 +1,4 @@
 import { Action } from '@reduxjs/toolkit'
-import { TransactionSpec } from '@codemirror/state'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
 import { Languages } from '../../i18n'
 import { v4 as uuidv4 } from 'uuid'
@@ -129,6 +128,7 @@ export interface State {
 
     showError: boolean
     showRateLimit: boolean
+    showNoAuthRateLimit: boolean
     errorType: string
     errorInfo: string
 
@@ -301,6 +301,7 @@ export interface Settings {
     useFour: string
     contextType: string
     textWrapping: string
+    openAIKey?: string
     tabSize?: string
     language: Languages
 }
@@ -343,6 +344,11 @@ export interface ToolState {
     commandPaletteTriggered: boolean
     aiCommandPaletteTriggered: boolean
     leftSideExpanded: boolean
+    cursorLogin: {
+        accessToken?: string
+        profile?: string
+        stripeId?: string
+    }
 }
 
 export interface LoggingState {
@@ -443,6 +449,7 @@ export const initialState = {
     },
 
     showError: false,
+    showNoAuthRateLimit: false,
     showRateLimit: false,
     errorType: 'server',
     errorInfo: '404, request bad',
@@ -465,7 +472,7 @@ export function nextValue(keys: string[]) {
         return Math.max(...keys.map((x) => parseInt(x))) + 1
     }
 }
-export function nextId(byIds: Object) {
+export function nextId(byIds: object) {
     return nextValue(Object.keys(byIds))
 }
 export function nextTabID(state: State) {

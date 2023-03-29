@@ -3,7 +3,7 @@ import { Combobox } from '@headlessui/react'
 import { getIconElement } from './filetree'
 import { openFile } from '../features/globalSlice'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { getRootPath, searchAllFiles, searchFile } from '../features/selectors'
+import { getRootPath, searchAllFiles } from '../features/selectors'
 import { untriggerFileSearch } from '../features/tools/toolSlice'
 import { fileSearchTriggered } from '../features/tools/toolSelectors'
 
@@ -15,7 +15,6 @@ interface FileResult {
 export default function SearchFiles() {
     const [selected, setSelected] = useState<FileResult>()
     const [query, setQuery] = useState('')
-    const [showing, setShowing] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [results, setResults] = useState<string[]>([])
     const [childQuery, setChildQuery] = useState('')
@@ -26,7 +25,7 @@ export default function SearchFiles() {
         setSelectedIndex(results.length - 1)
     }
 
-    const triggerFileSearchFocus = useAppSelector(fileSearchTriggered)
+    const showFileSearch = useAppSelector(fileSearchTriggered)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -37,20 +36,19 @@ export default function SearchFiles() {
     }, [query])
 
     useEffect(() => {
-        if (triggerFileSearchFocus) {
-            dispatch(untriggerFileSearch())
-            setShowing(true)
+        if (showFileSearch) {
             setSelectedIndex(0)
         }
-    }, [triggerFileSearchFocus, comboRef.current])
+    }, [showFileSearch, comboRef.current])
 
     // effect for when becomes unfocused
     useEffect(() => {
-        if (showing && comboRef.current) {
+        if (showFileSearch && comboRef.current) {
             comboRef.current.focus()
             const handleBlur = (event: any) => {
                 if (!event.currentTarget.contains(event.relatedTarget)) {
                     setTimeout(() => {
+                        dispatch(untriggerFileSearch())
                         // setShowing(false)
                     }, 200)
                     //setShowing(false);
@@ -61,7 +59,7 @@ export default function SearchFiles() {
                 comboRef.current?.removeEventListener('blur', handleBlur)
             }
         }
-    }, [showing, comboRef.current])
+    }, [showFileSearch, comboRef.current])
 
     useEffect(() => {
         const selectedElement = document.querySelector('.file__line_selected')
@@ -70,11 +68,11 @@ export default function SearchFiles() {
 
     return (
         <>
-            {showing && (
+            {showFileSearch && (
                 <div
                     className="absolute top-2.5 left-1/2 
                 transform -translate-x-1/2 z-50"
-                    style={{ display: showing ? 'block' : 'none' }}
+                    style={{ display: showFileSearch ? 'block' : 'none' }}
                     id="fileSearchId"
                 >
                     <Combobox value={selected} onChange={setSelected}>
@@ -98,7 +96,7 @@ export default function SearchFiles() {
                                                     results[selectedIndex],
                                             })
                                         )
-                                        setShowing(false)
+                                        dispatch(untriggerFileSearch())
                                     }
                                 }
                                 if (e.key === 'ArrowDown') {
@@ -124,7 +122,7 @@ export default function SearchFiles() {
                                     }
                                 } else if (e.key === 'Escape') {
                                     e.preventDefault()
-                                    setShowing(false)
+                                    dispatch(untriggerFileSearch())
                                 }
                             }}
                             ref={comboRef}
@@ -165,9 +163,9 @@ export function SearchResult({
 
     // Now paths are relative to the root path
 
-    let splitFilePath = path.split(connector.PLATFORM_DELIMITER)
-    let fileName = splitFilePath.pop()!
-    let precedingPath = splitFilePath
+    const splitFilePath = path.split(connector.PLATFORM_DELIMITER)
+    const fileName = splitFilePath.pop()!
+    const precedingPath = splitFilePath
         .join(connector.PLATFORM_DELIMITER)
         .slice(rootPath!.length + 1)
 
