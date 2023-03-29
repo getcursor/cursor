@@ -1,4 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks'
+
+import { Switch} from '@headlessui/react'
+
 import * as ssel from '../features/settings/settingsSelectors'
 import {
     changeSettings,
@@ -182,6 +185,27 @@ export function SettingsPopup() {
                                     }}
                                     value={settings.openAIKey || ""}
                                     />
+                                <div className="flex items-center">
+                                    <Switch
+                                        checked={settings.useOpenAIKey}
+                                        onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
+                                        className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
+                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                        >
+                                        <span className="sr-only">Use setting</span>
+                                        <span
+                                            aria-hidden="true"
+                                            className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
+                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                                            />
+                                    </Switch>
+                                    {settings.useOpenAIKey ? (
+                
+                                        <span className="ml-2">Enabled</span>
+                                    ) : (
+                                        <span className="ml-2">Disabled</span>
+                                    )}
+                                </div>
                             </div>
 
                             <CopilotPanel />
@@ -224,6 +248,7 @@ function CursorLogin() {
         currentPanel = (
             <div className="copilot__signin">
                 <button onClick={signIn}>Sign in</button>
+                <br/>
                 <button onClick={signIn}>Sign up</button>
             </div>
         )
@@ -238,6 +263,7 @@ function CursorLogin() {
             currentPanel = (
                 <div className="copilot__signin">
                     <button onClick={upgrade}>Upgrade to Pro</button>
+                    <br/>
                     <button onClick={signOut}>Log out</button>
                 </div>
             )

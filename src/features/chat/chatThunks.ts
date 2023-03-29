@@ -7,6 +7,11 @@ import {
 import {
     API_ROOT,
     AuthRateLimitError,
+    BadModelError,
+    BadOpenAIAPIKeyError,
+    NoAuthGlobalNewRateLimitError,
+    NoAuthGlobalOldRateLimitError,
+    NoAuthLocalRateLimitError,
     NoAuthRateLimitError,
     streamSource,
 } from '../../utils'
@@ -275,7 +280,8 @@ export async function getPayload({
     dispatch(updateLastUserMessageMsgType(null))
 
     let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
-    if (oaiKey == null || oaiKey === '') {
+    let useOpenAI = state.settingsState.settings.useOpenAIKey;
+    if (oaiKey == null || oaiKey === '' || !useOpenAI) {
        oaiKey = null; 
     }
     const userRequest = {
@@ -383,16 +389,23 @@ export const continueGeneration = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        default:
+                            break
                     }
                 }
                 return resp
@@ -600,16 +613,23 @@ export const streamResponse = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        default:
+                            break
                     }
                 }
                 return resp
@@ -1030,16 +1050,23 @@ export const diffResponse = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        default:
+                            break
                     }
                 }
                 return resp

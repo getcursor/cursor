@@ -302,6 +302,7 @@ export interface Settings {
     contextType: string
     textWrapping: string
     openAIKey?: string
+    useOpenAIKey?: boolean
     tabSize?: string
 }
 

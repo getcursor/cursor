@@ -1683,7 +1683,7 @@ cm-diff-cancel > div {
     cursor: pointer;
 }
 
-.settings button {
+.copilot__signin button {
     background-color: var(--vscode-blue);
     padding: 4px 12px;
     border-radius: 5px;

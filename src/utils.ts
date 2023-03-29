@@ -18,6 +18,52 @@ export class AuthRateLimitError extends Error {
         this.name = 'AuthRateLimitError'
     }
 }
+
+export class NoAuthLocalRateLimitError extends Error {
+    constructor(
+        message = 'You have reached the rate limit for unauthenticated local requests. Please authenticate to continue.'
+    ) {
+        super(message)
+        this.name = 'NoAuthLocalRateLimitError'
+    }
+}
+
+export class NoAuthGlobalOldRateLimitError extends Error {
+    constructor(
+        message = 'You have reached the rate limit for unauthenticated global requests. Please wait before making more requests.'
+    ) {
+        super(message)
+        this.name = 'NoAuthGlobalOldRateLimitError'
+    }
+}
+
+export class NoAuthGlobalNewRateLimitError extends Error {
+    constructor(
+        message = 'You have reached the rate limit for unauthenticated global requests. Please wait before making more requests.'
+    ) {
+        super(message)
+        this.name = 'NoAuthGlobalNewRateLimitError'
+    }
+}
+
+export class BadOpenAIAPIKeyError extends Error {
+    constructor(
+        message = 'The provided OpenAI API key is invalid. Please provide a valid API key.'
+    ) {
+        super(message)
+        this.name = 'BadOpenAIAPIKeyError'
+    }
+}
+
+export class BadModelError extends Error {
+    constructor(
+        message = 'The provided model ID is invalid. Please provide a valid model ID.'
+    ) {
+        super(message)
+        this.name = 'BADModelError'
+    }
+}
+
 export async function fetchWithCookies(url: string, options: RequestInit = {}) {
     const response = await fetch(url, options)
     // Get the cookies
