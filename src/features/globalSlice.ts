@@ -712,7 +712,7 @@ export const initState = createAsyncThunk(
 
         const settings = await connector.initSettings()
         dispatch(changeSettingsNoSideffect(settings))
-        
+
         initI18n(settings.language)
 
         if (config != null && config.defaultFolder) {

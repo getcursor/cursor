@@ -27,7 +27,6 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
-
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
 import { FeedbackArea, LeftSide } from './components/search'
@@ -62,7 +61,7 @@ function ErrorPopup() {
     const { t } = useTranslation()
     const showError = useAppSelector(gsel.getShowErrors)
     const dispatch = useAppDispatch()
-    
+
     return (
         <Modal
             isOpen={showError}
@@ -84,7 +83,9 @@ function ErrorPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    {t('Something unexpected happened. Please try again later. ')}
+                    {t(
+                        'Something unexpected happened. Please try again later. '
+                    )}
                     {t('If this continues, please contact michael@cursor.so.')}
                     <br />
                 </div>
@@ -121,7 +122,9 @@ function RateLimitPopup() {
                 <div className="errorPopup__body">
                     {t(`It seems like you're making a high rate of requests. `)}
                     {t('Please slow down and try again in a minute or so. ')}
-                    {t('If you believe this is an error, contact us at michael@cursor.so')}
+                    {t(
+                        'If you believe this is an error, contact us at michael@cursor.so'
+                    )}
                     <br />
                 </div>
             </div>
@@ -155,7 +158,9 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    {t(`We're getting more traffic than we can handle right now. `)}
+                    {t(
+                        `We're getting more traffic than we can handle right now. `
+                    )}
                     {t('Please try again in one minute. ')}
                     {t('To avoid these limits, you can optionally upgrade to ')}
                     <a
@@ -218,7 +223,9 @@ function SSHPopup() {
                     </div>
                 )}
                 <div className="remotePopup__body">
-                    <div className="settings__item_title">{t('SSH Command')}</div>
+                    <div className="settings__item_title">
+                        {t('SSH Command')}
+                    </div>
                     <div className="settings__item_description">
                         {t('Same command you would put in the terminal')}
                     </div>
@@ -233,7 +240,9 @@ function SSHPopup() {
                     />
                 </div>
                 <div className="remotePopup__body">
-                    <div className="settings__item_title">{t('Target Folder')}</div>
+                    <div className="settings__item_title">
+                        {t('Target Folder')}
+                    </div>
                     <div className="settings__item_description">
                         {t('Must be an absolute path')}
                     </div>

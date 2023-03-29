@@ -1,5 +1,5 @@
 import { URI } from 'vscode-uri'
-import { autocompletion , pickedCompletion } from '@codemirror/autocomplete'
+import { autocompletion, pickedCompletion } from '@codemirror/autocomplete'
 import posthog from 'posthog-js'
 import {
     LanguageServerClient,
@@ -16,9 +16,23 @@ import {
     setDiagnostics,
     Action,
 } from '../linter/lint'
-import { EditorView, ViewPlugin, Tooltip, hoverTooltip , Decoration, DecorationSet } from '@codemirror/view'
+import {
+    EditorView,
+    ViewPlugin,
+    Tooltip,
+    hoverTooltip,
+    Decoration,
+    DecorationSet,
+} from '@codemirror/view'
 import type { ViewUpdate } from '@codemirror/view'
-import { Facet, Text, Range , StateField, StateEffect , Extension } from '@codemirror/state'
+import {
+    Facet,
+    Text,
+    Range,
+    StateField,
+    StateEffect,
+    Extension,
+} from '@codemirror/state'
 
 import {
     findDeclarationGivenDefinition,
@@ -107,10 +121,7 @@ export const semanticTokenField = StateField.define<DecorationSet>({
 
 // TODO - remove this when done testing autocomplete
 import _ from 'lodash'
-import {
-    computeAndRenderTest,
-    renderNewTest,
-} from '../tests/testSlice'
+import { computeAndRenderTest, renderNewTest } from '../tests/testSlice'
 const dontComplete = [
     'TemplateString',
     'String',

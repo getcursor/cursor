@@ -7,29 +7,28 @@ import jp from './locales/jp.json'
 import zh from './locales/zh.json'
 
 export const localeOptions = {
-    'English': 'en',
-    '日本語': 'jp',
-    '中文': 'zh',    
+    English: 'en',
+    日本語: 'jp',
+    中文: 'zh',
 }
 
 export type Languages = keyof typeof localeOptions
 
 export const init = (locale: Languages = 'English') => {
-    const lng = localeOptions[locale];
-    i18n
-    .use(initReactI18next)
-    .use(HttpBackend)
-    .init({
-        lng,
-        fallbackLng: lng,
-        interpolation: {
-            escapeValue: false,
-        },
-        resources: {
-            en: { translation: en },            
-            zh: { translation: zh },
-            jp: { translation: jp },
-        }
-    })
-    return i18n;
+    const lng = localeOptions[locale]
+    i18n.use(initReactI18next)
+        .use(HttpBackend)
+        .init({
+            lng,
+            fallbackLng: lng,
+            interpolation: {
+                escapeValue: false,
+            },
+            resources: {
+                en: { translation: en },
+                zh: { translation: zh },
+                jp: { translation: jp },
+            },
+        })
+    return i18n
 }

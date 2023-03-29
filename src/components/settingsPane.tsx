@@ -11,7 +11,8 @@ import {
     installLanguageServer,
     runLanguageServer,
     stopLanguageServer,
- getConnections } from '../features/lsp/languageServerSlice'
+    getConnections,
+} from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 
@@ -106,7 +107,9 @@ export function SettingsPopup() {
                                     {t('Key Bindings')}
                                 </div>
                                 <div className="settings__item_description">
-                                    {t('Controls whether to use vim, emacs, or none')}
+                                    {t(
+                                        'Controls whether to use vim, emacs, or none'
+                                    )}
                                 </div>
                                 <Dropdown
                                     options={['none', 'vim', 'emacs']}
@@ -126,7 +129,9 @@ export function SettingsPopup() {
                                     {t('Text Wrapping')}
                                 </div>
                                 <div className="settings__item_description">
-                                    {t('Controls whether text wrapping is enabled')}
+                                    {t(
+                                        'Controls whether text wrapping is enabled'
+                                    )}
                                 </div>
                                 <Dropdown
                                     options={['2', '4', '8']}
@@ -159,22 +164,24 @@ export function SettingsPopup() {
                                     }}
                                     value={settings.textWrapping}
                                 />
-                            </div>                            
+                            </div>
 
                             <div className="settings__item">
-                                <div className="settings__item_title">                                    
+                                <div className="settings__item_title">
                                     {t('Languages')}
                                 </div>
-                                <div className="settings__item_description">                                    
+                                <div className="settings__item_description">
                                     {t('Switch language')}
                                 </div>
                                 <Dropdown
                                     options={Object.keys(localeOptions)}
                                     onChange={(e) => {
                                         const lang = e.value as Languages
-                                        connector.changeLanguage(localeOptions[lang])
+                                        connector.changeLanguage(
+                                            localeOptions[lang]
+                                        )
                                         i18n.changeLanguage(localeOptions[lang])
-                                        dispatch(                                            
+                                        dispatch(
                                             changeSettings({
                                                 language: lang,
                                             })

@@ -9,7 +9,8 @@ import React, {
 import { useTranslation } from 'react-i18next'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
-import { Message ,
+import {
+    Message,
     CodeBlock as CodeBlockType,
     CodeSymbolType,
 } from '../features/window/state'
@@ -330,7 +331,7 @@ export function ChatPopup() {
 
     function handleMouseDown() {
         if (document.activeElement) {
-            (document.activeElement as HTMLElement).blur()
+            ;(document.activeElement as HTMLElement).blur()
         }
     }
     return (
@@ -830,7 +831,7 @@ export function CommandBar({
 }) {
     const dispatch = useAppDispatch()
     const { t } = useTranslation()
-    
+
     const customStyles = {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.1)',

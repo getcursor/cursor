@@ -1,5 +1,5 @@
 import i18n from 'i18next'
-import { init as initI18n } from "../i18n";
+import { init as initI18n } from '../i18n'
 import fetch from 'node-fetch'
 import { Settings, File, Folder } from '../features/window/state'
 
@@ -146,13 +146,13 @@ const createWindow = () => {
 
     if (!app.isPackaged) {
         main_window.webContents.openDevTools()
-    }    
+    }
 
     ipcMain.handle('changeLanguage', (event: Event, lang: string) => {
-        i18n.changeLanguage(lang);
+        i18n.changeLanguage(lang)
         const menu = Menu.buildFromTemplate(getMenuTemplate())
         Menu.setApplicationMenu(menu)
-    })    
+    })
 
     ipcMain.handle('maximize', () => {
         // First check if this is maximized
@@ -221,7 +221,9 @@ const createWindow = () => {
         }
         if (process.platform === 'darwin') {
             menuList.push({
-                label: t(process.platform === 'darwin' ? 'Custom Menu' : 'Cursor'),
+                label: t(
+                    process.platform === 'darwin' ? 'Custom Menu' : 'Cursor'
+                ),
                 submenu: [quitApp],
             })
         }
@@ -239,7 +241,9 @@ const createWindow = () => {
                     {
                         label: t('Open Folder'),
                         click: () => {
-                            main_window.webContents.send('open_folder_triggered')
+                            main_window.webContents.send(
+                                'open_folder_triggered'
+                            )
                         },
                         accelerator: META_KEY + '+O',
                     },
@@ -359,7 +363,7 @@ const createWindow = () => {
                 ],
             },
         ])
-        return menuList;
+        return menuList
     }
     const menu = Menu.buildFromTemplate(getMenuTemplate())
     Menu.setApplicationMenu(menu)

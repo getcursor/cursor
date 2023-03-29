@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import * as ss from '../features/settings/settingsSlice'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import React, { useCallback, useEffect,  useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { copilotStatus } from '../features/lsp/languageServerSelector'
 import {
     copilotChangeEnable,
@@ -254,9 +254,13 @@ export function WelcomeScreen() {
             <div className="welcome-screen-inner">
                 <h1 className="welcome-screen-title">{t('Welcome')}</h1>
                 <div className="key-bindings-section section">
-                    <h2 className="key-bindings-title title">{t('Key Bindings')}</h2>
+                    <h2 className="key-bindings-title title">
+                        {t('Key Bindings')}
+                    </h2>
                     <p className="key-bindings-subheading subheading">
-                        {t('Choose your preferred key binding style for the editor.')}
+                        {t(
+                            'Choose your preferred key binding style for the editor.'
+                        )}
                     </p>
                     <ButtonGroup
                         plans={keyOptions}
@@ -274,7 +278,9 @@ export function WelcomeScreen() {
                         {t('Optional: Copilot')}
                     </h2>
                     <p className="key-bindings-subheading subheading">
-                        {t('Cursor comes with a built-in Github Copilot integration.')}
+                        {t(
+                            'Cursor comes with a built-in Github Copilot integration.'
+                        )}
                     </p>
                     <CopilotPanel />
                 </div>
