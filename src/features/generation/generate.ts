@@ -2,9 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { addTransaction } from '../globalSlice'
 import { State, initialState, FullState } from '../window/state'
 import { getFilePath } from '../selectors'
-import { streamSource } from '../../utils'
-import { EditorView } from '@codemirror/view'
-import { API_ROOT } from '../../utils'
+import { streamSource , API_ROOT } from '../../utils'
 
 const API_ENDPOINT = '/long_complete'
 
@@ -44,9 +42,9 @@ export const startCompletion = createAsyncThunk(
                 body: JSON.stringify(data),
             })
 
-            var notStarted = true
-            var currentPos = pos
-            for await (let token of streamSource(response)) {
+            let notStarted = true
+            let currentPos = pos
+            for await (const token of streamSource(response)) {
                 if (notStarted) {
                     notStarted = false
                     dispatch(generationSlice.actions.starting(tabId))

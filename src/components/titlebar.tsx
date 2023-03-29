@@ -5,7 +5,6 @@ import * as ss from '../features/settings/settingsSlice'
 import * as ls from '../features/logging/loggingSlice'
 import * as ts from '../features/tools/toolSlice'
 import * as csel from '../features/chat/chatSelectors'
-import * as tsel from '../features/tools/toolSelectors'
 import * as gsel from '../features/selectors'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import { useEffect, useState } from 'react'
@@ -19,7 +18,6 @@ import {
     faSquare,
     faTimes,
     faRobot,
-    faTerminal,
     faSquareTerminal,
 } from '@fortawesome/pro-regular-svg-icons'
 
@@ -100,9 +98,9 @@ function MenuBar() {
                     [
                         'Open SSH Folder',
                         () => {
-                            dispatch(gs.openRemotePopup(null))
+                            dispatch(gs.openRemotePopup())
                         },
-                        ''
+                        '',
                     ],
                     [
                         'Save File',
@@ -325,7 +323,7 @@ export function TitleBar({
                     <div
                         className="titlebar__right_button"
                         onClick={() => {
-                            dispatch(gs.toggleTerminal(null))
+                            dispatch(gs.toggleTerminal())
                         }}
                     >
                         <FontAwesomeIcon icon={faSquareTerminal} />

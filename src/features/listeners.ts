@@ -3,8 +3,6 @@ import * as gs from './globalSlice'
 import * as gt from './globalThunks'
 import * as cs from './chat/chatSlice'
 import * as ts from './tools/toolSlice'
-import * as ss from './settings/settingsSlice'
-import * as state from './window/state'
 
 ////////
 // GLOBAL LISTENERS
@@ -14,6 +12,16 @@ import * as state from './window/state'
 connector.registerRenameClick(() => {
     store.dispatch(gs.triggerRename(null))
 })
+
+connector.registerUpdateAuthStatus(
+    (data: {
+        accessToken?: string | null
+        profile?: any | null
+        stripeProfile?: string | null
+    }) => {
+        store.dispatch(ts.login(data))
+    }
+)
 
 // @ts-ignore
 connector.registerSaved(() => {
@@ -48,6 +56,11 @@ connector.registerNewFolderClick(() => {
 // @ts-ignore
 connector.registerCloseTab(() => {
     store.dispatch(gt.closeTab(null))
+})
+
+// @ts-ignore
+connector.registerCloseAllTabs(() => {
+    store.dispatch(gt.closeAllTabs())
 })
 
 // @ts-ignore
@@ -117,8 +130,8 @@ connector.registerFileWasUpdated((evt: any, payload: any) => {
 })
 
 // @ts-ignore
-connector.registerOpenRemotePopup((evt: any, payload: any) => {
-    store.dispatch(gs.openRemotePopup(null))
+connector.registerOpenRemotePopup((_evt: any, _payload: any) => {
+    store.dispatch(gs.openRemotePopup())
 })
 
 /////////

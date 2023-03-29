@@ -1,22 +1,8 @@
-import _ from 'lodash'
-
 import * as cp from 'child_process'
-import * as path from 'path'
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
 import { promisify } from 'util'
-import { app } from 'electron'
-import Fuse from 'fuse.js'
 
-import { platformResourcesDir, PLATFORM_INFO, rgLoc } from './utils'
-
-// Use fuse.js for fuzzy search of files
-let cachedFuseInstance: Fuse<string> | null = null
-let cachedFuseRootPath: string = ''
-const FUSE_OPTIONS = {
-    includeScore: true,
-    threshold: 0.3,
-    distance: 50,
-}
+import { PLATFORM_INFO, rgLoc } from './utils'
 
 const searchRipGrep = async (
     event: IpcMainInvokeEvent,
@@ -29,25 +15,25 @@ const searchRipGrep = async (
 ) => {
     // Instead run ripgrep fromt the cli
     // let cmd = ['rg', '--json', '--line-number', '--with-filename']
-    let cmd = ['--json', '--line-number', '--with-filename']
+    const cmd = ['--json', '--line-number', '--with-filename', '--sort-files']
     if (arg.caseSensitive) {
         cmd.push('--case-sensitive')
     } else {
         cmd.push('-i')
     }
 
-    for (let badPath of arg.badPaths) {
+    for (const badPath of arg.badPaths) {
         cmd.push('--ignore-file', badPath)
     }
 
     // cmd.push(`"${arg.query}"`, arg.rootPath);
     cmd.push(arg.query, arg.rootPath)
-    let start = performance.now()
-    let childProcess = cp.spawn(rgLoc, cmd)
+    // const start = performance.now()
+    const childProcess = cp.spawn(rgLoc, cmd)
 
-    let rawData: string[] = []
-    let errored = false
-    var overflowBuffer = ''
+    const rawData: string[] = []
+    let _errored = false
+    let overflowBuffer = ''
 
     const trimLines = (lines: string) => {
         lines = overflowBuffer + lines
@@ -58,7 +44,7 @@ const searchRipGrep = async (
             .split('\n')
             .filter((match) => {
                 try {
-                    let data = JSON.parse(match)
+                    const data = JSON.parse(match)
                     if (data.type === 'match') {
                         return match
                     }
@@ -68,8 +54,8 @@ const searchRipGrep = async (
             })
     }
 
-    childProcess.on('error', (err) => {
-        errored = true
+    childProcess.on('error', (_err) => {
+        _errored = true
     })
 
     childProcess.stdout.on('data', (chunk) => {
@@ -81,7 +67,7 @@ const searchRipGrep = async (
     })
 
     // Wait for the process to finish
-    await new Promise((resolve, reject) => {
+    await new Promise((resolve) => {
         childProcess.on('close', (code) => {
             resolve(code)
         })
@@ -90,7 +76,7 @@ const searchRipGrep = async (
     return rawData
 }
 
-const customDebounce = (func: any, wait: number = 0) => {
+const customDebounce = (func: any, wait = 0) => {
     let timeout: any
     let lastCall = 0
 
@@ -98,10 +84,10 @@ const customDebounce = (func: any, wait: number = 0) => {
         const now = Date.now()
         if (now - lastCall < wait) {
             clearTimeout(timeout)
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 timeout = setTimeout(() => {
                     lastCall = now
-                    let out = func(...args)
+                    const out = func(...args)
                     return resolve(out)
                 }, wait)
             })
@@ -124,14 +110,10 @@ const searchFilesName = async (
         topResults?: number
     }
 ) => {
-    const queryKeywords = query
-        .split(' ')
-        .map((k) => `*${k}*`)
-        .join('')
     const cmd =
         process.platform === 'win32'
-            ? `${rgLoc} --iglob "${queryKeywords}" --files '' ./ | head -n ${topResults}`
-            : `find . -type f -iname "${queryKeywords}" | head -n ${topResults}`
+            ? `${rgLoc} --iglob "*${query}*" --files '' ./ | head -n ${topResults}`
+            : `find . -type f -iname "*${query}*" | head -n ${topResults}`
     const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
     return stdout
         .split('\n')
@@ -156,7 +138,6 @@ const searchFilesPath = async (
         topResults?: number
     }
 ) => {
-    const wildcardQuery = query.split('').join('*')
     const cmd =
         process.platform === 'win32'
             ? `${rgLoc} --iglob "*${query}*" --files '' ./ | head -n ${topResults}`
@@ -186,32 +167,18 @@ const searchFilesPathGit = async (
     }
 ) => {
     if (await doesCommandSucceed('git ls-files ffff', rootPath)) {
-        if (cachedFuseRootPath !== rootPath) {
-            const cmd = `git ls-files`
-            try {
-                const { stdout } = await promisify(cp.exec)(cmd, {
-                    cwd: rootPath,
+        const cmd = `git ls-files | grep "${query}" | head -n ${topResults}`
+        try {
+            const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
+            return stdout
+                .split('\n')
+                .map((l) => {
+                    // map / to connector.PLATFORM_DELIMITER
+                    return l.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
                 })
-                const files = stdout.split('\n').filter(Boolean)
-                cachedFuseInstance = new Fuse(files, FUSE_OPTIONS)
-                cachedFuseRootPath = rootPath
-            } catch (e) {
-                cachedFuseInstance = null
-                cachedFuseRootPath = ''
-            }
-        }
-
-        if (cachedFuseInstance) {
-            const results = cachedFuseInstance
-                .search(query)
-                .slice(0, topResults)
-            return results.map((result) => {
-                // map / to connector.PLATFORM_DELIMITER
-                return result.item.replace(
-                    /\//g,
-                    PLATFORM_INFO.PLATFORM_DELIMITER
-                )
-            })
+                .filter(Boolean)
+        } catch (e) {
+            // ignore errors
         }
     }
     return await searchFilesPath(event, { query, rootPath, topResults })
@@ -219,7 +186,7 @@ const searchFilesPathGit = async (
 
 const doesCommandSucceed = async (cmd: string, rootPath: string) => {
     try {
-        const res = await promisify(cp.exec)(cmd, { cwd: rootPath })
+        await promisify(cp.exec)(cmd, { cwd: rootPath })
         return true
     } catch (e) {
         return false
@@ -239,43 +206,23 @@ const searchFilesNameGit = async (
     }
 ) => {
     if (await doesCommandSucceed('git ls-files ffff', rootPath)) {
-        if (cachedFuseRootPath !== rootPath) {
-            const cmd = `git ls-files`
-            try {
-                const { stdout } = await promisify(cp.exec)(cmd, {
-                    cwd: rootPath,
+        const cmd = `git ls-files | grep -i "${query}[^\\/]*" | grep -v "^node_modules/" | head -n ${topResults}`
+        try {
+            const { stdout } = await promisify(cp.exec)(cmd, { cwd: rootPath })
+            return stdout
+                .split('\n')
+                .map((l) => {
+                    // map / to connector.PLATFORM_DELIMITER
+                    return l.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
                 })
-                const files = stdout.split('\n').filter(Boolean)
-                cachedFuseInstance = new Fuse(files, FUSE_OPTIONS)
-                cachedFuseRootPath = rootPath
-            } catch (e) {
-                cachedFuseInstance = null
-                cachedFuseRootPath = ''
-            }
-        }
-
-        if (cachedFuseInstance) {
-            const results = cachedFuseInstance
-                .search(query)
-                .slice(0, topResults)
-            return results
-                .map((result) => {
-                    const file = result.item
-                    const fileName = file.substring(file.lastIndexOf('/') + 1)
-                    return { file, fileName }
-                })
-                .filter(({ fileName }) =>
-                    fileName.toLowerCase().includes(query.toLowerCase())
-                )
-                .map(({ file }) =>
-                    file.replace(/\//g, PLATFORM_INFO.PLATFORM_DELIMITER)
-                )
+                .filter(Boolean)
+        } catch (e) {
+            // ignore errors
         }
     }
     // we'll have to run it with find
     return await searchFilesName(event, { query, rootPath, topResults })
 }
-
 export const setupSearch = () => {
     ipcMain.handle('searchRipGrep', customDebounce(searchRipGrep))
     ipcMain.handle('searchFilesName', customDebounce(searchFilesName))

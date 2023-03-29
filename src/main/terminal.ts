@@ -22,7 +22,7 @@ export function setupTerminal(mainWindow: any) {
     }, {} as { [key: string]: string })
 
     let ptyProcess: any = null
-    for (var i = 0; i < shells.length; i++) {
+    for (let i = 0; i < shells.length; i++) {
         const shell = shells[i]
         try {
             if (process.platform !== 'win32')
@@ -37,7 +37,9 @@ export function setupTerminal(mainWindow: any) {
             ptyProcess = res
             
             break
-        } catch (e) {}
+        } catch (e) {
+            // ignore errors
+        }
     }
 
     if (ptyProcess == null) return

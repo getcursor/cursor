@@ -7,26 +7,28 @@ import {
 import { createSelector } from 'reselect'
 import { store } from '../app/store'
 
-export const getDraggingTabId = (state: {}) =>
+export const getDraggingTabId = (state: object) =>
     (<FullState>state).global.draggingTabId
-export const getZoomFactor = (state: {}) => (<FullState>state).global.zoomFactor
+export const getZoomFactor = (state: object) =>
+    (<FullState>state).global.zoomFactor
 
-export const getProgress = (state: {}) => (<FullState>state).global.repoProgress
+export const getProgress = (state: object) =>
+    (<FullState>state).global.repoProgress
 
 // PANE SELECTORS
 export const getPaneIsActive = (paneId: number) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.paneState.byIds
         },
         // Gets the actual pane
         (panes: State['paneState']['byIds']) => panes[paneId].isActive
     )
-export const getPaneStateBySplits = (state: {}) =>
+export const getPaneStateBySplits = (state: object) =>
     (<FullState>state).global.paneState.bySplits
 export const getPane = (paneId: number) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.paneState.byIds
         },
         // Gets the actual pane
@@ -35,18 +37,18 @@ export const getPane = (paneId: number) =>
 
 export const getEditorSelection = (tabId: number) =>
     createSelector(
-        (state: {}) => (state as FullState).global.tabCache[tabId],
+        (state: object) => (state as FullState).global.tabCache[tabId],
         (tab) => tab.initialEditorState?.selection
     )
 
 export const getCurrentTab = (paneId: number) =>
     createSelector(
         getPane(paneId),
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         (pane: Pane, tabs: State['tabs']) => {
             connector
             if (pane) {
-                for (let tabId of pane.tabIds) {
+                for (const tabId of pane.tabIds) {
                     if (tabs[tabId].isActive) {
                         return tabId
                     }
@@ -60,14 +62,14 @@ export const getCurrentTab = (paneId: number) =>
     )
 
 export const selectFocusedTabId = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.tabs,
     (panes: State['paneState']['byIds'], tabs: State['tabs']) => {
-        for (let paneIdStr of Object.keys(panes)) {
+        for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
             if (panes[paneId].isActive) {
                 const pane = panes[paneId]
-                for (let tabId of pane.tabIds) {
+                for (const tabId of pane.tabIds) {
                     if (tabs[tabId].isActive) {
                         return tabId
                     }
@@ -81,14 +83,14 @@ export const selectFocusedTabId = createSelector(
 )
 
 export const getFocusedTab = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.tabs,
     (panes: State['paneState']['byIds'], tabs: State['tabs']) => {
-        for (let paneIdStr of Object.keys(panes)) {
+        for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
             if (panes[paneId].isActive) {
                 const pane = panes[paneId]
-                for (let tabId of pane.tabIds) {
+                for (const tabId of pane.tabIds) {
                     if (tabs[tabId].isActive) {
                         return tabs[tabId]
                     }
@@ -102,9 +104,9 @@ export const getFocusedTab = createSelector(
 )
 
 export const getCurrentPane = createSelector(
-    (state: {}) => (<FullState>state).global.paneState.byIds,
+    (state: object) => (<FullState>state).global.paneState.byIds,
     (panes: State['paneState']['byIds']) => {
-        for (let paneIdStr of Object.keys(panes)) {
+        for (const paneIdStr of Object.keys(panes)) {
             const paneId = parseInt(paneIdStr)
             if (panes[paneId].isActive) {
                 return paneId
@@ -117,21 +119,21 @@ export const getCurrentPane = createSelector(
 
 // TAB SELECTORS
 export const getTabs = createSelector(
-    (state: {}) => (<FullState>state).global.tabs,
+    (state: object) => (<FullState>state).global.tabs,
     // Gets the actual tab row
     (tabs: State['tabs']) => Object.values(tabs).filter((tab) => tab.isActive)
 )
 
 export const getTab = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         // Gets the actual tab row
         (tabs: State['tabs']) => tabs[tid]
     )
 
 export const getPageType = (tabId: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabs,
+        (state: object) => (<FullState>state).global.tabs,
         (tabs: State['tabs']): 'multi' | 'editor' => {
             if (tabs[tabId].isMulti) {
                 return 'multi'
@@ -148,14 +150,8 @@ const searchUnseenFiles = async (query: string, state: FullState) => {
     const rootPath = state.global.rootPath!
     // Now we need to search the files that haven't been seen yet
 
-    let nameResultsFuture = await connector.searchFilesNameGit({
-        query,
-        rootPath,
-    })
-    let pathResultsFuture = await connector.searchFilesPathGit({
-        query,
-        rootPath,
-    })
+    const nameResultsFuture = connector.searchFilesNameGit({ query, rootPath })
+    const pathResultsFuture = connector.searchFilesPathGit({ query, rootPath })
 
     const [initialNameResults, initialPathResults] = await Promise.all([
         nameResultsFuture,
@@ -207,10 +203,10 @@ const preferredExtensions = (paths: string[]) => {
 }
 
 const sortPaths = (origQuery: string, paths: string[]) => {
-    let query = origQuery.toLowerCase()
+    const query = origQuery.toLowerCase()
     paths.sort((origA, origB) => {
-        let a = origA.toLowerCase()
-        let b = origB.toLowerCase()
+        const a = origA.toLowerCase()
+        const b = origB.toLowerCase()
         // First get the filenames
         const aFileName = a.split(connector.PLATFORM_DELIMITER).at(-1)
         const bFileName = b.split(connector.PLATFORM_DELIMITER).at(-1)
@@ -249,16 +245,16 @@ export const searchAllFiles = async (query: string) => {
 /// AMAN ADDITION FOR SEARCHING FOR FILES
 
 // // FOLDER/FILE SELECTORS
-// const searchAllFile = (query: string) => (state: {}) => {
+// const searchAllFile = (query: string) => (state: object) => {
 //     const appFiles = searchFile
 
 /// AMAN ADDITION FOR SEARCHING FOR FILES
 export const searchFile = (query: string) =>
     createSelector(
-        (state: {}) => (<FullState>state).global,
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global,
+        (state: object) => (<FullState>state).global.files,
         (state: State, files: State['files']) => {
-            let resultsSet: {
+            const resultsSet: {
                 [path: string]: {
                     path: string
                     filename: string
@@ -266,20 +262,19 @@ export const searchFile = (query: string) =>
                 }
             } = {}
 
-            const queryKeywords = query.toLowerCase().split(' ')
-
-            const matchesQuery = (str: string) =>
-                queryKeywords.every((keyword) =>
-                    str.toLowerCase().replace(/\s+/g, '').includes(keyword)
-                )
-
-            for (let fid in files) {
-                let fileId = parseInt(fid)
+            for (const fid in files) {
+                const fileId = parseInt(fid)
                 const file = files[fid]
-                let filename = file.name
+                const filename = file.name
                 const path = getPathForFileId(state, fileId)
 
-                if (query === '' || matchesQuery(path)) {
+                if (
+                    query === '' ||
+                    filename
+                        .toLowerCase()
+                        .replace(/\s+/g, '')
+                        .includes(query.toLowerCase().replace(/\s+/g, ''))
+                ) {
                     resultsSet[path] = { path, filename, score: 0 }
 
                     if (Object.keys(resultsSet).length > 50) {
@@ -289,14 +284,20 @@ export const searchFile = (query: string) =>
             }
 
             // Second pass
-            for (let fid in files) {
-                let fileId = parseInt(fid)
+            for (const fid in files) {
+                const fileId = parseInt(fid)
                 const file = files[fid]
-                let filename = file.name
+                const filename = file.name
                 const path = getPathForFileId(state, fileId)
                 const relativePath = getRelativePathForFileId(state, fileId)
 
-                if (query === '' || matchesQuery(relativePath)) {
+                if (
+                    query == '' ||
+                    relativePath
+                        .toLowerCase()
+                        .replace(/\s+/g, '')
+                        .includes(query.toLowerCase().replace(/\s+/g, ''))
+                ) {
                     if (!(path in resultsSet)) {
                         resultsSet[path] = { path, filename, score: 1 }
                     }
@@ -306,7 +307,7 @@ export const searchFile = (query: string) =>
                 }
             }
 
-            let results = [
+            const results = [
                 ...Object.values(resultsSet).map((r) => ({
                     path: r.path,
                     filename: r.filename,
@@ -332,15 +333,15 @@ export const searchFile = (query: string) =>
 
 export const getFolder = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.folders,
         // Gets the actual folder
         (folders: State['folders']) => folders[fid]
     )
 
 export const getNotDeletedFiles = (parendFolderId: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders,
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.files,
         (folders: State['folders'], files: State['files']) => {
             const folder = folders[parendFolderId]
             return folder.fileIds.filter((fid) => !files[fid].deleted)
@@ -349,7 +350,7 @@ export const getNotDeletedFiles = (parendFolderId: number) =>
 
 export const getFileName = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].name
     )
@@ -397,18 +398,18 @@ export const getCurrentFilePath = createSelector(
 )
 
 export const getAllPaths = createSelector(
-    (state: {}) => (<FullState>state).global.files,
-    (state: {}) => (<FullState>state).global.folders,
-    (state: {}) => (<FullState>state).global,
+    (state: object) => (<FullState>state).global.files,
+    (state: object) => (<FullState>state).global.folders,
+    (state: object) => (<FullState>state).global,
     (files: State['files'], folders: State['folders'], state) => {
-        let filePaths: Set<string> = new Set()
-        let folderPaths: Set<string> = new Set()
-        for (let fid in files) {
+        const filePaths: Set<string> = new Set()
+        const folderPaths: Set<string> = new Set()
+        for (const fid in files) {
             const fileId = parseInt(fid)
             const path = getPathForFileId(state, fileId)
             filePaths.add(path)
         }
-        for (let fid in folders) {
+        for (const fid in folders) {
             const folderId = parseInt(fid)
             const path = getPathForFolderId(state, folderId)
             folderPaths.add(path)
@@ -422,35 +423,32 @@ export const getAllPaths = createSelector(
 
 export const getFileRenameName = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].renameName
     )
 
 export const getFileIndentUnit = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid].indentUnit
     )
 
 export const getFile = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.files,
+        (state: object) => (<FullState>state).global.files,
         // Gets the actual file
         (files: State['files']) => files[fid]
     )
 
-export const getFolders = (state: {}) => (<FullState>state).global.folders
+export const getFolders = (state: object) => (<FullState>state).global.folders
 
 function getDepthWrapper(
     files: State['files'],
     folders: State['folders']
 ): (currentFid: number, isFile: boolean) => number {
-    function getDepthHelper(
-        currentFid: number,
-        isFile: boolean = false
-    ): number {
+    function getDepthHelper(currentFid: number, isFile = false): number {
         if (isFile) {
             if (files[currentFid].parentFolderId == null) {
                 return 0
@@ -469,23 +467,23 @@ function getDepthWrapper(
     return getDepthHelper
 }
 
-export const getDepth = (folderId: number, isFile: boolean = false) =>
+export const getDepth = (folderId: number, isFile = false) =>
     createSelector(
-        (state: {}) => {
+        (state: object) => {
             return (<FullState>state).global.files
         },
-        (state: {}) => (<FullState>state).global.folders,
+        (state: object) => (<FullState>state).global.folders,
         (files: State['files'], folders: State['folders']) =>
             getDepthWrapper(files, folders)(folderId, isFile)
     )
 
 export const getFolderPath =
-    (fid: number, includeRoot: boolean = true) =>
+    (fid: number, includeRoot = true) =>
     (state: FullState) =>
         getPathForFolderId(state.global, fid, includeRoot)
 
 export const getFilePath =
-    (fid: number, includeRoot: boolean = true) =>
+    (fid: number, includeRoot = true) =>
     (state: FullState) =>
         getPathForFileId(state.global, fid, includeRoot)
 
@@ -495,27 +493,27 @@ export const getRelativeFilePath = (fid: number) => (state: FullState) =>
 // EDITOR SELECTORS
 export const getFileContents = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.fileCache,
+        (state: object) => (<FullState>state).global.fileCache,
         (fileCache: State['fileCache']) => fileCache[fid].contents
     )
 
 // EDITOR SELECTORS
 export const getFileResetContents = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.fileCache,
+        (state: object) => (<FullState>state).global.fileCache,
         (fileCache: State['fileCache']) => fileCache[fid].counter
     )
 
 export const getCachedTab = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabCache,
+        (state: object) => (<FullState>state).global.tabCache,
         (tabCache: State['tabCache']) => tabCache[tid]
     )
 
 // CodeMirror Transaction Selectors
 export const getPendingTransactions = (tid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.tabCache,
+        (state: object) => (<FullState>state).global.tabCache,
         (tabCache: State['tabCache']) => tabCache[tid].pendingTransactions
     )
 
@@ -528,6 +526,8 @@ export const getShowErrors = (state: FullState) => state.global.showError
 export const getShowRateLimit = (state: FullState) => state.global.showRateLimit
 export const getErrorType = (state: FullState) => state.global.errorType
 export const getErrorInfo = (state: FullState) => state.global.errorInfo
+export const getShowNoAuthRateLimit = (state: FullState) =>
+    state.global.showNoAuthRateLimit
 
 export const getVersion = (state: FullState) => state.global.version
 
@@ -539,7 +539,7 @@ export const getRemoteBad = (state: FullState) => state.global.remoteBad
 
 export const getFolderOpen = (fid: number) =>
     createSelector(
-        (state: {}) => (<FullState>state).global.folders[fid],
+        (state: object) => (<FullState>state).global.folders[fid],
         (folder: Folder) => {
             return folder.isOpen
         }

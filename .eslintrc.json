@@ -1,0 +1,37 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "plugins": ["unused-imports"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/recommended",
+        "plugin:import/electron",
+        "plugin:import/typescript"
+    ],
+    "rules": {
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "import/no-named-as-default": "off",
+        "no-constant-condition": "off",
+        "unused-imports/no-unused-imports": "error",
+        "unused-imports/no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "^_",
+                "args": "after-used",
+                "argsIgnorePattern": "^_"
+            }
+        ]
+    },
+    "parser": "@typescript-eslint/parser"
+}

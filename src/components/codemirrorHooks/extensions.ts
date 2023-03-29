@@ -1,36 +1,35 @@
 import { useEffect, useMemo } from 'react'
-import { EditorState, Transaction, ChangeDesc } from '@codemirror/state'
+import { EditorState,  Prec, Extension, Compartment , RangeSetBuilder } from '@codemirror/state'
 import {
     closeHoverTooltips,
     EditorView,
     keymap,
     scrollPastEnd,
+
+    ViewPlugin,
+    ViewUpdate,
+    Decoration,
+    DecorationSet,
 } from '@codemirror/view'
-import { Prec, Extension, Compartment } from '@codemirror/state'
 import { syntaxBundle } from '../../features/extensions/syntax'
 import { indentationMarkers } from '../../features/extensions/indentLines'
 // import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import {
-    acceptDiff,
     diffExtension,
-    rejectDiff,
 } from '../../features/extensions/diff'
 import {
-    editBoundaryEffect,
     hackExtension,
-    insertCursorEffect,
 } from '../../features/extensions/hackDiff'
 import { diagnosticsField, lintGutter } from '../../features/linter/lint'
 import { autocompleteView } from '../../features/extensions/autocomplete'
 import { acceptCompletion } from '@codemirror/autocomplete'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import * as cs from '../../features/chat/chatSlice'
 import * as csel from '../../features/chat/chatSelectors'
 import * as ssel from '../../features/settings/settingsSelectors'
 import { Tab } from '../../features/window/state'
 import { ReactCodeMirrorRef } from '../react-codemirror'
 import { getFileIndentUnit } from '../../features/selectors'
-import { indentUnit } from '@codemirror/language'
+import { indentUnit , syntaxTree } from '@codemirror/language'
 import { vim } from '../codemirror-vim'
 import { moveToPane, saveFile } from '../../features/globalSlice'
 import { closeTab } from '../../features/globalThunks'
@@ -50,23 +49,13 @@ import { scrollbarPlugin } from '../../features/extensions/minimap'
 import { cursorTooltip } from '../../features/extensions/selectionTooltip'
 // import { activeGutter } from '../../features/extensions/activeLineGutter'
 
-import { indentSelection, history } from '@codemirror/commands'
+import { indentSelection } from '@codemirror/commands'
 import { emacs } from '@replit/codemirror-emacs'
 
 import { newLineText } from '../../features/extensions/newLineText'
 
 import { Tree } from '@lezer/common'
-import {
-    ViewPlugin,
-    ViewUpdate,
-    Decoration,
-    DecorationSet,
-} from '@codemirror/view'
-import { RangeSetBuilder } from '@codemirror/state'
-import { syntaxTree } from '@codemirror/language'
-import { changeSettings } from '../../features/settings/settingsSlice'
-import { regexpLinter } from '../../features/linter/extension'
-import { barExtension, barField } from '../../features/extensions/cmdZBar'
+import { barExtension } from '../../features/extensions/cmdZBar'
 import { updateCommentsEffect } from '../../features/extensions/comments'
 import { getStyleTags, tags, Tag } from '@lezer/highlight'
 import { fixLintExtension } from '../../features/linter/fixLSPExtension'
@@ -118,7 +107,7 @@ class TreeHighlighter {
     }
 
     update(update: ViewUpdate) {
-        let tree = syntaxTree(update.state)
+        const tree = syntaxTree(update.state)
         if (tree != this.tree || update.viewportChanged) {
             this.tree = tree
             this.decorations = this.buildDeco(update.view)
@@ -128,9 +117,9 @@ class TreeHighlighter {
     buildDeco(view: EditorView) {
         if (!this.tree.length) return Decoration.none
 
-        let builder = new RangeSetBuilder<Decoration>()
+        const builder = new RangeSetBuilder<Decoration>()
         let level = -1
-        let cursor = this.tree.cursor()
+        const cursor = this.tree.cursor()
         do {
             const tagData = getStyleTags(cursor.node)
             //
@@ -372,7 +361,7 @@ export function useExtensions({
 
     useEffect(() => {
         const main = async () => {
-            let syntax = await syntaxBundle(filePath)
+            const syntax = await syntaxBundle(filePath)
             editorRef.current.view?.dispatch({
                 effects: syntaxCompartment.reconfigure(syntax),
             })
@@ -508,14 +497,14 @@ export function useExtensions({
     }, [fileIndentUnit, editorRef.current, justCreated])
 
     useEffect(() => {
-      if (settings.tabSize != undefined) {
-          editorRef.current.view?.dispatch({
-              effects: indentCompartment.reconfigure([
-                  indentUnit.of(" ".repeat(Number(settings.tabSize))), 
-                  EditorState.tabSize.of(Number(settings.tabSize))
-              ]),
-          })
-      }
+        if (settings.tabSize != undefined) {
+            editorRef.current.view?.dispatch({
+                effects: indentCompartment.reconfigure([
+                    indentUnit.of(' '.repeat(Number(settings.tabSize))),
+                    EditorState.tabSize.of(Number(settings.tabSize)),
+                ]),
+            })
+        }
     }, [settings.tabSize, editorRef.current, justCreated])
 
     return globalExtensions
