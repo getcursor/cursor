@@ -1,5 +1,12 @@
-import { ViewUpdate, ViewPlugin, DecorationSet,  EditorView, Decoration , WidgetType } from '@codemirror/view'
-import { Range  } from '@codemirror/state'
+import {
+    ViewUpdate,
+    ViewPlugin,
+    DecorationSet,
+    EditorView,
+    Decoration,
+    WidgetType,
+} from '@codemirror/view'
+import { Range } from '@codemirror/state'
 
 class LineText extends WidgetType {
     constructor(readonly checked: boolean) {
