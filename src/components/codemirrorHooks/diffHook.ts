@@ -6,7 +6,6 @@ import { rejectDiff, setDiff } from '../../features/extensions/diff'
 import { editBoundaryState } from '../../features/extensions/hackDiff'
 import { useAppDispatch } from '../../app/hooks'
 // Import chatslice
-import * as cs from '../../features/chat/chatSlice'
 // Hook to get the previous value of lastBotMessage
 function usePrevious<T>(value: T) {
     const ref = useRef<T>()
@@ -59,7 +58,7 @@ export function useSetDiff({
                                 head: view.state.selection.main.from,
                             },
                         })
-                        let edit =
+                        const edit =
                             origEditorState.current.field(editBoundaryState)
                         if (
                             lastBotMessage.finished &&
@@ -67,7 +66,7 @@ export function useSetDiff({
                         ) {
                             // If we are finished, and haven't been interrupted, then we show the
                             // full diff
-                            let diffParameters = {
+                            const diffParameters = {
                                 origText: origEditorState.current.doc,
                                 diffId,
                                 origLine: origEditorState.current.doc.lineAt(
@@ -90,7 +89,7 @@ export function useSetDiff({
                             setDiff(diffParameters)(view)
                         } else {
                             // This is the logic for streaming diffs. It is insanely busted right now
-                            let diffParameters = {
+                            const diffParameters = {
                                 origText: origEditorState.current.doc,
                                 diffId,
                                 origLine: origEditorState.current.doc.lineAt(

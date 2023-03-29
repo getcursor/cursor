@@ -1,17 +1,15 @@
 import * as ss from '../features/settings/settingsSlice'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect,  useState } from 'react'
 import { copilotStatus } from '../features/lsp/languageServerSelector'
 import {
     copilotChangeEnable,
     copilotChangeSignin,
     getConnections,
 } from '../features/lsp/languageServerSlice'
-import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import {
     openTutorFolder,
-    setIsNotFirstTime,
     setIsNotFirstTimeWithSideEffect,
 } from '../features/globalSlice'
 import posthog from 'posthog-js'

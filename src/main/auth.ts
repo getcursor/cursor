@@ -3,7 +3,6 @@ import {shell} from 'electron'
 import * as url from 'url'
 // import envVariables from '../env-variables';
 import {
-    BrowserView,
     BrowserWindow,
     ipcMain,
     IpcMainInvokeEvent,
@@ -118,6 +117,7 @@ export async function refreshTokens(event?: IpcMainInvokeEvent) {
                 // state: 'thisisatest',
             }),
         }
+<<<<<<< HEAD
         try {
             const response = await fetch(
                 `https://${auth0Domain}/oauth/token`,
@@ -128,13 +128,20 @@ export async function refreshTokens(event?: IpcMainInvokeEvent) {
                 access_token: string
                 id_token: string
             }
+=======
+>>>>>>> main
 
-            accessToken = data.access_token
-            profile = jwtDecode(data.id_token)
-        } catch (error) {
-            // await logout(parentWindow)
-            throw error
+        const response = await fetch(
+            `https://${auth0Domain}/oauth/token`,
+            refreshOptions
+        )
+        const data = (await response.json()) as {
+            access_token: string
+            id_token: string
         }
+
+        accessToken = data.access_token
+        profile = jwtDecode(data.id_token)
     } else {
         // No refresh token
         //throw new Error('No available refresh token.')
@@ -178,7 +185,12 @@ export async function loadStripeProfile() {
             Authorization: `Bearer ${accessToken}`,
         },
     })
+<<<<<<< HEAD
     let resp = await response.json()
+=======
+    const resp = await response.json()
+    console.log('GOT STRIPE PROFILE', resp)
+>>>>>>> main
     if (resp) {
         stripeProfile = resp as string
     }
@@ -214,9 +226,61 @@ export function getLogOutUrl() {
     return `https://${auth0Domain}/v2/logout`
 }
 
+<<<<<<< HEAD
 export async function login() {
     // const { url, state, } = getAuthenticationURL()
     await shell.openExternal(loginUrl);
+=======
+export function createAuthWindow(parentWindow: BrowserWindow) {
+    destroyAuthWin(parentWindow)
+
+    win = new BrowserWindow({
+        width: 1000,
+        height: 800,
+        modal: true,
+        show: true,
+        frame: true,
+        // parent: parentWindow,
+        webPreferences: {
+            nodeIntegration: false,
+            webSecurity: false,
+            // enableRemoteModule: false
+        },
+    })
+
+    const { url, verifier } = getAuthenticationURL()
+    console.log('SENDING TO URL', url)
+
+    const {
+        session: { webRequest },
+    } = win.webContents
+
+    const filter = {
+        urls: [DUMMY_URL],
+    }
+    const requestListener = async ({ url }: { url: string }) => {
+        console.log('INTERRUPTED', url)
+        await loadTokens(url, verifier, parentWindow)
+        await loadStripeProfile()
+        console.log('GOT STRIPE PROFILE', stripeProfile)
+        // Not sure what to do here:
+        // createAppWindow();
+        if (!stripeProfile && win) {
+            console.log('Creating stripe window')
+            createStripeWindow(parentWindow, win)
+        } else {
+            console.log('Destroying auth window')
+            return destroyAuthWin(parentWindow)
+        }
+    }
+
+    webRequest.onBeforeRequest(filter, requestListener)
+
+    win?.webContents.loadURL(url)
+    win.on('closed', () => {
+        win = null
+    })
+>>>>>>> main
 }
 
 export async function signup() {
@@ -247,6 +311,7 @@ export function createLogoutWindow(event: IpcMainInvokeEvent) {
 }
 
 export function authPackage() {
+<<<<<<< HEAD
     // Simple browser opening functions
     ipcMain.handle('loginCursor', login);
     ipcMain.handle('signupCursor', signup)
@@ -264,6 +329,29 @@ export function authPackage() {
         accessToken = data.accessToken
         profile = data.profile
         stripeProfile = data.stripeProfile
+=======
+    ipcMain.handle('loginCursor', async (event: IpcMainInvokeEvent) => {
+        console.log('LOGGING IN CURSOR')
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
+        if (mainWindow) {
+            createAuthWindow(mainWindow)
+        } else {
+            console.log('main window not found')
+        }
+    })
+    ipcMain.handle('payCursor', async (event: IpcMainInvokeEvent) => {
+        console.log('PAYING CURSOR')
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
+        if (mainWindow) {
+            createStripeWindow(mainWindow)
+        } else {
+            console.log('main window not found')
+        }
+    })
+
+    ipcMain.handle('refreshTokens', async (event: IpcMainInvokeEvent) => {
+        console.log('REFRESHING TOKENS')
+>>>>>>> main
         await refreshTokens(event)
         await loadStripeProfile()
 

@@ -5,7 +5,7 @@ import {
     useState,
     useCallback,
 } from 'react'
-import { faClose, faCog } from '@fortawesome/pro-regular-svg-icons'
+import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
 import { useAppSelector, useAppDispatch } from './app/hooks'
@@ -26,7 +26,6 @@ import {
     getFocusedTab,
 } from './features/selectors'
 
-import _ from 'lodash'
 
 import { ChatPopup, CommandBar } from './components/markdown'
 import { SettingsPopup } from './components/settingsPane'
@@ -54,7 +53,7 @@ const customStyles = {
         height: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: '600px',
+        maxWidth: '700px',
     },
 }
 
@@ -66,25 +65,25 @@ function ErrorPopup() {
         <Modal
             isOpen={showError}
             onRequestClose={() => {
-                dispatch(gs.closeError(null))
+                dispatch(gs.closeError())
             }}
             style={customStyles}
         >
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        Maximum Capacity
+                        We ran into a problem
                     </div>
                     <div
                         className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError(null))}
+                        onClick={() => dispatch(gs.closeError())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right now.
-                    Please try again later.
+                    Something unexpected happened. Please try again later. If
+                    this continues, please contact michael@cursor.so.
                     <br />
                 </div>
             </div>
@@ -111,7 +110,7 @@ function RateLimitPopup() {
                     </div>
                     <div
                         className="errorPopup__title_close"
-                        onClick={() => dispatch(gs.closeError(null))}
+                        onClick={() => dispatch(gs.closeError())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>
@@ -152,8 +151,16 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right
-                    now. To avoid these limits, you can enter your OpenAI API key in Settings.
+                    We're getting more traffic than we can handle right now.
+                    Please try again in one minute. To avoid these limits, you
+                    can optionally upgrade to{' '}
+                    <a
+                        className="pay-link"
+                        onClick={() => dispatch(ts.upgradeCursor(null))}
+                    >
+                        pro
+                    </a>
+                    .
                 </div>
             </div>
         </Modal>
@@ -183,7 +190,7 @@ function SSHPopup() {
         <Modal
             isOpen={showRemotePopup}
             onRequestClose={() => {
-                dispatch(gs.closeRemotePopup(null))
+                dispatch(gs.closeRemotePopup())
             }}
             style={customStyles}
         >
@@ -194,7 +201,7 @@ function SSHPopup() {
                     </div>
                     <div
                         className="remotePopup__title_close"
-                        onClick={() => dispatch(gs.closeRemotePopup(null))}
+                        onClick={() => dispatch(gs.closeRemotePopup())}
                     >
                         <FontAwesomeIcon icon={faClose} />
                     </div>

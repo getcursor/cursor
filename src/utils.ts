@@ -112,7 +112,7 @@ export async function* streamSource(response: Response): AsyncGenerator<any> {
             const rawValue = decoder.decode(value)
             const lines = rawValue.split('\n')
 
-            for (let line of lines) {
+            for (const line of lines) {
                 if (line.startsWith('data: ')) {
                     const jsonString = line.slice(6)
                     if (jsonString == '[DONE]') {
@@ -151,7 +151,7 @@ export async function* anotherStreamSource(
             const rawValue = decoder.decode(value)
             const lines = rawValue.split('\n')
 
-            for (let line of lines) {
+            for (const line of lines) {
                 if (line.startsWith('data: ')) {
                     const jsonString = line.slice(6)
                     if (jsonString == '[DONE]') {
