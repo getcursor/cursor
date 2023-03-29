@@ -61,7 +61,7 @@ const customStyles = {
 function ErrorPopup() {
     const { t } = useTranslation()
     const showError = useAppSelector(gsel.getShowErrors)
-    const dispatch = useAppDispatch()    
+    const dispatch = useAppDispatch()
     
     return (
         <Modal
