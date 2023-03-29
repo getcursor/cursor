@@ -331,7 +331,8 @@ const electronConnector = {
     searchFilesNameGit: (payload: { query: string; rootPath: string }) =>
         ipcRenderer.invoke('searchFilesNameGit', payload),
 
-    changeLanguage: (lang: string) => ipcRenderer.invoke('changeLanguage', lang),
+    changeLanguage: (lang: string) =>
+        ipcRenderer.invoke('changeLanguage', lang),
 
     checkCloseTab: (path: string) =>
         ipcRenderer.invoke('check_close_tab', path),
