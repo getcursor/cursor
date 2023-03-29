@@ -161,7 +161,29 @@ export function SettingsPopup() {
                                     value={settings.tabSize}
                                 />
                             </div>
-                            <CursorLogin />
+
+                            <div className="settings__item">
+                                <div className="settings__item_title">
+                                    OpenAI API Key
+                                </div>
+                                <div className="settings__item_description">
+                                    We'll use your key for any requests to OpenAI. This will help you avoid "maximum capacity" limits.
+                                </div>
+                                <input
+                                    className="settings__item_textarea"
+                                    placeholder="Enter your OpenAI API Key"
+                                    type="password"
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                openAIKey: e.target.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.openAIKey || ""}
+                                    />
+                            </div>
+
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
@@ -171,6 +193,7 @@ export function SettingsPopup() {
                                     languageName={name}
                                 />
                             ))}
+                            <CursorLogin />
                         </div>
                     </div>
                     <div className="cover-bar"></div>
@@ -224,6 +247,9 @@ function CursorLogin() {
     return (
         <div className="settings__item">
             <div className="settings__item_title">Cursor Pro</div>
+            <div className="settings__item_description">
+                If you'd like to pay for unlimited requests, instead of using your OpenAI API key.
+            </div>
             {currentPanel}
         </div>
     )

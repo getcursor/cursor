@@ -274,6 +274,10 @@ export async function getPayload({
     // hack
     dispatch(updateLastUserMessageMsgType(null))
 
+    let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
+    if (oaiKey == null || oaiKey === '') {
+       oaiKey = null; 
+    }
     const userRequest = {
         // Core request
         message: lastUserMessage.message,
@@ -291,6 +295,7 @@ export async function getPayload({
         customCodeBlocks,
         codeBlockIdentifiers,
         msgType: chatState.msgType,
+        apiKey: oaiKey,
         // Messy, but needed for the single lsp stuff to work
         maxOrigLine: forContinue
             ? getLastBotMessage(chatState, conversationId)!.maxOrigLine

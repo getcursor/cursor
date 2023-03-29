@@ -152,16 +152,8 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than our servers can handle right
-                    now. To avoid these limits and to purchase reserved
-                    capacity, you can upgrade to{' '}
-                    <a
-                        className="pay-link"
-                        onClick={() => dispatch(ts.upgradeCursor(null))}
-                    >
-                        Cursor Pro
-                    </a>{' '}
-                    for $20/month.
+                    We're getting more traffic than we can handle right
+                    now. To avoid these limits, you can enter your OpenAI API key in Settings.
                 </div>
             </div>
         </Modal>
