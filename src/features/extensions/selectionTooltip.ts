@@ -1,9 +1,6 @@
-import { Tooltip, TooltipView, showTooltip } from '@codemirror/view'
-import { StateField } from '@codemirror/state'
-import { EditorState } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
+import { Tooltip, showTooltip , EditorView } from '@codemirror/view'
+import { StateField , EditorState  } from '@codemirror/state'
 import { store } from '../../app/store'
-import { Prec } from '@codemirror/state'
 import { pressAICommand } from '../chat/chatThunks'
 
 const cursorTooltipField = StateField.define<readonly Tooltip[]>({
@@ -29,7 +26,7 @@ function getCursorTooltips(state: EditorState): readonly Tooltip[] {
                 strictSide: false,
                 arrow: true,
                 create: (view: EditorView) => {
-                    let dom = document.createElement('div')
+                    const dom = document.createElement('div')
                     dom.className = 'cm-tooltip-cursor'
                     function btn(
                         titleText: string,
@@ -37,11 +34,11 @@ function getCursorTooltips(state: EditorState): readonly Tooltip[] {
                         callback: any
                     ) {
                         // create one edit button and one chat button
-                        let editButton = document.createElement('button')
+                        const editButton = document.createElement('button')
                         // two spans
-                        let editSpan = document.createElement('span')
+                        const editSpan = document.createElement('span')
                         editSpan.className = 'title-text'
-                        let cmdKspan = document.createElement('span')
+                        const cmdKspan = document.createElement('span')
                         cmdKspan.className = 'cmd-text'
                         // add the text to the spans
                         editSpan.textContent = titleText

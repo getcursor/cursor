@@ -1,19 +1,8 @@
-import { EditorView, ViewUpdate } from '@codemirror/view'
-import { TransactionSpec } from '@codemirror/state'
-import {
-    Action,
-    createAsyncThunk,
-    createSlice,
-    PayloadAction,
-    current,
-} from '@reduxjs/toolkit'
-import { clear } from 'console'
-import { historyField } from '@codemirror/commands'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
     startConnections,
     getDefinition,
     runLanguageServer,
-    installLanguageServer,
     getIdentifier,
     startCopilotWithoutFolder,
 } from './lsp/languageServerSlice'
@@ -21,12 +10,11 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import { changeSettingsNoSideffect } from './settings/settingsSlice'
 import { getLanguageFromFilename } from './extensions/utils'
 
-import { API_ROOT } from '../utils'
+import { join } from '../utils'
 import {
     State,
     FullState,
     HoverState,
-    ReduxTransaction,
     ReduxEditorState,
     FolderData,
     nextFolderID,
@@ -43,7 +31,6 @@ import {
     insertFirstPane,
     insertNewTab,
     setActiveTab,
-    setPaneContents,
     createCachedTabIfNotExists,
     getActiveTabId,
     doCloseTab,
@@ -79,14 +66,10 @@ import {
     abortFileRename,
 } from './window/fileUtils'
 
-import { join } from '../utils'
-import { LSPNotifyMap } from './lsp/stdioClient'
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
-import { changeSettings } from './settings/settingsSlice'
 import { updateCommentsForFile } from './comment/commentSlice'
 import { openFileTree } from './tools/toolSlice'
 import { updateTestsForFile } from './tests/testSlice'
-import { getPane } from './selectors'
 
 import posthog from 'posthog-js'
 import { removeEditor } from './codemirror/codemirrorSlice'
@@ -128,7 +111,7 @@ export const gotoDefinition = createAsyncThunk(
         }
         const { fileId, newStartPos, newEndPos } = response.payload
 
-        let paneId = getActivePaneID((<FullState>getState()).global)
+        const paneId = getActivePaneID((<FullState>getState()).global)
 
         if (!paneId) {
             return
@@ -244,12 +227,12 @@ export const openFile = createAsyncThunk(
             return
         }
 
-        let { fileId, contents } = result.payload
+        const { fileId } = result.payload
         await dispatch(selectFile(fileId))
 
-        let tabId = getActiveTabId((<FullState>getState()).global)!
+        const tabId: number = getActiveTabId((<FullState>getState()).global)!
         if (selectionRegions != null) {
-            let { start, end } = selectionRegions[0]
+            const { start, end } = selectionRegions[0]
             dispatch(
                 addTransaction({
                     tabId,
@@ -268,7 +251,7 @@ export const openFile = createAsyncThunk(
 
 export const saveFile = createAsyncThunk(
     'global/savedFile',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         if (fileId == null) {
             fileId = getActiveFileId((<FullState>getState()).global)
             if (fileId == null) {
@@ -281,7 +264,7 @@ export const saveFile = createAsyncThunk(
         if (!cachedFile) {
             return
         }
-        let path = getPathForFileId(state, fileId)
+        const path = getPathForFileId(state, fileId)
 
         const lmTime = (await connector.getLastModifiedTime(path)) as number
 
@@ -296,10 +279,7 @@ export const saveFile = createAsyncThunk(
             }
         }
 
-        const savedTime = (await connector.saveFile(
-            path,
-            cachedFile.contents
-        )) as number
+        await connector.saveFile(path, cachedFile.contents)
         return { fileId }
     }
 )
@@ -314,8 +294,8 @@ export const forceSaveAndClose = createAsyncThunk(
 
 export const deleteFolder = createAsyncThunk(
     'global/deleteFolder',
-    async (folderId: number | null, { getState, dispatch }) => {
-        const state = (<FullState>getState()).global
+    async (folderId: number | null, { getState }) => {
+        const state: any = (<FullState>getState()).global
         if (folderId == null) {
             folderId = state.rightClickId
             if (!folderId) {
@@ -323,7 +303,7 @@ export const deleteFolder = createAsyncThunk(
             }
         }
 
-        let path = getPathForFolderId(state, folderId)
+        const path = getPathForFolderId(state, folderId)
 
         await connector.deleteFolder(path)
         return folderId
@@ -332,14 +312,14 @@ export const deleteFolder = createAsyncThunk(
 
 export const folderWasAdded = createAsyncThunk(
     'global/folderWasAdded',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFolderWasAdded(path))
     }
 )
 
 export const folderWasDeleted = createAsyncThunk(
     'global/folderWasDeleted',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFolderWasDeleted(path))
     }
 )
@@ -366,11 +346,11 @@ export const fileWasUpdated = createAsyncThunk(
         const contents = await connector.getFile(path)
 
         // find all tabs with this file
-        let tabIds = Object.keys(state.tabs)
+        const tabIds = Object.keys(state.tabs)
             .map((key) => parseInt(key))
             .filter((key) => state.tabs[key].fileId == fileId)
         //await dispatch(afterFileWasUpdated({fileId, contents}));
-        for (let tabId of tabIds) {
+        for (const tabId of tabIds) {
             dispatch(
                 addTransaction({
                     tabId,
@@ -388,21 +368,21 @@ export const fileWasUpdated = createAsyncThunk(
 
 export const fileWasAdded = createAsyncThunk(
     'global/fileWasAdded',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFileWasAdded(path))
     }
 )
 
 export const fileWasDeleted = createAsyncThunk(
     'global/fileWasDeleted',
-    async (path: string, { getState, dispatch }) => {
+    async (path: string, { dispatch }) => {
         dispatch(afterFileWasDeleted(path))
     }
 )
 
 export const deleteFile = createAsyncThunk(
     'global/deleteFile',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         const state = (<FullState>getState()).global
         if (fileId == null) {
             fileId = state.rightClickId
@@ -410,7 +390,7 @@ export const deleteFile = createAsyncThunk(
                 return
             }
         }
-        let path = getPathForFileId(state, fileId)
+        const path = getPathForFileId(state, fileId)
 
         await connector.deleteFile(path)
         return fileId
@@ -419,7 +399,7 @@ export const deleteFile = createAsyncThunk(
 
 export const openContainingFolder = createAsyncThunk(
     'global/openContainingFolder',
-    async (fileId: number | null, { getState, dispatch }) => {
+    async (fileId: number | null, { getState }) => {
         const state = (<FullState>getState()).global
         if (fileId == null) {
             fileId = state.rightClickId
@@ -427,7 +407,7 @@ export const openContainingFolder = createAsyncThunk(
                 return
             }
         }
-        let path = getPathForFileId(state, fileId)
+        const path = getPathForFileId(state, fileId)
 
         await connector.openContainingFolder(path)
     }
@@ -437,7 +417,7 @@ export const commitRename = createAsyncThunk(
     'global/commitRename',
     async (
         { fid, isFolder = false }: { fid: number | null; isFolder?: boolean },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global as State
         if (fid == null) {
@@ -450,10 +430,10 @@ export const commitRename = createAsyncThunk(
         if (file.renameName == null || !isValidRenameName(state)) {
             return
         }
-        let oldPath = isFolder
+        const oldPath = isFolder
             ? getPathForFolderId(state, fid)
             : getPathForFileId(state, fid)
-        let newPath = join(
+        const newPath = join(
             getPathForFolderId(state, file.parentFolderId!),
             file.renameName
         )
@@ -494,8 +474,10 @@ export const loadFolder = createAsyncThunk(
     'global/loadFolder',
     async (
         { folderId, goDeep }: { folderId: number; goDeep: boolean },
-        { getState, dispatch }
+        { getState }
     ) => {
+        void goDeep // unimplemented
+
         const state: State = (<FullState>getState()).global
 
         if (state.folders[folderId].loaded) return null
@@ -529,7 +511,7 @@ export const openRemoteFolder = createAsyncThunk(
         })
 
         if (!res) {
-            dispatch(setBadConnection(null))
+            dispatch(setBadConnection())
             return null
         }
 
@@ -548,7 +530,7 @@ export const openRemoteFolder = createAsyncThunk(
         const version = await connector.getVersion()
         dispatch(setVersion(version))
 
-        let repoId: string | null = await connector.initProject(folderPath)
+        const repoId: string | null = await connector.initProject(folderPath)
         if (repoId != null) {
             dispatch(setRepoId(repoId))
             dispatch(syncProject(null))
@@ -623,7 +605,7 @@ export const openFolder = createAsyncThunk(
         const version = await connector.getVersion()
         dispatch(setVersion(version))
 
-        let repoId: string | null = await connector.initProject(folderPath)
+        const repoId: string | null = await connector.initProject(folderPath)
         if (repoId != null) {
             dispatch(setRepoId(repoId))
             dispatch(syncProject(null))
@@ -648,7 +630,7 @@ export const loadRecur = createAsyncThunk(
     async (depth: number, { getState, dispatch }) => {
         const state = (<FullState>getState()).global
         const toLoad = []
-        for (let folderIdStr of Object.keys(state.folders)) {
+        for (const folderIdStr of Object.keys(state.folders)) {
             const folderId = parseInt(folderIdStr)
             const folder = state.folders[folderId]
             if (
@@ -658,7 +640,7 @@ export const loadRecur = createAsyncThunk(
             )
                 toLoad.push(folderId)
         }
-        for (let folderId of toLoad) {
+        for (const folderId of toLoad) {
             const folder = state.folders[folderId]
             if (folder.name == 'node_modules') continue
             if (folder.name == 'dist') continue
@@ -693,7 +675,7 @@ export const trulyOpenFolder = createAsyncThunk(
 
         // Setup the project by uploading all files to a remote server
 
-        let repoId: string | null = await connector.initProject(args)
+        const repoId: string | null = await connector.initProject(args)
 
         //
         if (repoId != null) {
@@ -720,7 +702,7 @@ export const setIsNotFirstTimeWithSideEffect = createAsyncThunk(
 
 export const initState = createAsyncThunk(
     'global/initState',
-    async (args: null, { getState, dispatch }) => {
+    async (args: null, { dispatch }) => {
         const config = await connector.getProject()
         connector.refreshTokens()
 
@@ -728,7 +710,7 @@ export const initState = createAsyncThunk(
         //     return
         // }
 
-        let settings = await connector.initSettings()
+        const settings = await connector.initSettings()
         dispatch(changeSettingsNoSideffect(settings))
 
         if (config != null && config.defaultFolder) {
@@ -754,7 +736,7 @@ export const initState = createAsyncThunk(
 
 export const syncProject = createAsyncThunk(
     'global/syncProject',
-    async (rootDir: string | null, { getState, dispatch }) => {
+    async (rootDir: string | null, { getState }) => {
         const state = (<FullState>getState()).global
         const myDir = rootDir || state.rootPath
         await connector.syncProject(myDir!)
@@ -777,7 +759,7 @@ export const newFile = createAsyncThunk(
     'global/newFile',
     async (
         { parentFolderId }: { parentFolderId: number | null },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global
         const actualParent = parentFolderId || state.rightClickId || 1
@@ -785,8 +767,8 @@ export const newFile = createAsyncThunk(
             return
         }
         const name = getNewFileName(state, actualParent)
-        let parentPath = getPathForFolderId(state, actualParent)
-        let newPath = `${parentPath}/${name}`
+        const parentPath = getPathForFolderId(state, actualParent)
+        const newPath = `${parentPath}/${name}`
         await connector.saveFile(newPath, '')
 
         return { name, parentFolderId }
@@ -797,7 +779,7 @@ export const newFolder = createAsyncThunk(
     'global/newFolder',
     async (
         { parentFolderId }: { parentFolderId: number | null },
-        { getState, dispatch }
+        { getState }
     ) => {
         const state = (<FullState>getState()).global
         const actualParent = parentFolderId || state.rightClickId
@@ -805,8 +787,8 @@ export const newFolder = createAsyncThunk(
             return
         }
         const name = getNewFolderName(state, actualParent)
-        let parentPath = getPathForFolderId(state, actualParent)
-        let newPath = `${parentPath}/${name}`
+        const parentPath = getPathForFolderId(state, actualParent)
+        const newPath = `${parentPath}/${name}`
         await connector.saveFolder(newPath)
 
         return { name, parentFolderId }
@@ -920,7 +902,7 @@ const globalSlice = createSlice({
                 if (action.payload == null) {
                     return
                 }
-                const fileid = action.payload as number
+                // const fileid = action.payload as number
                 commitFileRename(state)
             })
             .addCase(rightClickFile.fulfilled, (stobj, action) => {
@@ -1024,7 +1006,7 @@ const globalSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
-        insertMultiTabAndSetActive(stobj: Object, action: PayloadAction<null>) {
+        insertMultiTabAndSetActive(stobj: object) {
             const state = <State>stobj
             const paneId = getActivePaneID(state)!
 
@@ -1047,7 +1029,7 @@ const globalSlice = createSlice({
             createCachedTabIfNotExists(state, tabid)
             setActiveTab(state, tabid)
         },
-        setMultiTabToDiff(stobj: Object, action: PayloadAction<null>) {
+        setMultiTabToDiff(stobj: object) {
             const state = <State>stobj
             const tabId = getActiveTabId(state)!
             const tab = state.tabs[tabId]
@@ -1055,7 +1037,7 @@ const globalSlice = createSlice({
             tab.isMultiDiff = true
         },
         insertTab(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 paneId: number
                 fileId: number
@@ -1073,13 +1055,13 @@ const globalSlice = createSlice({
                 state.tabCache[tabId].scrollPos = scrollPos
             }
         },
-        activeTab(stobj: Object, action: PayloadAction<number>) {
+        activeTab(stobj: object, action: PayloadAction<number>) {
             const state = <State>stobj
             const tabId = action.payload as number
             setActiveTab(state, tabId)
         },
         overwriteFolder(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 folderPath: string
                 folderData: FolderData
@@ -1096,7 +1078,7 @@ const globalSlice = createSlice({
             }
 
             // copy initial state
-            let newInitialState = structuredClone(initialState)
+            const newInitialState = structuredClone(initialState)
             Object.keys(newInitialState).forEach((key) => {
                 // @ts-ignore
                 state[key] = newInitialState[key]
@@ -1122,7 +1104,7 @@ const globalSlice = createSlice({
             sortAllFolders(state)
         },
         scrollUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; scrollPos: number }>
         ) {
             const state = <State>stobj
@@ -1132,7 +1114,7 @@ const globalSlice = createSlice({
             state.tabCache[tabId].scrollPos = scrollPos
         },
         codeUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 code: string
                 update: ReduxEditorState
@@ -1148,7 +1130,7 @@ const globalSlice = createSlice({
             }
 
             const file = state.files[tab.fileId]
-            let newCode = state.fileCache[tab.fileId].contents
+            const newCode = state.fileCache[tab.fileId].contents
             // newCode = newCode.replace(/\r\n/g, '\n');
             // const repCode = code.replace(/\r\n/g, '\n');
             const repCode = code
@@ -1167,7 +1149,7 @@ const globalSlice = createSlice({
             updateEditorState(state, tabId, update)
         },
         vimUpdate(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; vimState: any }>
         ) {
             const state = <State>stobj
@@ -1179,7 +1161,7 @@ const globalSlice = createSlice({
             state.tabCache[tabId].vimState = vimState
         },
         triggerRename: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<number | null>
         ) => {
             const state = <State>stobj
@@ -1189,7 +1171,7 @@ const globalSlice = createSlice({
             triggerFileRename(state)
         },
         updateRenameName: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 fid: number
                 new_name: string
@@ -1205,15 +1187,15 @@ const globalSlice = createSlice({
             file.renameName = new_name
         },
         forceCloseTab: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<number | null>
         ) => {
             const state = <State>stobj
-            let tabid = action.payload || getActiveTabId(state)
+            const tabid = action.payload || getActiveTabId(state)
             if (tabid == null) return
             doCloseTab(state, tabid)
         },
-        selectTab: (stobj: Object, action: PayloadAction<number>) => {
+        selectTab: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabid = action.payload
             const tab = state.tabs[tabid]
@@ -1223,32 +1205,32 @@ const globalSlice = createSlice({
             setActiveTab(state, tabid)
             setSelectedFile(state, fileid)
         },
-        selectPane: (stobj: Object, action: PayloadAction<number>) => {
+        selectPane: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const paneid = action.payload
 
             setPaneActive(state, paneid)
         },
-        editorCreated: (stobj: Object, action: PayloadAction<number>) => {
+        editorCreated: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabId = action.payload
             // move up dummy variable to force a rerender
             state.tabs[tabId].isReady += 1
         },
         moveTabToPane(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; paneId: number }>
         ) {
             const state = <State>stobj
             const { tabId, paneId } = action.payload
             doMoveTabToPane(state, tabId, paneId)
         },
-        setDraggingTab: (stobj: Object, action: PayloadAction<number>) => {
+        setDraggingTab: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const tabId = action.payload
             state.draggingTabId = tabId
         },
-        stopDraggingTab: (stobj: Object, action: PayloadAction<null>) => {
+        stopDraggingTab: (stobj: object) => {
             const state = <State>stobj
             state.draggingTabId = null
         },
@@ -1273,20 +1255,20 @@ const globalSlice = createSlice({
             state.draggingTabId = null
         },
         executeSplitPane(
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneId: number; hoverState: HoverState }>
         ) {
             const state = <State>stobj
             const { paneId, hoverState } = action.payload
             splitPane(state, paneId, hoverState)
         },
-        setZoomFactor: (stobj: Object, action: PayloadAction<number>) => {
+        setZoomFactor: (stobj: object, action: PayloadAction<number>) => {
             const state = <State>stobj
             const zoomFactor = action.payload
             state.zoomFactor = zoomFactor
         },
         addTransaction: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{
                 tabId: number
                 transactionFunction: CustomTransaction | CustomTransaction[]
@@ -1296,7 +1278,7 @@ const globalSlice = createSlice({
             const { tabId, transactionFunction } = action.payload
             const tabCache = state.tabCache[tabId]
 
-            var newId: number
+            let newId: number
             if (tabCache.pendingTransactions.length === 0) {
                 newId = 0
             } else {
@@ -1312,7 +1294,7 @@ const globalSlice = createSlice({
             })
         },
         splitPaneUnselected: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneId: number; direction: HoverState }>
         ) => {
             const state = <State>stobj
@@ -1338,7 +1320,7 @@ const globalSlice = createSlice({
             setSelectedFile(state, fileId)
         },
         splitCurrentPaneUnselected: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ direction: HoverState }>
         ) => {
             const state = <State>stobj
@@ -1369,7 +1351,7 @@ const globalSlice = createSlice({
             setSelectedFile(state, fileId)
         },
         flushTransactions: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ tabId: number; transactionIds: number[] }>
         ) => {
             const state = <State>stobj
@@ -1385,7 +1367,7 @@ const globalSlice = createSlice({
             tabCache.pendingTransactions = newPendingTransactions
         },
         moveToPane: (
-            stobj: Object,
+            stobj: object,
             action: PayloadAction<{ paneDirection: string }>
         ) => {
             const state = <State>stobj
@@ -1410,10 +1392,10 @@ const globalSlice = createSlice({
         openNoAuthRateLimit(state: State) {
             state.showNoAuthRateLimit = true
         },
-        closeError(state: State, action: PayloadAction<null>) {
+        closeError(state: State) {
             state.showError = false
         },
-        openError(state: State, action: PayloadAction<null>) {
+        openError(state: State) {
             state.showError = true
         },
         setVersion(state: State, action: PayloadAction<string>) {
@@ -1442,7 +1424,7 @@ const globalSlice = createSlice({
                 parentFolderPath
             )!
             const newFileId = insertNewFile(state, parentFolderId, fileName)
-            const file = state.files[newFileId]
+            // const file = state.files[newFileId]
             delete state.fileCache[newFileId]
         },
         afterFileWasDeleted(state: State, action: PayloadAction<string>) {
@@ -1525,10 +1507,10 @@ const globalSlice = createSlice({
             const folder = state.folders[folderId]
             folder.isOpen = isOpen
         },
-        closeRemotePopup(state: State, action: PayloadAction<null>) {
+        closeRemotePopup(state: State) {
             state.showRemotePopup = false
         },
-        openRemotePopup(state: State, action: PayloadAction<null>) {
+        openRemotePopup(state: State) {
             state.showRemotePopup = true
         },
         setRemoteCommand(state: State, action: PayloadAction<string>) {
@@ -1537,7 +1519,7 @@ const globalSlice = createSlice({
         setRemotePath(state: State, action: PayloadAction<string>) {
             state.remotePath = action.payload
         },
-        setBadConnection(state: State, action: PayloadAction<null>) {
+        setBadConnection(state: State) {
             state.remoteBad = true
         },
         afterSelectFile(
@@ -1551,13 +1533,13 @@ const globalSlice = createSlice({
         setIsNotFirstTime(state: State, action: PayloadAction<boolean>) {
             state.isNotFirstTime = action.payload
         },
-        openTerminal(state: State, action: PayloadAction<null>) {
+        openTerminal(state: State) {
             state.terminalOpen = true
         },
-        closeTerminal(state: State, action: PayloadAction<null>) {
+        closeTerminal(state: State) {
             state.terminalOpen = false
         },
-        toggleTerminal(state: State, action: PayloadAction<null>) {
+        toggleTerminal(state: State) {
             state.terminalOpen = !state.terminalOpen
         },
     },

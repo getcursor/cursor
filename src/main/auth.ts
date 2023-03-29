@@ -1,12 +1,7 @@
 import jwtDecode from 'jwt-decode'
 import * as url from 'url'
 // import envVariables from '../env-variables';
-import {
-    BrowserView,
-    BrowserWindow,
-    ipcMain,
-    IpcMainInvokeEvent,
-} from 'electron'
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron'
 import { API_ROOT } from '../utils'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
@@ -139,22 +134,18 @@ export async function refreshTokens(event: IpcMainInvokeEvent) {
                 state: 'thisisatest',
             }),
         }
-        try {
-            const response = await fetch(
-                `https://${auth0Domain}/oauth/token`,
-                refreshOptions
-            )
-            const data = (await response.json()) as {
-                access_token: string
-                id_token: string
-            }
 
-            accessToken = data.access_token
-            profile = jwtDecode(data.id_token)
-        } catch (error) {
-            // await logout(parentWindow)
-            throw error
+        const response = await fetch(
+            `https://${auth0Domain}/oauth/token`,
+            refreshOptions
+        )
+        const data = (await response.json()) as {
+            access_token: string
+            id_token: string
         }
+
+        accessToken = data.access_token
+        profile = jwtDecode(data.id_token)
     } else {
         // No refresh token
         //throw new Error('No available refresh token.')
@@ -225,7 +216,7 @@ export async function loadStripeProfile() {
             Authorization: `Bearer ${accessToken}`,
         },
     })
-    let resp = await response.json()
+    const resp = await response.json()
     console.log('GOT STRIPE PROFILE', resp)
     if (resp) {
         stripeProfile = resp as string
@@ -281,7 +272,7 @@ export function createAuthWindow(parentWindow: BrowserWindow) {
         },
     })
 
-    const { url, state, verifier } = getAuthenticationURL()
+    const { url, verifier } = getAuthenticationURL()
     console.log('SENDING TO URL', url)
 
     const {
@@ -416,7 +407,7 @@ export function createLogoutWindow(event: IpcMainInvokeEvent) {
 export function authPackage() {
     ipcMain.handle('loginCursor', async (event: IpcMainInvokeEvent) => {
         console.log('LOGGING IN CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
         if (mainWindow) {
             createAuthWindow(mainWindow)
         } else {
@@ -425,7 +416,7 @@ export function authPackage() {
     })
     ipcMain.handle('payCursor', async (event: IpcMainInvokeEvent) => {
         console.log('PAYING CURSOR')
-        let mainWindow = BrowserWindow.fromWebContents(event.sender)
+        const mainWindow = BrowserWindow.fromWebContents(event.sender)
         if (mainWindow) {
             createStripeWindow(mainWindow)
         } else {

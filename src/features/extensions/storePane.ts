@@ -7,7 +7,7 @@ export const updatePaneId = StateEffect.define<number>()
 export const paneIdField = StateField.define<number>({
     create: () => -1,
     update: (paneId, tr) => {
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(updatePaneId)) {
                 paneId = effect.value
             }

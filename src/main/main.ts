@@ -1,12 +1,10 @@
 import fetch from 'node-fetch'
-import { Settings } from '../features/window/state'
+import { Settings, File, Folder } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
 import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
-
-import _, { uniqueId } from 'lodash'
 
 import {
     app,
@@ -18,14 +16,14 @@ import {
     session,
     systemPreferences,
     globalShortcut,
+    dialog,
+    clipboard,
+    MenuItemConstructorOptions,
 } from 'electron'
 
 import { API_ROOT } from '../utils'
 import * as path from 'path'
 import * as fs from 'fs'
-import { dialog, clipboard } from 'electron'
-import { MenuItemConstructorOptions } from 'electron'
-import { File, Folder } from '../features/window/state'
 import Store from 'electron-store'
 import log from 'electron-log'
 import { machineIdSync } from 'node-machine-id'
@@ -35,7 +33,7 @@ import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { authPackage, refreshTokens } from './auth'
+import { authPackage } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
@@ -349,7 +347,7 @@ const createWindow = () => {
             ],
         },
     ])
-    var menu = Menu.buildFromTemplate(menuList)
+    const menu = Menu.buildFromTemplate(menuList)
     Menu.setApplicationMenu(menu)
 
     globalShortcut.register(META_KEY + '+M', () => {
@@ -371,7 +369,7 @@ const createWindow = () => {
         store.set('settings', settings)
     })
 
-    ipcMain.handle('initSettings', (event: Event) => {
+    ipcMain.handle('initSettings', (_event: Event) => {
         if (store.has('settings')) {
             log.info('found settings')
             return store.get('settings')
@@ -380,7 +378,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('get_platform', function (event: any, arg: null) {
+    ipcMain.handle('get_platform', function (_event: any) {
         return process.platform
     })
 
@@ -403,8 +401,8 @@ const createWindow = () => {
                 dirName: string,
                 depth: number
             ) {
-                let name = path.basename(dirName)
-                let newFolder: Folder = {
+                const name = path.basename(dirName)
+                const newFolder: Folder = {
                     name,
                     fileIds: [],
                     folderIds: [],
@@ -413,11 +411,11 @@ const createWindow = () => {
                     renameName: null,
                     isOpen: false,
                 }
-                var newFolderId = Object.keys(folders).length + 1
+                const newFolderId = Object.keys(folders).length + 1
                 folders[newFolderId] = newFolder
 
                 if (depth < origDepth && !badDirectories.includes(name)) {
-                    let fileNameList = await fileSystem.readdirSyncWithIsDir(
+                    const fileNameList = await fileSystem.readdirSyncWithIsDir(
                         dirName
                     )
                     for (let i = 0; i < fileNameList.length; i++) {
@@ -437,14 +435,14 @@ const createWindow = () => {
                             newFolder.folderIds.push(res.newFolderId)
                             res.newFolder.parentFolderId = newFolderId
                         } else {
-                            var newSubFile: File = {
+                            const newSubFile: File = {
                                 parentFolderId: newFolderId,
                                 saved: true,
                                 name: path.basename(newName),
                                 renameName: null as any,
                                 isSelected: false,
                             }
-                            var newSubFileId = Object.keys(files).length + 1
+                            const newSubFileId = Object.keys(files).length + 1
                             files[newSubFileId] = newSubFile
 
                             newFolder.fileIds.push(newSubFileId)
@@ -461,8 +459,8 @@ const createWindow = () => {
     )
 
     log.info('setting up handle getClipboard')
-    ipcMain.handle('getClipboard', function (event: any, arg: null) {
-        var clip = clipboard.readText()
+    ipcMain.handle('getClipboard', function (_event: any) {
+        const clip = clipboard.readText()
         return clip
     })
 
@@ -470,7 +468,7 @@ const createWindow = () => {
         store.set('uploadPreferences', arg)
     })
 
-    ipcMain.handle('getUploadPreference', function (event: any, arg: null) {
+    ipcMain.handle('getUploadPreference', function (_event: any) {
         if (store.has('uploadPreferences')) {
             return store.get('uploadPreferences')
         } else {
@@ -478,7 +476,7 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('createTutorDir', function (event: any) {
+    ipcMain.handle('createTutorDir', function (_event: any) {
         const toCopyFrom = path.join(resourcesDir, 'tutor')
         const toCopyTo = path.join(app.getPath('home'), 'cursor-tutor')
 
@@ -497,7 +495,7 @@ const createWindow = () => {
     ipcMain.handle('checkSave', function (event: Event, filePath: string) {
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
         const basename = path.basename(filePath)
-        var options = {
+        const options = {
             type: 'question',
             buttons: ['&Go Back', '&Overwrite'],
             message: `Overwrite ${basename}?`,
@@ -524,7 +522,7 @@ const createWindow = () => {
                 'icon128.png'
             )
             const basename = path.basename(filePath)
-            var options = {
+            const options = {
                 type: 'question',
                 buttons: ['&Save', "&Don't Save", '&Cancel'],
                 message: `Do you want to save the changes you made to ${basename}`,
@@ -568,7 +566,7 @@ const createWindow = () => {
         clipboard.writeText(arg)
     })
 
-    ipcMain.handle('getProject', function (event: Event) {
+    ipcMain.handle('getProject', function (_event: Event) {
         if (store.has('projectPath')) {
             const res = store.get('projectPath') as any
             return res
@@ -577,8 +575,8 @@ const createWindow = () => {
         }
     })
 
-    ipcMain.handle('getRemote', function (event: Event) {
-        let ret = {
+    ipcMain.handle('getRemote', function (_event: Event) {
+        const ret = {
             remoteCommand: store.has('remoteCommand')
                 ? store.get('remoteCommand')
                 : null,
@@ -627,7 +625,7 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('get_version', function (event: Event) {
+    ipcMain.handle('get_version', function (_event: Event) {
         return app.getVersion()
     })
 
@@ -674,10 +672,10 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('check_learn_codebase', function (event: Event, arg: any) {
+    ipcMain.handle('check_learn_codebase', function (event: Event) {
         // ask the user if we can learn their codebase, if yes, send back true
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
-        var options = {
+        const options = {
             type: 'question',
             buttons: ['&Yes', '&No'],
             title: 'Index this folder?',
@@ -699,10 +697,10 @@ const createWindow = () => {
                     // do nothing
                 }
             })
-            .catch((err: any) => {})
+            .catch((_err: any) => {})
     })
 
-    ipcMain.handle('right_click_file', function (event: Event, arg: null) {
+    ipcMain.handle('right_click_file', function (event: Event) {
         const template: MenuItemConstructorOptions[] = [
             {
                 label: 'Rename',
@@ -728,7 +726,7 @@ const createWindow = () => {
         menu.popup({ window: BrowserWindow.fromWebContents(event.sender)! })
     })
 
-    ipcMain.handle('right_click_tab', function (event: Event, arg: null) {
+    ipcMain.handle('right_click_tab', function (event: Event) {
         const template: MenuItemConstructorOptions[] = [
             {
                 label: 'Close All',
@@ -776,7 +774,7 @@ const createWindow = () => {
                             'icon',
                             'icon128.png'
                         )
-                        var options = {
+                        const options = {
                             type: 'question',
                             buttons: ['&!Delete!', '&Cancel'],
                             title: `DANGER: Do you want to delete`,
@@ -795,7 +793,7 @@ const createWindow = () => {
                                     event.sender.send('delete_folder_click')
                                 }
                             })
-                            .catch((err: any) => {})
+                            .catch((_err: any) => {})
                     },
                 },
             ]
@@ -893,7 +891,7 @@ const createWindow = () => {
     )
 
     // show the open folder dialog
-    ipcMain.handle('open_folder', function (event: any, arg: null) {
+    ipcMain.handle('open_folder', function (_event: any, _arg: null) {
         showingDialog = true
         const result = dialog.showOpenDialogSync(main_window, {
             properties: ['openDirectory'],
@@ -958,7 +956,7 @@ const modifyHeaders = () => {
     )
 }
 
-todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
+todesktop.autoUpdater.on('update-downloaded', (_ev, _info) => {
     function check() {
         if (showingDialog) {
             setTimeout(check, 1000)
@@ -971,7 +969,7 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
                 'icon',
                 'icon128.png'
             )
-            var options = {
+            const options = {
                 type: 'question',
                 buttons: ['&Accept', '&Cancel'],
                 message: `Accept update?`,
@@ -995,7 +993,7 @@ todesktop.autoUpdater.on('update-downloaded', (ev, info) => {
                         }, 100)
                     }
                 })
-                .catch((err: any) => {})
+                .catch((_err: any) => {})
         }
     }
 

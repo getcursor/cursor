@@ -4,8 +4,6 @@ import {
     EditorView,
     DecorationSet,
     ViewUpdate,
-    keymap,
-    Command,
 } from '@codemirror/view'
 import {
     Facet,
@@ -14,17 +12,20 @@ import {
     Transaction,
     Extension,
     Annotation,
-    AnnotationType,
+    EditorState,
+    Prec,
 } from '@codemirror/state'
-import { EditorState, Prec } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
 import { vimStateField } from '../../components/codemirror-vim'
 import { getLanguageFromFilename } from './utils'
 import { LanguageServerClient } from '../lsp/stdioClient'
 import { getConnections } from '../lsp/languageServerSlice'
-import { offsetToPos, posToOffset } from '../lsp/lspPlugin'
-
-import { copilotServer, docPathFacet } from '../lsp/lspPlugin'
+import {
+    offsetToPos,
+    posToOffset,
+    copilotServer,
+    docPathFacet,
+} from '../lsp/lspPlugin'
 
 // Create Facet for the current docPath
 export const docPath = Facet.define<string, string>({
@@ -74,11 +75,11 @@ interface GhostText {
 }
 
 export const completionDecoration = StateField.define<CompletionState>({
-    create(state: EditorState) {
+    create(_state: EditorState) {
         return { ghostText: null }
     },
     update(state: CompletionState, transaction: Transaction) {
-        for (let effect of transaction.effects) {
+        for (const effect of transaction.effects) {
             if (effect.is(addSuggestion)) {
                 // When adding a suggestion, we set th ghostText
                 const {
@@ -115,7 +116,7 @@ export const completionDecoration = StateField.define<CompletionState>({
             } else if (effect.is(typeFirst)) {
                 const numChars = effect.value
                 if (state.ghostText && !state.ghostText.weirdInsert) {
-                    var {
+                    let {
                         text,
                         displayText,
                         displayPos,
@@ -332,7 +333,7 @@ const completionRequester = (client: LanguageServerClient) => {
     let lastPos = 0
 
     const badUpdate = (update: ViewUpdate) => {
-        for (let tr of update.transactions) {
+        for (const tr of update.transactions) {
             if (tr.annotation(copilotEvent) != undefined) {
                 return true
             }
@@ -343,7 +344,7 @@ const completionRequester = (client: LanguageServerClient) => {
         return update.state.field(completionDecoration).ghostText != null
     }
     const notInsertMode = (update: ViewUpdate) => {
-        let vimState = update.state.field(vimStateField, false)
+        const vimState = update.state.field(vimStateField, false)
         if (!vimState) {
             return false
         } else {
@@ -427,7 +428,7 @@ const completionRequester = (client: LanguageServerClient) => {
                             uuid,
                         } = completionResult.completions[0]
 
-                        let startPos = posToOffset(state.doc, {
+                        const startPos = posToOffset(state.doc, {
                             line: start.line,
                             character: start.character,
                         })!
@@ -456,7 +457,7 @@ const completionRequester = (client: LanguageServerClient) => {
                         ) {
                             // Dispatch an effect to add the suggestion
                             // If the completion starts before the end of the line, check the end of the line with the end of the completion
-                            let line = update.view.state.doc.lineAt(pos)
+                            const line = update.view.state.doc.lineAt(pos)
                             if (line.to != pos) {
                                 const ending =
                                     update.view.state.doc.sliceString(

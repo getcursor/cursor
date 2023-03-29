@@ -1,4 +1,4 @@
-import { Settings, FullState, SettingsState } from '../window/state'
+import { FullState, SettingsState } from '../window/state'
 import { createSelector } from 'reselect'
 
 export const getSettingsIsOpen = createSelector(

@@ -29,7 +29,6 @@
 import './index.css'
 import './features/listeners'
 import './app.tsx'
-import { machineId } from 'node-machine-id'
 import posthog from 'posthog-js'
 
 posthog.init('phc_OrLbTmMnw0Ou1C4xuVIWJJaijIcp4J9Cm4JsAVRLtJo', {
