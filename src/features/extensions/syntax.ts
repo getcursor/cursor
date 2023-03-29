@@ -1,7 +1,6 @@
 // import { sql } from '@codemirror/lang-sql'
 import { languages } from '@codemirror/language-data'
 
-
 import { colorPicker } from '@replit/codemirror-css-color-picker'
 
 // TODO - when you have time to write a script or something

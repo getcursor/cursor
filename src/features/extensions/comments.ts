@@ -1,8 +1,5 @@
 import { syntaxTree } from '@codemirror/language'
-import {
-    Prec,
-    RangeSetBuilder,
-    StateEffect } from '@codemirror/state'
+import { Prec, RangeSetBuilder, StateEffect } from '@codemirror/state'
 import {
     Decoration,
     DecorationSet,
@@ -14,10 +11,7 @@ import {
 import { Tree } from '@lezer/common'
 import { store } from '../../app/store'
 import { addCommentToDoc } from '../comment/commentSlice'
-import {
-    getFilePath,
-    getFocusedTab,
-} from '../selectors'
+import { getFilePath, getFocusedTab } from '../selectors'
 import { CommentFunction } from '../window/state'
 import { getNamesAndBodies } from './utils'
 
