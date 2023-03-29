@@ -6,19 +6,13 @@ import {
     TransactionSpec,
     StateEffect,
     Text,
-} from '@codemirror/state'
+ Annotation } from '@codemirror/state'
 import { useAppDispatch } from '../../app/hooks'
 import { flushTransactions } from '../../features/globalSlice'
-import { getPendingTransactions } from '../../features/selectors'
 import { ReduxTransaction, LineChange } from '../../features/window/state'
-import { posToOffset } from '../../features/lsp/lspPlugin'
 import { showBar } from '../../features/extensions/cmdZBar'
 
-import { Annotation } from '@codemirror/state'
-import { store } from '../../app/store'
 import { reduxTransaction } from '../../features/extensions/utils'
-import { lineNumbersState } from '../../features/linter/fixLSPExtension'
-import { setDiff } from '../../features/extensions/diff'
 // import { showBar } from '../../features/extensions/cmdZBar'
 
 type TransactionFunction = CustomTransaction | CustomTransaction[]
@@ -242,8 +236,8 @@ function getTransaction(
                 },
                 write({ cursor, scroller }) {
                     if (cursor) {
-                        let curMid = (cursor.top + cursor.bottom) / 2
-                        let eltMid = (scroller.top + scroller.bottom) / 2
+                        const curMid = (cursor.top + cursor.bottom) / 2
+                        const eltMid = (scroller.top + scroller.bottom) / 2
                         if (Math.abs(curMid - eltMid) > 5)
                             view.scrollDOM.scrollTop += curMid - eltMid
                     }
@@ -359,25 +353,25 @@ function getTransaction(
 
 export const customDispatchEffect = StateEffect.define<CustomTransaction>()
 
-let runningaverage: number[] = []
+const runningaverage: number[] = []
 export function customDispatch(view: EditorView, tr: Transaction) {
-    let start = performance.now()
+    const start = performance.now()
     // First we handle the original default transaction
     view.update([tr])
 
     // Handle custom transactions next
     try {
-        let customDispatchEffects = tr.effects.filter((e) =>
+        const customDispatchEffects = tr.effects.filter((e) =>
             e.is(customDispatchEffect)
         )
-        let newTransactions: TransactionSpec[] = []
-        for (let effect of customDispatchEffects) {
-            let customTransaction = effect.value
+        const newTransactions: TransactionSpec[] = []
+        for (const effect of customDispatchEffects) {
+            const customTransaction = effect.value
             const tr = getTransaction(view, customTransaction)
             if (tr != null) newTransactions.push(tr)
         }
         if (newTransactions.length != 0) {
-            let transaction = view.state.update(...newTransactions)
+            const transaction = view.state.update(...newTransactions)
             view.update([transaction])
         }
     } catch (e) {
@@ -396,7 +390,7 @@ export function customDispatch(view: EditorView, tr: Transaction) {
     }
 }
 
-let syncAnnotation = Annotation.define<boolean>()
+const syncAnnotation = Annotation.define<boolean>()
 
 export function syncDispatch(
     tr: Transaction,
@@ -405,10 +399,10 @@ export function syncDispatch(
 ) {
     customDispatch(view, tr)
     if (!tr.changes.empty && !tr.annotation(syncAnnotation)) {
-        let annotations: Annotation<any>[] = [syncAnnotation.of(true)]
-        let userEvent = tr.annotation(Transaction.userEvent)
+        const annotations: Annotation<any>[] = [syncAnnotation.of(true)]
+        const userEvent = tr.annotation(Transaction.userEvent)
         if (userEvent) annotations.push(Transaction.userEvent.of(userEvent))
-        for (let other of others) {
+        for (const other of others) {
             other.dispatch({ changes: tr.changes, annotations })
         }
     }

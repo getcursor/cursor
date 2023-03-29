@@ -40,7 +40,6 @@ import { URI } from 'vscode-uri'
 import type * as LSP from 'vscode-languageserver-protocol'
 import type { PluginValue } from '@codemirror/view'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { posToOffset } from './lspPlugin'
 import { Action } from '../linter/lint'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -301,9 +300,9 @@ export class LanguageServerClient {
     private documentVersionMap: { [documentPath: string]: number } = {}
 
     public isCopilot: boolean
-    private copilotSignedIn: boolean = false
+    private copilotSignedIn = false
     private queuedUids: string[] = []
-    public uuid: string = ''
+    public uuid = ''
 
     constructor(options: LanguageServerClientOptions) {
         // this.childProcess = cp.spawn(options.process.command, options.process.args);
@@ -512,7 +511,7 @@ export class LanguageServerClient {
         // DISABLED WHEN USING PYRIGHT
         // Adding config settings for python
         if (this.getName() == 'python') {
-            let settings = {
+            const settings = {
                 pylsp: {
                     plugins: {
                         pycodestyle: { enabled: false },
@@ -862,7 +861,7 @@ export class LanguageServerClient {
         }
     }
     async signedIn() {
-        let { status } = await this.request('checkStatus', {})
+        const { status } = await this.request('checkStatus', {})
         if (
             status == 'SignedIn' ||
             status == 'AlreadySignedIn' ||
@@ -882,14 +881,14 @@ export class LanguageServerClient {
     }
 
     async accept(uuid: string) {
-        let badUids = this.queuedUids.filter((u) => u != uuid)
+        const badUids = this.queuedUids.filter((u) => u != uuid)
         this.queuedUids = []
         await this.acceptCompletion({ uuid })
         await this.rejectCompletions({ uuids: badUids })
     }
 
     async reject() {
-        let badUids = this.queuedUids
+        const badUids = this.queuedUids
         this.queuedUids = []
         return await this.rejectCompletions({ uuids: badUids })
     }

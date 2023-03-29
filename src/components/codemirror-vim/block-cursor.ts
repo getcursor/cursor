@@ -19,7 +19,7 @@ class Piece {
     ) {}
 
     draw() {
-        let elt = document.createElement('div')
+        const elt = document.createElement('div')
         elt.className = this.className
         this.adjust(elt)
         return elt
@@ -99,11 +99,11 @@ export class BlockCursorPlugin {
     }
 
     readPos(): Measure {
-        let { state } = this.view
-        let cursors = []
-        for (let r of state.selection.ranges) {
-            let prim = r == state.selection.main
-            let piece = measureCursor(this.cm, this.view, r, prim)
+        const { state } = this.view
+        const cursors = []
+        for (const r of state.selection.ranges) {
+            const prim = r == state.selection.main
+            const piece = measureCursor(this.cm, this.view, r, prim)
             if (piece) cursors.push(piece)
         }
         return { cursors }
@@ -114,7 +114,7 @@ export class BlockCursorPlugin {
             cursors.length != this.cursors.length ||
             cursors.some((c, i) => !c.eq(this.cursors[i]))
         ) {
-            let oldCursors = this.cursorLayer.children
+            const oldCursors = this.cursorLayer.children
             if (oldCursors.length !== cursors.length) {
                 this.cursorLayer.textContent = ''
                 for (const c of cursors) this.cursorLayer.appendChild(c.draw())
@@ -156,8 +156,8 @@ const themeSpec = {
 export const hideNativeSelection = Prec.highest(EditorView.theme(themeSpec))
 
 function getBase(view: EditorView) {
-    let rect = view.scrollDOM.getBoundingClientRect()
-    let left =
+    const rect = view.scrollDOM.getBoundingClientRect()
+    const left =
         view.textDirection == Direction.LTR
             ? rect.left
             : rect.right - view.scrollDOM.clientWidth
@@ -176,7 +176,7 @@ function measureCursor(
     let head = cursor.head
     let fatCursor = false
     let hCoeff = 1
-    let vim = cm.state.vim
+    const vim = cm.state.vim
     if (vim && (!vim.insertMode || cm.state.overwrite)) {
         fatCursor = true
         if (vim.visualBlock && !primary) return null
@@ -193,9 +193,9 @@ function measureCursor(
             head--
             letter = view.state.sliceDoc(head, head + 1)
         }
-        let pos = view.coordsAtPos(head, 1)
+        const pos = view.coordsAtPos(head, 1)
         if (!pos) return null
-        let base = getBase(view)
+        const base = getBase(view)
         let domAtPos = view.domAtPos(head)
         let node = domAtPos ? domAtPos.node : view.contentDOM
         while (domAtPos && domAtPos.node instanceof HTMLElement) {
@@ -209,7 +209,7 @@ function measureCursor(
             if (!node.parentNode) return null
             node = node.parentNode
         }
-        let style = getComputedStyle(node as HTMLElement)
+        const style = getComputedStyle(node as HTMLElement)
         if (!letter || letter == '\n' || letter == '\r') letter = '\xa0'
         else if (
             /[\uD800-\uDBFF]/.test(letter) &&
@@ -218,7 +218,7 @@ function measureCursor(
             // include the second half of a surrogate pair in cursor
             letter += view.state.sliceDoc(head + 1, head + 2)
         }
-        let h = pos.bottom - pos.top
+        const h = pos.bottom - pos.top
         return new Piece(
             pos.left - base.left,
             pos.top - base.top + h * (1 - hCoeff),

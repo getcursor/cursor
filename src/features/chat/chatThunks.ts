@@ -16,16 +16,14 @@ import {
     getCodeMirrorView,
 } from '../codemirror/codemirrorSlice'
 import { throttle } from 'lodash'
-import { acceptDiff, rejectDiff, setDiff } from '../extensions/diff'
+import { acceptDiff, setDiff } from '../extensions/diff'
 import { getActiveFileId, getActiveTabId } from '../window/paneUtils'
 import { BotMessageType, FullState } from '../window/state'
 import {
     activateDiffFromEditor,
     appendResponse,
-    changeDraftMsgType,
     changeMsgType,
     doSetChatState,
-    doSetMessages,
     dummySubmitCommandBar,
     // chatSlice,
     endFinishResponse,
@@ -35,12 +33,10 @@ import {
     newResponse,
     openCommandBar,
     PromptCancelledError,
-    rejectMessage,
     resumeGeneration,
     setChatOpen,
-    setCurrentDraftMessage,
     setGenerating,
-    startNewMessage,
+    setHitTokenLimit,
     toggleChatHistory,
     tokenLimitInterrupt,
     updateLastUserMessageMsgType,
@@ -60,7 +56,7 @@ import {
     getSelectedPos,
     getSelectedText,
 } from '../../components/editor'
-import { getLastBotMessageById, getLastUserMessage } from './chatSelectors'
+import { getLastBotMessageById } from './chatSelectors'
 import { editBoundaryEffect, insertCursorEffect } from '../extensions/hackDiff'
 import posthog from 'posthog-js'
 import { getCopilotSnippets } from './promptUtils'
@@ -88,7 +84,7 @@ const getBearerTokenHeader = (getState: () => unknown) => {
 function getMatchingLines(doc: Text, ...lines: string[]): number[][] {
     // Iterate through the lines in the document and find matching line numbers
     // Initialize an empty array to store matching line numbers
-    let matchingLineNumbers = Array(lines.length).fill([])
+    const matchingLineNumbers = Array(lines.length).fill([])
 
     // Iterate through the lines in the document
     for (let i = 0; i < doc.lines; i++) {
@@ -145,8 +141,8 @@ export async function getPayload({
     dispatch(setGenerating(true))
 
     const state = getState() as FullState
-    let chatState = state.chatState
-    let fileCache = state.global.fileCache
+    const chatState = state.chatState
+    const fileCache = state.global.fileCache
     const currentTab = getActiveTabId(state.global)!
 
     const userMessages = chatState.userMessages.filter(
@@ -201,10 +197,10 @@ export async function getPayload({
         : null
     const currentFileContents = fileId ? fileCache[fileId!]?.contents : null
 
-    let copilotCodeBlocks =
+    const copilotCodeBlocks =
         fileId == null ? [] : await getCopilotSnippets(state, fileId)
 
-    let customCodeBlocks = [
+    const customCodeBlocks = [
         ...lastUserMessage.otherCodeBlocks.map((block) => {
             return {
                 text: block.text,
@@ -214,11 +210,11 @@ export async function getPayload({
     ]
 
     // Capture all `CODE_HERE` with regex from the last message
-    let capturedSymbols = lastUserMessage.message
+    const capturedSymbols = lastUserMessage.message
         .match(/`(\w+\.*)+`/g)
         ?.map((symbol) => symbol.replace(/`/g, ''))
     // Convert to a set
-    let codeSymbols = new Set<string>()
+    const codeSymbols = new Set<string>()
     if (capturedSymbols) {
         capturedSymbols.forEach((symbol) => {
             codeSymbols.add(symbol)
@@ -226,7 +222,7 @@ export async function getPayload({
     }
     // Now set filter out the lastUserMessage.codeSymbols to only be the ones that are in the message
 
-    let codeBlockIdentifiers = [
+    const codeBlockIdentifiers = [
         ...lastUserMessage.codeSymbols
             .filter((symbol) => codeSymbols.has(symbol.name))
             .map((symbol) => ({
@@ -238,21 +234,21 @@ export async function getPayload({
     // Split the `precedingCode` into chunks of 20 line blocks called `precedingCodeBlocks`
     const blockSize = 20
 
-    let precedingCodeBlocks = []
+    const precedingCodeBlocks = []
     if (lastUserMessage.precedingCode) {
-        let precedingCodeLines = lastUserMessage.precedingCode.split('\n')
+        const precedingCodeLines = lastUserMessage.precedingCode.split('\n')
         for (let i = 0; i < precedingCodeLines.length; i += blockSize) {
-            let block = precedingCodeLines.slice(i, i + blockSize)
+            const block = precedingCodeLines.slice(i, i + blockSize)
             precedingCodeBlocks.push(block.join('\n'))
         }
     }
 
     // Split the `procedingCodeBlocks` into chunks of 20 line blocks called `procedingCodeBlocks`
-    let procedingCodeBlocks = []
+    const procedingCodeBlocks = []
     if (lastUserMessage.procedingCode) {
-        let procedingCodeLines = lastUserMessage.procedingCode.split('\n')
+        const procedingCodeLines = lastUserMessage.procedingCode.split('\n')
         for (let i = 0; i < procedingCodeLines.length; i += blockSize) {
-            let block = procedingCodeLines.slice(i, i + blockSize)
+            const block = procedingCodeLines.slice(i, i + blockSize)
             procedingCodeBlocks.push(block.join('\n'))
         }
     }
@@ -374,7 +370,7 @@ export const continueGeneration = createAsyncThunk(
             // Hit the diffs endpoint
             const server = `${API_ROOT}/continue/`
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -413,10 +409,10 @@ export const continueGeneration = createAsyncThunk(
                 (<FullState>getState()).chatState.botMessages.at(-1)
                     ?.interrupted
 
-            let generator = streamSource(response)
+            const generator = streamSource(response)
 
             const getNextToken = async () => {
-                let rawResult = await generator.next()
+                const rawResult = await generator.next()
                 if (rawResult.done) return null
                 return rawResult.value
             }
@@ -438,7 +434,7 @@ export const continueGeneration = createAsyncThunk(
             )
 
             while (!toBreak) {
-                let token = await getNextToken()
+                const token = await getNextToken()
                 // When there are no more tokens, or we are interrupted, stop the generation
                 if (token == null) break
                 if (!isGenerating() || isInterrupted()) break
@@ -487,7 +483,7 @@ export const continueGeneration = createAsyncThunk(
                     buffer = buffer.replace(`<|END_message|>`, '')
                     break
                 }
-                let token = await getNextToken()
+                const token = await getNextToken()
                 buffer += token
 
                 if (!isGenerating() || isInterrupted()) break
@@ -517,9 +513,10 @@ export const continueGeneration = createAsyncThunk(
                 dispatch(openRateLimit())
                 dispatch(interruptGeneration(null))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
             }
+            dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))
         }
     }
 )
@@ -537,7 +534,7 @@ export const finishResponse = createAsyncThunk(
 
 export const initializeChatState = createAsyncThunk(
     'chat/getResponse',
-    async (payload: null, { getState, dispatch }) => {
+    async (payload: null, { dispatch }) => {
         // const userMessages = await connector.getStore('userMessages');
         // const botMessages = await connector.getStore('botMessages');
         const chatState = await connector.getStore('chatState')
@@ -591,7 +588,7 @@ export const streamResponse = createAsyncThunk(
 
             const server = `${API_ROOT}/conversation`
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -616,7 +613,7 @@ export const streamResponse = createAsyncThunk(
                 return resp
             })
 
-            let generator = streamSource(response)
+            const generator = streamSource(response)
 
             const isGenerating = () =>
                 (<FullState>getState()).chatState.generating
@@ -625,7 +622,7 @@ export const streamResponse = createAsyncThunk(
                     ?.interrupted
 
             const getNextToken = async () => {
-                let rawResult = await generator.next()
+                const rawResult = await generator.next()
                 if (rawResult.done) return null
                 return rawResult.value
             }
@@ -636,7 +633,7 @@ export const streamResponse = createAsyncThunk(
                 capture: (buff: string) => string = (buff) => buff
             ) => {
                 while (!condition(startBuffer)) {
-                    let nextToken = await getNextToken()
+                    const nextToken = await getNextToken()
                     if (nextToken == null) return null
                     startBuffer += nextToken
                 }
@@ -652,7 +649,7 @@ export const streamResponse = createAsyncThunk(
                     startToken
                 )
                 while (true) {
-                    let token = await getNextToken()
+                    const token = await getNextToken()
                     if (token == null) break
                     if (token.includes('<|')) {
                         buffer = token
@@ -664,7 +661,7 @@ export const streamResponse = createAsyncThunk(
                     }
                 }
                 while (true) {
-                    let token = await getNextToken()
+                    const token = await getNextToken()
                     buffer += token!
                     if (buffer!.includes(`<|END_${variableName}|>`)) {
                         break
@@ -672,7 +669,7 @@ export const streamResponse = createAsyncThunk(
                 }
 
                 // parse out the value between the tags
-                let value = buffer!.match(
+                const value = buffer!.match(
                     /<\|BEGIN_\w+\|>([\s\S]*)<\|END_\w+\|>/
                 )![1]!
                 return { value, buffer }
@@ -704,7 +701,7 @@ export const streamResponse = createAsyncThunk(
                 let toBreak = false
                 let finalMessage = ''
                 while (!toBreak) {
-                    let token = await getNextToken()
+                    const token = await getNextToken()
                     // When there are no more tokens, or we are interrupted, stop the generation
                     // Wait for 100 ms
 
@@ -790,7 +787,7 @@ export const streamResponse = createAsyncThunk(
                         buffer = buffer.replace(`<|END_message|>`, '')
                         break
                     }
-                    let token = await getNextToken()
+                    const token = await getNextToken()
                     buffer += token
 
                     if (!isGenerating() || isInterrupted()) break
@@ -798,7 +795,7 @@ export const streamResponse = createAsyncThunk(
             }
 
             const processResponse = async () => {
-                let { value, buffer } = await getVariable('', 'type')
+                const { value } = await getVariable('', 'type')
                 checkSend()
                 dispatch(
                     newResponse({
@@ -809,11 +806,11 @@ export const streamResponse = createAsyncThunk(
                 await sendBody(''!, value.trim())
                 if (value.trim() == 'location') {
                     const state = <FullState>getState()
-                    let locString =
+                    const locString =
                         state.chatState.botMessages[
                             state.chatState.botMessages.length - 1
                         ].message
-                    let locJson: {
+                    const locJson: {
                         filePath: string
                         startLine: number
                         endLine: number
@@ -837,11 +834,11 @@ export const streamResponse = createAsyncThunk(
                         })
                     )
                 } else if (value.trim() == 'gotoEdit') {
-                    let generationString =
+                    const generationString =
                         state.chatState.botMessages[
                             state.chatState.botMessages.length - 1
                         ].message
-                    let generationJson: {
+                    const generationJson: {
                         filePath: string
                         startLine: number
                         endLine: number
@@ -925,7 +922,7 @@ export const streamResponse = createAsyncThunk(
                 dispatch(openRateLimit())
                 dispatch(interruptGeneration(null))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
             }
         }
@@ -961,7 +958,7 @@ export const continueUntilEnd = createAsyncThunk(
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             }
@@ -977,10 +974,11 @@ export const diffResponse = createAsyncThunk(
             type = type || 'chat'
 
             const getFullState = () => getState() as FullState
-            let lastBotMessage = getLastBotMessage(getFullState().chatState)
-            let useDiagnostics = lastBotMessage?.useDiagnostics || type == 'lsp'
+            const lastBotMessage = getLastBotMessage(getFullState().chatState)
+            const useDiagnostics =
+                lastBotMessage?.useDiagnostics || type == 'lsp'
 
-            let data = await getPayload({
+            const data = await getPayload({
                 getState: getFullState,
                 dispatch,
                 conversationId: getFullState().chatState.currentConversationId,
@@ -1026,7 +1024,7 @@ export const diffResponse = createAsyncThunk(
             // data.userRequest.message =
             //     'create a new Modal component, importing from headlessui'
 
-            let response = await fetch(server, {
+            const response = await fetch(server, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1072,15 +1070,16 @@ export const diffResponse = createAsyncThunk(
             )
 
             const origState = editorView.state
-            let generator = streamSource(response)
-            let usedChunks = []
-            for await (let chunk of generator) {
+            const generator = streamSource(response)
+            const usedChunks = []
+            for await (const chunk of generator) {
                 if (!isGenerating() || isInterrupted()) {
+                    // todo
                 }
                 // checkSend()
                 // chunk will n
 
-                let typedChunk = chunk as null | {
+                const typedChunk = chunk as null | {
                     diff_number: number
                     start_line: number
                     start_line_text: string
@@ -1103,7 +1102,7 @@ export const diffResponse = createAsyncThunk(
                     let updatedText = origState.doc
 
                     //
-                    let tmpChunks = [typedChunk, ...usedChunks]
+                    const tmpChunks = [typedChunk, ...usedChunks]
                     tmpChunks.sort((a, b) => a.start_line - b.start_line)
                     for (const chunk of [typedChunk, ...usedChunks]) {
                         const [startLines, endLines] = getMatchingLines(
@@ -1124,7 +1123,7 @@ export const diffResponse = createAsyncThunk(
                             end = origState.doc.line(chunk.end_line - 1).to
                         }
 
-                        let newText = Text.of(chunk.new_code.split('\n'))
+                        const newText = Text.of(chunk.new_code.split('\n'))
                         updatedText = updatedText.replace(start, end, newText)
                     }
 
@@ -1165,7 +1164,7 @@ export const diffResponse = createAsyncThunk(
                     end = origState.doc.line(chunk.end_line - 1).to
                 }
 
-                let newText = Text.of(chunk.new_code.split('\n'))
+                const newText = Text.of(chunk.new_code.split('\n'))
                 updatedText = updatedText.replace(start, end, newText)
             }
             dispatch(
@@ -1191,7 +1190,7 @@ export const diffResponse = createAsyncThunk(
             console.error(e)
             dispatch(setGenerating(false))
             if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
                 dispatch(finishResponse())
             }
@@ -1328,13 +1327,13 @@ export const pressAICommand = createAsyncThunk(
                 }
                 return
             case 'k':
-                if (chatState.chatIsOpen && lastBotMessage?.finished) {
-                    if (editorView) {
-                        // When there is an editorView, we dispatch something
-                        dispatch(changeMsgType('chat_edit'))
-                        dispatch(changeDraftMsgType('chat_edit'))
-                    }
-                } else if (editorView) {
+                // if (chatState.chatIsOpen && lastBotMessage?.finished) {
+                //     if (editorView) {
+                //         // When there is an editorView, we dispatch something
+                //         dispatch(changeMsgType('chat_edit'))
+                //         dispatch(changeDraftMsgType('chat_edit'))
+                //     }
+                if (editorView) {
                     const selPos = getSelectedPos(editorView)
                     const selection = editorView.state.selection.main
                     editorView.dispatch({
@@ -1400,7 +1399,7 @@ export const pressAICommand = createAsyncThunk(
                     if (currentErrorField) {
                         relevantLine = currentErrorField.line
                     } else {
-                        let diagnostics = getDiagnostics(
+                        const diagnostics = getDiagnostics(
                             editorView.state.field(lintState),
                             editorView.state
                         )
@@ -1409,7 +1408,7 @@ export const pressAICommand = createAsyncThunk(
                         )
                         const currentPos = editorView.state.selection.main.from
 
-                        for (let diagnostic of seriousDiagnostics) {
+                        for (const diagnostic of seriousDiagnostics) {
                             if (
                                 currentPos <= diagnostic.to &&
                                 currentPos >= diagnostic.from

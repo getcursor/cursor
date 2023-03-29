@@ -5,7 +5,6 @@ import {
     IpcRendererEvent,
 } from 'electron'
 import {
-    LSPProcess,
     LSPRequestMap,
     LSPNotifyMap,
     Language,
@@ -73,7 +72,7 @@ const addRemoveCallbacks = () => {
                 ) => {
                     // This was a bug that I fixed where we used to just use callback
                     // here rather than first check the language
-                    let result = requestCallbacks[data.language](data.data)
+                    const result = requestCallbacks[data.language](data.data)
                     ipcRenderer.invoke(
                         'responseCallbackLS' + data.identifier,
                         result
@@ -139,7 +138,7 @@ const electronConnector = {
     getFolder: (
         dir: string,
         children: string[] = [],
-        depth: number = 1,
+        depth = 1,
         badDirectories: string[] = []
     ) => ipcRenderer.invoke('get_folder', dir, children, depth, badDirectories),
     getFile: (dir: string) => ipcRenderer.invoke('get_file', dir),
@@ -241,7 +240,7 @@ const electronConnector = {
         return ipcRenderer.invoke('loadTests', blob)
     },
     getProject: () => ipcRenderer.invoke('getProject'),
-    saveProject: (data: Object) => ipcRenderer.invoke('saveProject', data),
+    saveProject: (data: unknown) => ipcRenderer.invoke('saveProject', data),
 
     getClipboard: () => ipcRenderer.invoke('getClipboard', null),
 

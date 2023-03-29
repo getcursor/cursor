@@ -1,4 +1,4 @@
-import { FullState, BotMessage, Message } from '../window/state'
+import { FullState, Message } from '../window/state'
 import { createSelector } from 'reselect'
 import { getLastBotMessage as getLastBotMessageMain } from './chatSlice'
 

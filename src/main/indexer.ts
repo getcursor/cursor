@@ -3,9 +3,7 @@ import * as path from 'path'
 import * as cp from 'child_process'
 import log from 'electron-log'
 import { Semaphore } from 'await-semaphore'
-import { ipcMain, IpcMainInvokeEvent, session } from 'electron'
-import _ from 'lodash'
-import { BrowserWindow } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, BrowserWindow } from 'electron'
 import Store from 'electron-store'
 import crypto from 'crypto'
 // import gi from 'gitignore';
@@ -61,40 +59,16 @@ const PATHS_TO_IGNORE_REGEX: RegExp[] = [
     /.*\/\.pnp\/.*/,
 ]
 
-async function checkStatus(repoId: string, apiRoot: string, rootDir: string) {
-    return await fetch(`${apiRoot}/repos/${repoId}/status`, {
-        headers: {
-            Cookie: `repo_path=${rootDir}`,
-        },
-    }).then(
-        async (res) => {
-            if (res.status == 400) {
-                return 'notFound'
-            } else if (res.status != 200) {
-                return 'error'
-            }
-
-            const { status } = (await res.json()) as { status: string }
-            return status
-        },
-        (err) => {
-            return 'error'
-        }
-    )
-}
-
 export class CodebaseIndexer {
-    private isCancelled: boolean
     private options: {
         endpoint: string
         supportedExtensions: Set<string>
     }
-    private numFiles: number = 0
-    private numFilesToDelete: number = 0
-    private filesUploaded: number = 0
+    private numFiles = 0
+    private filesUploaded = 0
     private semaphore: Semaphore = new Semaphore(20)
-    public finishedUpload: boolean = false
-    private haveStartedWatcher: boolean = false
+    public finishedUpload = false
+    private haveStartedWatcher = false
 
     constructor(
         public rootDir: string,
@@ -103,7 +77,6 @@ export class CodebaseIndexer {
         private repoId?: string
     ) {
         this.rootDir = rootDir
-        this.isCancelled = false
         this.options = {
             endpoint: this.apiRoute + '/upload/repos/private',
             supportedExtensions: new Set([
@@ -240,9 +213,6 @@ export class CodebaseIndexer {
         )
     }
 
-    cancel() {
-        this.isCancelled = true
-    }
     async listIgnoredFiles() {
         const gitignoredFiles = new Set<string>()
         const gitSubmoduleFiles = new Set<string>()
@@ -279,7 +249,7 @@ export class CodebaseIndexer {
             }
             batchNum = 1
             while (true) {
-                const gitCmd = `git submodule foreach --quiet \'git ls-files | sed "s|^|$path/|"\'`
+                const gitCmd = `git submodule foreach --quiet 'git ls-files | sed "s|^|$path/|"'`
                 const paginateCmd = `head -n ${
                     batchNum * batchSize
                 } | tail -n ${batchSize}`
@@ -307,7 +277,7 @@ export class CodebaseIndexer {
                 ...gitSubmoduleFiles,
             ])
             // Get all ignore files with 'train' in it
-            return allIgnores
+            return allIgnores // eslint-disable-line no-unsafe-finally
         }
     }
     async listFiles() {
@@ -363,7 +333,7 @@ export class CodebaseIndexer {
         this.repoId = repoId
         this.numFiles = files.length
         const uploadFilesBatch = async (files: string[]) => {
-            let allData = await Promise.all(files.map(getContents))
+            const allData = await Promise.all(files.map(getContents))
             const filteredData = allData.filter((data) => data != null) as {
                 relativeFilePath: string
                 fileContents: string
@@ -417,11 +387,9 @@ export class CodebaseIndexer {
         const updateFile = async ({
             relativeFilePath,
             fileContents,
-            fileHash,
         }: {
             relativeFilePath: string
             fileContents: string
-            fileHash: string
         }) => {
             // Semaphore context
             const release = await this.semaphore.acquire()
@@ -450,16 +418,12 @@ export class CodebaseIndexer {
         const uploadFile = async ({
             relativeFilePath,
             fileContents,
-            fileHash,
         }: {
             relativeFilePath: string
             fileContents: string
-            fileHash: string
         }) => {
             // Semaphore context
             const release = await this.semaphore.acquire()
-
-            let startTime = performance.now()
 
             if (!fileSystem.isRemote && store.get('uploadPreferences')) {
                 await fetch(
@@ -506,8 +470,8 @@ export class CodebaseIndexer {
             let fileContents = ''
             try {
                 // Get file contents
-                fileContents = await new Promise(async (resolve) => {
-                    return await fileSystem.readFile(file, (err, data) => {
+                fileContents = await new Promise((resolve) => {
+                    return fileSystem.readFile(file, (err, data) => {
                         if (data == null) return null
                         return resolve(data.toString())
                     })
@@ -544,7 +508,7 @@ export class CodebaseIndexer {
             this.filesUploaded += 1
             release()
         }
-        let futures: Promise<void>[] = []
+        const futures: Promise<void>[] = []
         for (const file of files) {
             futures.push(uploadFile(file))
         }
@@ -581,7 +545,7 @@ export class CodebaseIndexer {
         apiRoot: string,
         files: string[],
         repoId: string,
-        onStart: boolean = false
+        onStart = false
     ) {
         // //
         // if (onStart) {

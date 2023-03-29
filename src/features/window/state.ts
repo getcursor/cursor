@@ -1,5 +1,4 @@
 import { Action } from '@reduxjs/toolkit'
-import { TransactionSpec } from '@codemirror/state'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -470,7 +469,7 @@ export function nextValue(keys: string[]) {
         return Math.max(...keys.map((x) => parseInt(x))) + 1
     }
 }
-export function nextId(byIds: Object) {
+export function nextId(byIds: object) {
     return nextValue(Object.keys(byIds))
 }
 export function nextTabID(state: State) {

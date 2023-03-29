@@ -3,19 +3,10 @@
  */
 import { tags as t } from '@lezer/highlight'
 import { EditorView } from '@codemirror/view'
-import { Extension } from '@codemirror/state'
-import {
-    HighlightStyle,
-    TagStyle,
-    syntaxHighlighting,
-} from '@codemirror/language'
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { StyleSpec } from 'style-mod'
 
-export const createTheme = ({
-    theme,
-    settings,
-    styles,
-}: CreateThemeOptions): any => {
+export const createTheme = ({ settings, styles }: CreateThemeOptions): any => {
     const themeOptions: Record<string, StyleSpec> = {
         '&': {
             backgroundColor: settings.background,
@@ -47,7 +38,7 @@ export const createTheme = ({
             borderLeftColor: settings.caret,
         }
     }
-    let activeLineGutterStyle: StyleSpec = {}
+    const activeLineGutterStyle: StyleSpec = {}
     if (settings.gutterActiveForeground) {
         activeLineGutterStyle.color = settings.gutterActiveForeground
     }
