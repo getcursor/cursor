@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import * as ss from '../features/settings/settingsSlice'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import React, { useCallback, useEffect,  useState } from 'react'
@@ -15,6 +16,7 @@ import {
 import posthog from 'posthog-js'
 
 function CopilotPanel() {
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
     const { signedIn, enabled } = useAppSelector(copilotStatus)
     const [localState, setLocalState] = useState<
@@ -78,11 +80,11 @@ function CopilotPanel() {
                         onClick={() => {
                             trySignIn()
                             posthog.capture(
-                                'Welcome Screen Copilot Connect Click'
+                                t('Welcome Screen Copilot Connect Click')
                             )
                         }}
                     >
-                        Connect
+                        {t('Connect')}
                     </button>
                 </div>
             </>
@@ -90,18 +92,18 @@ function CopilotPanel() {
     } else if (localState == 'signingIn') {
         currentPanel = (
             <div className="copilot__signin copilot-steps-panel">
-                <div className="copilot-steps-title">Instructions</div>
+                <div className="copilot-steps-title">{t('Instructions')}</div>
                 <div className="copilot-step">
-                    1. Please click this link:&nbsp;
+                    {t('1. Please click this link:')}&nbsp;
                     <a href={localData?.url} target="_blank">
                         {localData?.url}
                     </a>
                 </div>
                 <div className="copilot-step">
-                    2. Enter this code: {localData?.code}
+                    {t('2. Enter this code:')} {localData?.code}
                 </div>
                 <div className="copilot-step">
-                    3. Click here when done: &nbsp;
+                    {t('3. Click here when done:')} &nbsp;
                     <button onClick={tryFinishSignIn}>Done</button>
                 </div>
             </div>
@@ -110,13 +112,13 @@ function CopilotPanel() {
         currentPanel = (
             <div className="copilot__signin">
                 <div className="copilot-welcome-line">
-                    Sign in failed. Please try again.
+                    {t('Sign in failed. Please try again.')}
                 </div>
                 {loading ? (
-                    <p>Loading...</p>
+                    <p>{t('Loading...')}</p>
                 ) : (
                     <div className="welcome-button welcome-copilot-sign-in">
-                        <button onClick={trySignIn}>Sign in</button>
+                        <button onClick={trySignIn}>{t('Sign in')}</button>
                     </div>
                 )}
             </div>
@@ -125,7 +127,7 @@ function CopilotPanel() {
         posthog.capture('Welcome Screen Copilot Done')
         currentPanel = (
             <div className="copilot__signin copilot-welcome-done">
-                Connected!
+                {t('Connected!')}
             </div>
         )
     }
@@ -140,6 +142,7 @@ export default function ButtonGroup({
     plans: { name: string }[]
     onClick: any
 }) {
+    const { t } = useTranslation()
     const [selected, setSelected] = useState(plans[0])
     const dispatch = useAppDispatch()
 
@@ -157,7 +160,7 @@ export default function ButtonGroup({
                     }}
                 >
                     <RadioGroup.Label className="sr-only">
-                        Server size
+                        {t('Server size')}
                     </RadioGroup.Label>
                     <div className="">
                         {plans.map((plan) => (
@@ -235,6 +238,7 @@ const keyOptions = [
 ]
 
 export function WelcomeScreen() {
+    const { t } = useTranslation()
     const dispatch = useAppDispatch()
     const [selectedKeyBinding, setSelectedKeyBinding] = useState('default')
     const keyBindings = [
@@ -248,11 +252,11 @@ export function WelcomeScreen() {
     return (
         <div className="welcome-screen-container">
             <div className="welcome-screen-inner">
-                <h1 className="welcome-screen-title">Welcome</h1>
+                <h1 className="welcome-screen-title">{t('Welcome')}</h1>
                 <div className="key-bindings-section section">
-                    <h2 className="key-bindings-title title">Key Bindings</h2>
+                    <h2 className="key-bindings-title title">{t('Key Bindings')}</h2>
                     <p className="key-bindings-subheading subheading">
-                        Choose your preferred key binding style for the editor.
+                        {t('Choose your preferred key binding style for the editor.')}
                     </p>
                     <ButtonGroup
                         plans={keyOptions}
@@ -267,10 +271,10 @@ export function WelcomeScreen() {
                 </div>
                 <div className="copilot-setup-section section">
                     <h2 className="copilot-setup-title title">
-                        Optional: Copilot
+                        {t('Optional: Copilot')}
                     </h2>
                     <p className="key-bindings-subheading subheading">
-                        Cursor comes with a built-in Github Copilot integration.
+                        {t('Cursor comes with a built-in Github Copilot integration.')}
                     </p>
                     <CopilotPanel />
                 </div>
@@ -283,7 +287,7 @@ export function WelcomeScreen() {
                             dispatch(openTutorFolder(null))
                         }}
                     >
-                        Continue
+                        {t('Continue')}
                     </button>
                 </div>
             </div>

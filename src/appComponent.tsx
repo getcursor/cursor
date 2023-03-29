@@ -5,6 +5,7 @@ import {
     useState,
     useCallback,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
@@ -58,9 +59,10 @@ const customStyles = {
 }
 
 function ErrorPopup() {
+    const { t } = useTranslation()
     const showError = useAppSelector(gsel.getShowErrors)
-    const dispatch = useAppDispatch()
-
+    const dispatch = useAppDispatch()    
+    
     return (
         <Modal
             isOpen={showError}
@@ -72,7 +74,7 @@ function ErrorPopup() {
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        We ran into a problem
+                        {t('We ran into a problem')}
                     </div>
                     <div
                         className="errorPopup__title_close"
@@ -82,8 +84,8 @@ function ErrorPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    Something unexpected happened. Please try again later. If
-                    this continues, please contact michael@cursor.so.
+                    {t('Something unexpected happened. Please try again later. ')}
+                    {t('If this continues, please contact michael@cursor.so.')}
                     <br />
                 </div>
             </div>
@@ -92,6 +94,7 @@ function ErrorPopup() {
 }
 
 function RateLimitPopup() {
+    const { t } = useTranslation()
     const showError = useAppSelector(gsel.getShowRateLimit)
     const dispatch = useAppDispatch()
 
@@ -106,7 +109,7 @@ function RateLimitPopup() {
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        You're going a bit fast...
+                        {t(`You're going a bit fast...`)}
                     </div>
                     <div
                         className="errorPopup__title_close"
@@ -116,9 +119,9 @@ function RateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    It seems like you're making a high rate of requests. Please
-                    slow down and try again in a minute or so. If you believe
-                    this is an error, contact us at michael@cursor.so
+                    {t(`It seems like you're making a high rate of requests. `)}
+                    {t('Please slow down and try again in a minute or so. ')}
+                    {t('If you believe this is an error, contact us at michael@cursor.so')}
                     <br />
                 </div>
             </div>
@@ -127,6 +130,7 @@ function RateLimitPopup() {
 }
 
 function NoAuthRateLimitPopup() {
+    const { t } = useTranslation()
     const showError = useAppSelector(gsel.getShowNoAuthRateLimit)
     const dispatch = useAppDispatch()
 
@@ -141,7 +145,7 @@ function NoAuthRateLimitPopup() {
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        Maximum Capacity
+                        {t('Maximum Capacity')}
                     </div>
                     <div
                         className="errorPopup__title_close"
@@ -151,9 +155,9 @@ function NoAuthRateLimitPopup() {
                     </div>
                 </div>
                 <div className="errorPopup__body">
-                    We're getting more traffic than we can handle right now.
-                    Please try again in one minute. To avoid these limits, you
-                    can optionally upgrade to{' '}
+                    {t(`We're getting more traffic than we can handle right now. `)}
+                    {t('Please try again in one minute. ')}
+                    {t('To avoid these limits, you can optionally upgrade to ')}
                     <a
                         className="pay-link"
                         onClick={() => dispatch(ts.upgradeCursor(null))}
@@ -168,6 +172,7 @@ function NoAuthRateLimitPopup() {
 }
 
 function SSHPopup() {
+    const { t } = useTranslation()
     const showRemotePopup = useAppSelector(gsel.getShowRemotePopup)
     const remoteCommand = useAppSelector(gsel.getRemoteCommand)
     const remotePath = useAppSelector(gsel.getRemotePath)
@@ -197,7 +202,7 @@ function SSHPopup() {
             <div className="errorPopup">
                 <div className="errorPopup__title">
                     <div className="errorPopup__title_text">
-                        Connect to SSH directory
+                        {t('Connect to SSH directory')}
                     </div>
                     <div
                         className="remotePopup__title_close"
@@ -208,14 +213,14 @@ function SSHPopup() {
                 </div>
                 {remoteBad && (
                     <div className="errorPopup__body">
-                        The SSH command or path you entered is invalid. Please
-                        try again.
+                        {t('The SSH command or path you entered is invalid. ')}
+                        {t('Please try again.')}
                     </div>
                 )}
                 <div className="remotePopup__body">
-                    <div className="settings__item_title">SSH Command</div>
+                    <div className="settings__item_title">{t('SSH Command')}</div>
                     <div className="settings__item_description">
-                        Same command you would put in the terminal
+                        {t('Same command you would put in the terminal')}
                     </div>
                     <input
                         type="text"
@@ -228,9 +233,9 @@ function SSHPopup() {
                     />
                 </div>
                 <div className="remotePopup__body">
-                    <div className="settings__item_title">Target Folder</div>
+                    <div className="settings__item_title">{t('Target Folder')}</div>
                     <div className="settings__item_description">
-                        Must be an absolute path
+                        {t('Must be an absolute path')}
                     </div>
                     <input
                         type="text"
@@ -254,7 +259,7 @@ function SSHPopup() {
                             submit()
                         }}
                     >
-                        Submit
+                        {t('Submit')}
                     </button>
                 </div>
             </div>
@@ -266,13 +271,14 @@ function SSHPopup() {
 function FileDialog() {
     // Get the dispatch function from the app context
     const dispatch = useAppDispatch()
+    const { t } = useTranslation()
     return (
         // Render a div with a click handler that dispatches an action to open a folder
         <div
             className="filedialog"
             onClick={() => dispatch(gs.openFolder(null))}
         >
-            Open Folder
+            {t('Open Folder')}
         </div>
     )
 }

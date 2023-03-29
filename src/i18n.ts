@@ -3,13 +3,13 @@ import { initReactI18next } from 'react-i18next'
 import HttpBackend from 'i18next-http-backend'
 
 import en from './locales/en.json'
+import jp from './locales/jp.json'
 import zh from './locales/zh.json'
-import hi from './locales/hi.json'
 
 export const localeOptions = {
     'English': 'en',
-    '中文': 'zh',
-    'हिंदी': 'hi',
+    '日本語': 'jp',
+    '中文': 'zh',    
 }
 
 export type Languages = keyof typeof localeOptions
@@ -28,7 +28,7 @@ export const init = (locale: Languages = 'English') => {
         resources: {
             en: { translation: en },            
             zh: { translation: zh },
-            hi: { translation: hi },
+            jp: { translation: jp },
         }
     })
     return i18n;

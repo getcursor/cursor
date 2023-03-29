@@ -474,7 +474,7 @@ export function MarkdownPopup({
                                     className="apply-button"
                                     onClick={onApply}
                                 >
-                                    {t("Attempt Change")}
+                                    {t('Attempt Change')}
                                 </button>
                             )} */}
                         </div>
