@@ -513,7 +513,7 @@ export const continueGeneration = createAsyncThunk(
                 dispatch(openRateLimit())
                 dispatch(interruptGeneration(null))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError(null))
+                dispatch(openError())
                 dispatch(interruptGeneration(null))
             }
             dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))

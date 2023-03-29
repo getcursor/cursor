@@ -98,7 +98,7 @@ function MenuBar() {
                     [
                         'Open SSH Folder',
                         () => {
-                            dispatch(gs.openRemotePopup(null))
+                            dispatch(gs.openRemotePopup())
                         },
                         '',
                     ],
@@ -323,7 +323,7 @@ export function TitleBar({
                     <div
                         className="titlebar__right_button"
                         onClick={() => {
-                            dispatch(gs.toggleTerminal(null))
+                            dispatch(gs.toggleTerminal())
                         }}
                     >
                         <FontAwesomeIcon icon={faSquareTerminal} />
