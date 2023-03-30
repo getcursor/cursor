@@ -4,9 +4,13 @@ import { getError, getShowErrors } from '../features/selectors'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
-import { NoAuthGlobalOldRateLimitError, NotLoggedInError, OpenAIError } from '../utils';
-import { CursorLogin, OpenAILoginPanel } from './settingsPane';
-import { signInCursor, upgradeCursor } from '../features/tools/toolSlice';
+import {
+    NoAuthGlobalOldRateLimitError,
+    NotLoggedInError,
+    OpenAIError,
+} from '../utils'
+import { CursorLogin, OpenAILoginPanel } from './settingsPane'
+import { signInCursor, upgradeCursor } from '../features/tools/toolSlice'
 
 const customStyles = {
     overlay: {
@@ -103,28 +107,39 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                        <div className="signup__body">
-                           <div className="signup__title">Cursor</div>
-                            <div className="signup__module">
-                               <div className="signup__subtitle">To avoid abuse on our backend, we ask that you login in to use the AI features</div>
-                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Log in</div>
-                                
-                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Sign up</div>
-                                
-                            </div>
-                            <div className="signup__signup_button">Log in</div>
-                            <div className="signup__signup_button">Sign up</div>
-                        </div>
-                        <div className="signup__module signup__last_module">
+                    <div className="signup__body">
+                        <div className="signup__title">Cursor</div>
+                        <div className="signup__module">
                             <div className="signup__subtitle">
-                                Or enter your OpenAI API key
+                                To avoid abuse on our backend, we ask that you
+                                login in to use the AI features
                             </div>
-                            <OpenAILoginPanel
-                                onSubmit={() => {
-                                    dispatch(closeError())
-                                }}
-                            />
+                            <div
+                                className="signup__signup_button"
+                                onClick={() => dispatch(signInCursor(null))}
+                            >
+                                Log in
+                            </div>
+
+                            <div
+                                className="signup__signup_button"
+                                onClick={() => dispatch(signInCursor(null))}
+                            >
+                                Sign up
+                            </div>
                         </div>
+                        <div className="signup__signup_button">Log in</div>
+                        <div className="signup__signup_button">Sign up</div>
+                    </div>
+                    <div className="signup__module signup__last_module">
+                        <div className="signup__subtitle">
+                            Or enter your OpenAI API key
+                        </div>
+                        <OpenAILoginPanel
+                            onSubmit={() => {
+                                dispatch(closeError())
+                            }}
+                        />
                     </div>
                 </div>
             </Modal>
@@ -148,26 +163,34 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                        <div className="signup__body">
-                           <div className="signup__title">Free tier limit exceeded</div>
-                            <div className="signup__module">
-                               <div className="signup__subtitle">If you've enjoyed using Cursor, please consider subscribing to one of our paid plans</div>
-                               <div className="signup__signup_button" onClick={() => dispatch(upgradeCursor(null))}>Upgrade</div>
-                                
-                            </div>
-                            <div className="signup__signup_button">Upgrade</div>
+                    <div className="signup__body">
+                        <div className="signup__title">
+                            Free tier limit exceeded
                         </div>
-                        <div className="signup__module signup__last_module">
+                        <div className="signup__module">
                             <div className="signup__subtitle">
-                                Or enter your OpenAI API key to continue using
-                                the AI features at-cost
+                                If you've enjoyed using Cursor, please consider
+                                subscribing to one of our paid plans
                             </div>
-                            <OpenAILoginPanel
-                                onSubmit={() => {
-                                    dispatch(closeError())
-                                }}
-                            />
+                            <div
+                                className="signup__signup_button"
+                                onClick={() => dispatch(upgradeCursor(null))}
+                            >
+                                Upgrade
+                            </div>
                         </div>
+                        <div className="signup__signup_button">Upgrade</div>
+                    </div>
+                    <div className="signup__module signup__last_module">
+                        <div className="signup__subtitle">
+                            Or enter your OpenAI API key to continue using the
+                            AI features at-cost
+                        </div>
+                        <OpenAILoginPanel
+                            onSubmit={() => {
+                                dispatch(closeError())
+                            }}
+                        />
                     </div>
                 </div>
             </Modal>

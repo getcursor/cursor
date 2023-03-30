@@ -2,14 +2,19 @@ module.exports = {
     packagerConfig: {
         name: 'Cursor',
         icon: 'assets/icon/icon',
-        extraResource: ['./lsp', './resources', './tutor', './todesktop-runtime-config.json'],
+        extraResource: [
+            './lsp',
+            './resources',
+            './tutor',
+            './todesktop-runtime-config.json',
+        ],
         osxSign: {},
         protocols: [
-          {
-            name: "Electron Fiddle",
-            schemes: ["electron-fiddle"]
-          }
-        ]
+            {
+                name: 'Electron Fiddle',
+                schemes: ['electron-fiddle'],
+            },
+        ],
     },
     rebuildConfig: {},
     makers: [
@@ -30,11 +35,11 @@ module.exports = {
             },
         },
         {
-          "name": "@electron-forge/maker-deb",
-          "config": {
-            "mimeType": ["x-scheme-handler/electron-fiddle"]
-          }
-        }
+            name: '@electron-forge/maker-deb',
+            config: {
+                mimeType: ['x-scheme-handler/electron-fiddle'],
+            },
+        },
     ],
     plugins: [
         {
