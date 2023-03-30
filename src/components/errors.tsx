@@ -128,8 +128,6 @@ export function ErrorPopup() {
                                 Sign up
                             </div>
                         </div>
-                        <div className="signup__signup_button">Log in</div>
-                        <div className="signup__signup_button">Sign up</div>
                     </div>
                     <div className="signup__module signup__last_module">
                         <div className="signup__subtitle">
