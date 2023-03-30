@@ -1,6 +1,5 @@
-// export const API_ROOT = 'https://aicursor.com'
-// export const API_ROOT = 'http://localhost:8000'
-export const API_ROOT = 'https://staging.aicursor.com'
+export const API_ROOT = 'https://aicursor.com'
+export const HOMEPAGE_ROOT = 'https://cursor.so'
 
 export class ExpectedBackendError extends Error {
     public title: string | null = null;

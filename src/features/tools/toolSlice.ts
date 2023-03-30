@@ -140,6 +140,7 @@ export const toolSlice = createSlice({
                 stripeProfile?: string | null
             }>
         ) {
+            console.log('Triggered with', action.payload)
             if (action.payload.accessToken) {
                 state.cursorLogin.accessToken = action.payload.accessToken
             } else if (action.payload.accessToken === null) {
