@@ -5,7 +5,7 @@ import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
 import { NoAuthRateLimitError, NotLoggedInError, OpenAIError } from '../utils';
-import { CursorLogin, OpenAIPanel } from './settingsPane';
+import { CursorLogin, OpenAILoginPanel } from './settingsPane';
 
 const customStyles = {
     overlay: {
@@ -24,16 +24,20 @@ const customStyles = {
         height: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: '700px',
+        maxWidth: '450px',
     },
 }
 
+
+
 export function ErrorPopup() {
     const showError = useAppSelector(getShowErrors)
-    const error = useAppSelector(getError)
+    const error = new NotLoggedInError()
     const dispatch = useAppDispatch()
 
-    if (error == null) {
+    console.log('waht')
+
+    if (false && error == null) {
         return (
             <Modal
                 isOpen={showError}
@@ -62,10 +66,10 @@ export function ErrorPopup() {
                 </div>
             </Modal>
         )
-    } else if (error instanceof NotLoggedInError) {
+    } else if (true || error instanceof NotLoggedInError) {
         return (
             <Modal
-                isOpen={showError}
+                isOpen={true || showError}
                 onRequestClose={() => {
                     dispatch(closeError())
                 }}
@@ -74,7 +78,6 @@ export function ErrorPopup() {
                 <div className="errorPopup">
                     <div className="errorPopup__title">
                         <div className="errorPopup__title_text">
-                            {error.title}
                         </div>
                         <div
                             className="errorPopup__title_close"
@@ -83,46 +86,53 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                    <div className="errorPopup__body">
-                        {error.message}
-                        <br />
-                        Try logging in here:
-                        <CursorLogin showSettings={false}/>
-                        <br/>
-                        Or try using an OpenAI key:
-                        <OpenAIPanel />
-                    </div>
+                        <div className="signup__body">
+                           <div className="signup__title">Cursor</div>
+                            <div className="signup__module">
+                               <div className="signup__subtitle">To avoid abuse on our backend, we ask that you login in to use the AI features</div>
+                               <div className="signup__signup_button">Log in</div>
+                               <div className="signup__signup_button">Sign up</div>
+                            </div>
+                            <div className="signup__module signup__last_module">
+                               <div className="signup__subtitle">Or enter your OpenAI API key</div>
+                                <OpenAILoginPanel onSubmit={
+                                    () => {
+                                        dispatch(closeError())
+                                    }
+                                } />
+                            </div>
+                        </div>
                 </div>
             </Modal>
         )
     } else {
-        return (
-            <Modal
-                isOpen={showError}
-                onRequestClose={() => {
-                    dispatch(closeError())
-                }}
-                style={customStyles}
-            >
-                <div className="errorPopup">
-                    <div className="errorPopup__title">
-                        <div className="errorPopup__title_text">
-                            {error.title}
-                        </div>
-                        <div
-                            className="errorPopup__title_close"
-                            onClick={() => dispatch(closeError())}
-                        >
-                            <FontAwesomeIcon icon={faClose} />
-                        </div>
-                    </div>
-                    <div className="errorPopup__body">
-                        {error.message}
-                        <br />
-                    </div>
-                </div>
-            </Modal>
-        )
+        // return (
+        //     <Modal
+        //         isOpen={showError}
+        //         onRequestClose={() => {
+        //             dispatch(closeError())
+        //         }}
+        //         style={customStyles}
+        //     >
+        //         <div className="errorPopup">
+        //             <div className="errorPopup__title">
+        //                 <div className="errorPopup__title_text">
+        //                     {error.title}
+        //                 </div>
+        //                 <div
+        //                     className="errorPopup__title_close"
+        //                     onClick={() => dispatch(closeError())}
+        //                 >
+        //                     <FontAwesomeIcon icon={faClose} />
+        //                 </div>
+        //             </div>
+        //             <div className="errorPopup__body">
+        //                 {error.message}
+        //                 <br />
+        //             </div>
+        //         </div>
+        //     </Modal>
+        // )
     }
         
         
