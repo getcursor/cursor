@@ -1,11 +1,14 @@
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import {closeError} from '../features/globalSlice'
-import {getShowErrors, getError} from '../features/selectors';
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { closeError } from '../features/globalSlice'
+import { getShowErrors, getError } from '../features/selectors'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
-import { NoAuthGlobalOldRateLimitError, NotLoggedInError, OpenAIError } from '../utils';
-import { CursorLogin, OpenAILoginPanel } from './settingsPane';
+import {
+    NoAuthGlobalOldRateLimitError,
+    NotLoggedInError,
+} from '../utils'
+import { OpenAILoginPanel } from './settingsPane'
 
 const customStyles = {
     overlay: {
@@ -49,8 +52,6 @@ const loginStyles = {
     },
 }
 
-
-
 export function ErrorPopup() {
     const showError = useAppSelector(getShowErrors)
     const error = useAppSelector(getError)
@@ -78,8 +79,8 @@ export function ErrorPopup() {
                         </div>
                     </div>
                     <div className="errorPopup__body">
-                        Something unexpected happened. Please try again later. If
-                        this continues, please contact michael@cursor.so.
+                        Something unexpected happened. Please try again later.
+                        If this continues, please contact michael@cursor.so.
                         <br />
                     </div>
                 </div>
@@ -96,8 +97,7 @@ export function ErrorPopup() {
             >
                 <div className="errorPopup">
                     <div className="errorPopup__title">
-                        <div className="errorPopup__title_text">
-                        </div>
+                        <div className="errorPopup__title_text"></div>
                         <div
                             className="errorPopup__title_close"
                             onClick={() => dispatch(closeError())}
@@ -105,22 +105,27 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                        <div className="signup__body">
-                           <div className="signup__title">Cursor</div>
-                            <div className="signup__module">
-                               <div className="signup__subtitle">To avoid abuse on our backend, we ask that you login in to use the AI features</div>
-                               <div className="signup__signup_button">Log in</div>
-                               <div className="signup__signup_button">Sign up</div>
+                    <div className="signup__body">
+                        <div className="signup__title">Cursor</div>
+                        <div className="signup__module">
+                            <div className="signup__subtitle">
+                                To avoid abuse on our backend, we ask that you
+                                login in to use the AI features
                             </div>
-                            <div className="signup__module signup__last_module">
-                               <div className="signup__subtitle">Or enter your OpenAI API key</div>
-                                <OpenAILoginPanel onSubmit={
-                                    () => {
-                                        dispatch(closeError())
-                                    }
-                                } />
-                            </div>
+                            <div className="signup__signup_button">Log in</div>
+                            <div className="signup__signup_button">Sign up</div>
                         </div>
+                        <div className="signup__module signup__last_module">
+                            <div className="signup__subtitle">
+                                Or enter your OpenAI API key
+                            </div>
+                            <OpenAILoginPanel
+                                onSubmit={() => {
+                                    dispatch(closeError())
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
             </Modal>
         )
@@ -135,8 +140,7 @@ export function ErrorPopup() {
             >
                 <div className="errorPopup">
                     <div className="errorPopup__title">
-                        <div className="errorPopup__title_text">
-                        </div>
+                        <div className="errorPopup__title_text"></div>
                         <div
                             className="errorPopup__title_close"
                             onClick={() => dispatch(closeError())}
@@ -144,21 +148,29 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                        <div className="signup__body">
-                           <div className="signup__title">Free tier limit exceeded</div>
-                            <div className="signup__module">
-                               <div className="signup__subtitle">If you've enjoyed using Cursor, please consider subscribing to one of our paid plans</div>
-                               <div className="signup__signup_button">Upgrade</div>
-                            </div>
-                            <div className="signup__module signup__last_module">
-                               <div className="signup__subtitle">Or enter your OpenAI API key to continue using the AI features at-cost</div>
-                                <OpenAILoginPanel onSubmit={
-                                    () => {
-                                        dispatch(closeError())
-                                    }
-                                } />
-                            </div>
+                    <div className="signup__body">
+                        <div className="signup__title">
+                            Free tier limit exceeded
                         </div>
+                        <div className="signup__module">
+                            <div className="signup__subtitle">
+                                If you've enjoyed using Cursor, please consider
+                                subscribing to one of our paid plans
+                            </div>
+                            <div className="signup__signup_button">Upgrade</div>
+                        </div>
+                        <div className="signup__module signup__last_module">
+                            <div className="signup__subtitle">
+                                Or enter your OpenAI API key to continue using
+                                the AI features at-cost
+                            </div>
+                            <OpenAILoginPanel
+                                onSubmit={() => {
+                                    dispatch(closeError())
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
             </Modal>
         )
@@ -174,7 +186,7 @@ export function ErrorPopup() {
                 <div className="errorPopup">
                     <div className="errorPopup__title">
                         <div className="errorPopup__title_text">
-{/*                             {error.title} */}
+                            {/*                             {error.title} */}
                         </div>
                         <div
                             className="errorPopup__title_close"
@@ -184,13 +196,11 @@ export function ErrorPopup() {
                         </div>
                     </div>
                     <div className="errorPopup__body">
-{/*                         {error.message} */}
+                        {/*                         {error.message} */}
                         <br />
                     </div>
                 </div>
             </Modal>
         )
     }
-        
-        
 }

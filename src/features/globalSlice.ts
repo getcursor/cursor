@@ -1394,14 +1394,17 @@ const globalSlice = createSlice({
         },
         closeError(state: State) {
             state.showError = false
-            state.errorValue = null;
+            state.errorValue = null
         },
-        openError(state: State, action: PayloadAction<{error?: ExpectedError}>) {
+        openError(
+            state: State,
+            action: PayloadAction<{ error?: ExpectedError }>
+        ) {
             state.showError = true
             if (action.payload.error) {
                 state.errorValue = action.payload.error
             } else {
-                state.errorValue = null;
+                state.errorValue = null
             }
         },
         setVersion(state: State, action: PayloadAction<string>) {

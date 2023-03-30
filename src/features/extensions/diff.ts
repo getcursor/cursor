@@ -12,7 +12,8 @@ logic to work when we make edits to the diff and expand/close them. Though in hi
 it seems like that feature is never used.
 */
 import * as JSDiff from 'diff'
-import { RangeSet ,
+import {
+    RangeSet,
     StateField,
     StateEffect,
     Extension,
@@ -315,8 +316,10 @@ function getSubDiffTooltips(
     let prevLine: number | null = null
     let firstLine: number | null = null
 
-    const subdiffAcceptRejectLocations: { startLine: number; endLine: number }[] =
-        []
+    const subdiffAcceptRejectLocations: {
+        startLine: number
+        endLine: number
+    }[] = []
 
     while (currentDeco.value != null) {
         if (currentDeco.value.spec.type == null) {
@@ -493,13 +496,17 @@ export const diffField = StateField.define<DiffState>({
                         ? 'cm-diff-removed'
                         : null
                     if (className) {
-                        const from = tr.state.doc.line(origLine + lineOffset).from
+                        const from = tr.state.doc.line(
+                            origLine + lineOffset
+                        ).from
                         const to = from + part.value.length
                         // Iterate through the lines in the part
                         let offset = 0
                         const seenLines = new Set()
                         for (const line of tr.state.doc.iterRange(from, to)) {
-                            const lineNumber = tr.state.doc.lineAt(from + offset)
+                            const lineNumber = tr.state.doc.lineAt(
+                                from + offset
+                            )
                             if (seenLines.has(lineNumber)) continue
 
                             seenLines.add(lineNumber)
@@ -564,7 +571,9 @@ export const diffField = StateField.define<DiffState>({
                         let offset = 0
                         const seenLines = new Set()
                         for (const line of tr.state.doc.iterRange(from, to)) {
-                            const lineNumber = tr.state.doc.lineAt(from + offset)
+                            const lineNumber = tr.state.doc.lineAt(
+                                from + offset
+                            )
                             if (seenLines.has(lineNumber)) continue
 
                             seenLines.add(lineNumber)

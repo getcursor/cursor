@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 
-import { Switch} from '@headlessui/react'
-import {HOMEPAGE_ROOT} from '../utils'
+import { Switch } from '@headlessui/react'
+import { HOMEPAGE_ROOT } from '../utils'
 
 import * as ssel from '../features/settings/settingsSelectors'
 import {
@@ -14,7 +14,8 @@ import {
     installLanguageServer,
     runLanguageServer,
     stopLanguageServer,
-    getConnections } from '../features/lsp/languageServerSlice'
+    getConnections,
+} from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
 
@@ -88,7 +89,7 @@ export function SettingsPopup() {
                     dispatch(toggleSettings())
                 }}
                 style={customStyles}
-                >
+            >
                 <div className="settingsContainer">
                     <div className="settings">
                         <div
@@ -96,7 +97,7 @@ export function SettingsPopup() {
                             onClick={() => {
                                 dispatch(toggleSettings())
                             }}
-                            >
+                        >
                             <i className="fas fa-times"></i>
                         </div>
                         <div className="settings__title">SETTINGS</div>
@@ -118,7 +119,7 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.keyBindings}
-                                    />
+                                />
                             </div>
 
                             <div className="settings__item">
@@ -138,7 +139,7 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.textWrapping}
-                                    />
+                                />
                             </div>
 
                             <div className="settings__item">
@@ -158,20 +159,19 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.tabSize}
-                                    />
+                                />
                             </div>
 
-
-                            <OpenAIPanel/>
+                            <OpenAIPanel />
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
                             {languageServerNames.map((name) => (
-                    <LanguageServerPanel
-                        key={name}
-                        languageName={name}
-                        />
-                ))}
+                                <LanguageServerPanel
+                                    key={name}
+                                    languageName={name}
+                                />
+                            ))}
                             <CursorLogin />
                         </div>
                     </div>
@@ -182,7 +182,7 @@ export function SettingsPopup() {
     )
 }
 
-export function OpenAILoginPanel({onSubmit}: {onSubmit: () => void}) {
+export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
     const settings = useAppSelector(ssel.getSettings)
     const [localAPIKey, setLocalAPIKey] = useState('')
     const [models, setAvailableModels] = useState<string[]>([])
@@ -193,21 +193,23 @@ export function OpenAILoginPanel({onSubmit}: {onSubmit: () => void}) {
     useEffect(() => {
         if (settings.openAIKey && settings.openAIKey != localAPIKey) {
             setLocalAPIKey(settings.openAIKey)
-            ssel.getModels(settings.openAIKey).then(({models, isValidKey}) => {
-                if (models) {
-                    setAvailableModels(models)
+            ssel.getModels(settings.openAIKey).then(
+                ({ models, isValidKey }) => {
+                    if (models) {
+                        setAvailableModels(models)
+                    }
                 }
-            })
+            )
         }
     }, [settings.openAIKey])
 
     useEffect(() => {
         showKeyError(false)
-    }, [localAPIKey]);
+    }, [localAPIKey])
 
     const handleNewAPIKey = useCallback(async () => {
-        const {models, isValidKey} = await ssel.getModels(localAPIKey)
-        console.log({models, isValidKey})
+        const { models, isValidKey } = await ssel.getModels(localAPIKey)
+        console.log({ models, isValidKey })
         if (!isValidKey) {
             // Error, and we let them know
             showKeyError(true)
@@ -222,10 +224,9 @@ export function OpenAILoginPanel({onSubmit}: {onSubmit: () => void}) {
             onSubmit()
         }
     }, [localAPIKey])
-    
+
     return (
         <div className="settings__item">
-            
             <div className="flex">
                 <input
                     className={`settings__item_textarea
@@ -234,10 +235,11 @@ export function OpenAILoginPanel({onSubmit}: {onSubmit: () => void}) {
                     onChange={(e) => {
                         setLocalAPIKey(e.target.value)
                     }}
-                    value={localAPIKey || ""}
+                    value={localAPIKey || ''}
                     spellCheck="false"
-                    />
-                <button className='settings__button'
+                />
+                <button
+                    className="settings__button"
                     onClick={() => {
                         handleNewAPIKey()
                     }}
@@ -250,48 +252,58 @@ export function OpenAILoginPanel({onSubmit}: {onSubmit: () => void}) {
                     Invalid API Key. Please try again.
                 </div>
             )}
-            {settings.openAIKey &&
+            {settings.openAIKey && (
                 <>
-                <div className="flex items-center">
-                    <Switch
-                        checked={settings.useOpenAIKey}
-                        onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
-                        className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
+                    <div className="flex items-center">
+                        <Switch
+                            checked={settings.useOpenAIKey}
+                            onChange={(value) =>
+                                dispatch(
+                                    changeSettings({ useOpenAIKey: value })
+                                )
+                            }
+                            className={`${
+                                settings.useOpenAIKey
+                                    ? 'bg-green-500'
+                                    : 'bg-red-500'
+                            }
                                             mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                         >
-                        <span className="sr-only">Use setting</span>
-                        <span
-                            aria-hidden="true"
-                            className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
+                            <span className="sr-only">Use setting</span>
+                            <span
+                                aria-hidden="true"
+                                className={`${
+                                    settings.useOpenAIKey
+                                        ? 'translate-x-9'
+                                        : 'translate-x-0'
+                                }
                 pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                             />
-                    </Switch>
-                    {settings.useOpenAIKey ? (
-
-                    <span className="ml-2">Enabled</span>
-                ) : (
-                    <span className="ml-2">Disabled</span>
-                )}
-                </div>
-                {settings.useOpenAIKey && 
-                    <Dropdown
-                        options={models}
-                        onChange={(e) => {
-                            dispatch(
-                                changeSettings({
-                                    openAIModel: e.value,
-                                })
-                            )
-                        }}
-                        value={settings.openAIModel}
+                        </Switch>
+                        {settings.useOpenAIKey ? (
+                            <span className="ml-2">Enabled</span>
+                        ) : (
+                            <span className="ml-2">Disabled</span>
+                        )}
+                    </div>
+                    {settings.useOpenAIKey && (
+                        <Dropdown
+                            options={models}
+                            onChange={(e) => {
+                                dispatch(
+                                    changeSettings({
+                                        openAIModel: e.value,
+                                    })
+                                )
+                            }}
+                            value={settings.openAIModel}
                         />
-                }
-            </>
-            }
+                    )}
+                </>
+            )}
         </div>
     )
 }
-
 
 export function OpenAIPanel() {
     const settings = useAppSelector(ssel.getSettings)
@@ -304,21 +316,23 @@ export function OpenAIPanel() {
     useEffect(() => {
         if (settings.openAIKey && settings.openAIKey != localAPIKey) {
             setLocalAPIKey(settings.openAIKey)
-            ssel.getModels(settings.openAIKey).then(({models, isValidKey}) => {
-                if (models) {
-                    setAvailableModels(models)
+            ssel.getModels(settings.openAIKey).then(
+                ({ models, isValidKey }) => {
+                    if (models) {
+                        setAvailableModels(models)
+                    }
                 }
-            })
+            )
         }
     }, [settings.openAIKey])
 
     useEffect(() => {
         showKeyError(false)
-    }, [localAPIKey]);
+    }, [localAPIKey])
 
     const handleNewAPIKey = useCallback(async () => {
-        const {models, isValidKey} = await ssel.getModels(localAPIKey)
-        console.log({models, isValidKey})
+        const { models, isValidKey } = await ssel.getModels(localAPIKey)
+        console.log({ models, isValidKey })
         if (!isValidKey) {
             // Error, and we let them know
             showKeyError(true)
@@ -332,15 +346,13 @@ export function OpenAIPanel() {
             )
         }
     }, [localAPIKey])
-    
+
     return (
         <div className="settings__item">
-            
-            <div className="settings__item_title">
-                OpenAI API Key
-            </div>
+            <div className="settings__item_title">OpenAI API Key</div>
             <div className="settings__item_description">
-                We'll use your key for any requests to OpenAI. This will help you avoid "maximum capacity" limits.
+                We'll use your key for any requests to OpenAI. This will help
+                you avoid "maximum capacity" limits.
             </div>
             <div className="flex">
                 <input
@@ -350,10 +362,11 @@ export function OpenAIPanel() {
                     onChange={(e) => {
                         setLocalAPIKey(e.target.value)
                     }}
-                    value={localAPIKey || ""}
+                    value={localAPIKey || ''}
                     spellCheck="false"
-                    />
-                <button className='settings__button'
+                />
+                <button
+                    className="settings__button"
                     onClick={() => {
                         handleNewAPIKey()
                     }}
@@ -366,49 +379,64 @@ export function OpenAIPanel() {
                     Invalid API Key. Please try again.
                 </div>
             )}
-            {settings.openAIKey &&
+            {settings.openAIKey && (
                 <>
-                <div className="flex items-center">
-                    <Switch
-                        checked={settings.useOpenAIKey}
-                        onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
-                        className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
+                    <div className="flex items-center">
+                        <Switch
+                            checked={settings.useOpenAIKey}
+                            onChange={(value) =>
+                                dispatch(
+                                    changeSettings({ useOpenAIKey: value })
+                                )
+                            }
+                            className={`${
+                                settings.useOpenAIKey
+                                    ? 'bg-green-500'
+                                    : 'bg-red-500'
+                            }
                                             mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                         >
-                        <span className="sr-only">Use setting</span>
-                        <span
-                            aria-hidden="true"
-                            className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
+                            <span className="sr-only">Use setting</span>
+                            <span
+                                aria-hidden="true"
+                                className={`${
+                                    settings.useOpenAIKey
+                                        ? 'translate-x-9'
+                                        : 'translate-x-0'
+                                }
                 pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                             />
-                    </Switch>
-                    {settings.useOpenAIKey ? (
-
-                    <span className="ml-2">Enabled</span>
-                ) : (
-                    <span className="ml-2">Disabled</span>
-                )}
-                </div>
-                {settings.useOpenAIKey && 
-                    <Dropdown
-                        options={models}
-                        onChange={(e) => {
-                            dispatch(
-                                changeSettings({
-                                    openAIModel: e.value,
-                                })
-                            )
-                        }}
-                        value={settings.openAIModel}
+                        </Switch>
+                        {settings.useOpenAIKey ? (
+                            <span className="ml-2">Enabled</span>
+                        ) : (
+                            <span className="ml-2">Disabled</span>
+                        )}
+                    </div>
+                    {settings.useOpenAIKey && (
+                        <Dropdown
+                            options={models}
+                            onChange={(e) => {
+                                dispatch(
+                                    changeSettings({
+                                        openAIModel: e.value,
+                                    })
+                                )
+                            }}
+                            value={settings.openAIModel}
                         />
-                }
-            </>
-            }
+                    )}
+                </>
+            )}
         </div>
     )
 }
 
-export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
+export function CursorLogin({
+    showSettings = true,
+}: {
+    showSettings?: boolean
+}) {
     const dispatch = useAppDispatch()
 
     const { signedIn, proVersion } = useAppSelector(loginStatus)
@@ -432,7 +460,7 @@ export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
         currentPanel = (
             <div className="copilot__signin">
                 <button onClick={signIn}>Sign in</button>
-                <br/>
+                <br />
                 <button onClick={signIn}>Sign up</button>
             </div>
         )
@@ -441,28 +469,30 @@ export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
             currentPanel = (
                 <div className="copilot__signin">
                     <button onClick={signOut}>Log out</button>
-                    {showSettings &&
-                        (<>
-                            <br/> 
-                            <button onClick={openAccountSettings}>Manage settings</button>
+                    {showSettings && (
+                        <>
+                            <br />
+                            <button onClick={openAccountSettings}>
+                                Manage settings
+                            </button>
                         </>
-                        )
-                    }
+                    )}
                 </div>
             )
         } else {
             currentPanel = (
                 <div className="copilot__signin">
-                    <br/>
+                    <br />
                     <button onClick={signOut}>Log out</button>
-                    {showSettings &&
-                        (<>
-                            <br/> 
-                            <button onClick={openAccountSettings}>Manage settings</button>
+                    {showSettings && (
+                        <>
+                            <br />
+                            <button onClick={openAccountSettings}>
+                                Manage settings
+                            </button>
                         </>
-                        )
-                    }
-                    <br/>
+                    )}
+                    <br />
                     Upgrade for unlimited generations
                     <button onClick={upgrade}>Upgrade to Pro</button>
                 </div>
@@ -481,13 +511,12 @@ export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
     )
 }
 
-
 function CopilotPanel() {
     const dispatch = useAppDispatch()
     const { signedIn, enabled } = useAppSelector(copilotStatus)
     const [localState, setLocalState] = useState<
         'signedIn' | 'signingIn' | 'signInFailed' | 'signedOut'
-        >(signedIn ? 'signedIn' : 'signedOut')
+    >(signedIn ? 'signedIn' : 'signedOut')
     const [localData, setLocalData] = useState<{ url: string; code: string }>()
     const [loading, setLoading] = useState(false)
 
@@ -563,10 +592,10 @@ function CopilotPanel() {
             <div className="copilot__signin">
                 Sign in failed. Please try again.
                 {loading ? (
-                <p>Loading...</p>
-            ) : (
-                <button onClick={trySignIn}>Sign in</button>
-            )}
+                    <p>Loading...</p>
+                ) : (
+                    <button onClick={trySignIn}>Sign in</button>
+                )}
             </div>
         )
     } else {
@@ -574,10 +603,10 @@ function CopilotPanel() {
             <div className="copilot__signin">
                 Currently signed in <br />
                 {enabled ? (
-                <button onClick={disableCopilot}>Disable</button>
-            ) : (
-                <button onClick={enableCopilot}>Enable</button>
-            )}
+                    <button onClick={disableCopilot}>Disable</button>
+                ) : (
+                    <button onClick={enableCopilot}>Enable</button>
+                )}
                 <br />
                 <button onClick={signOut}>Sign out</button>
             </div>
@@ -693,10 +722,10 @@ function LanguageServerPanel({ languageName }: { languageName: string }) {
                 </div>
                 <div className="copilot__signin">
                     {languageRunning ? (
-                <button onClick={stopServer}>Stop</button>
-            ) : (
-                <button onClick={runServer}>Run</button>
-            )}
+                        <button onClick={stopServer}>Stop</button>
+                    ) : (
+                        <button onClick={runServer}>Run</button>
+                    )}
                 </div>
             </div>
         )

@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode'
-import {shell} from 'electron'
+import { shell } from 'electron'
 import * as url from 'url'
 // import envVariables from '../env-variables';
 import {
@@ -15,7 +15,7 @@ import fetch from 'node-fetch'
 import Store from 'electron-store'
 const store = new Store()
 
-let win: BrowserWindow | null = null
+const win: BrowserWindow | null = null
 
 const auth0Domain = 'cursor.us.auth0.com'
 const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
@@ -26,10 +26,10 @@ const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
 
 let accessToken: string | null = null
 let profile: any | null = null
-let openAISecretKey: string | null = null
+const openAISecretKey: string | null = null
 let refreshToken: string | null = null
 let stripeProfile: string | null = null
-let verifier: string | null = null
+const verifier: string | null = null
 
 const STRIPE_SUCCESS_URL = 'electron-fiddle://success/'
 const STRIPE_FAILURE_URL = 'electron-fiddle://failure/'
@@ -139,7 +139,7 @@ export async function refreshTokens(event?: IpcMainInvokeEvent) {
 }
 
 export async function setupTokens(
-    callbackURL: string,
+    callbackURL: string
     // window: BrowserWindow
 ) {
     const urlParts = url.parse(callbackURL, true)
@@ -159,7 +159,6 @@ export async function setupTokens(
     webContents.getAllWebContents().forEach((wc) => {
         wc.send('updateAuthStatus', { accessToken, profile, stripeProfile })
     })
-
 }
 
 export async function loadStripeProfile() {
@@ -172,7 +171,7 @@ export async function loadStripeProfile() {
             Authorization: `Bearer ${accessToken}`,
         },
     })
-    let resp = await response.json()
+    const resp = await response.json()
     if (resp) {
         stripeProfile = resp as string
     }
@@ -210,21 +209,21 @@ export function getLogOutUrl() {
 
 export async function login() {
     // const { url, state, } = getAuthenticationURL()
-    await shell.openExternal(loginUrl);
+    await shell.openExternal(loginUrl)
 }
 
 export async function signup() {
-    await shell.openExternal(signUpUrl);
+    await shell.openExternal(signUpUrl)
 }
 
 export async function pay() {
-    await shell.openExternal(payUrl);
+    await shell.openExternal(payUrl)
 }
 export async function settings() {
-    await shell.openExternal(settingsUrl);
+    await shell.openExternal(settingsUrl)
 }
 export async function support() {
-    await shell.openExternal(supportUrl);
+    await shell.openExternal(supportUrl)
 }
 
 export function createLogoutWindow(event: IpcMainInvokeEvent) {
@@ -242,32 +241,38 @@ export function createLogoutWindow(event: IpcMainInvokeEvent) {
 
 export function authPackage() {
     // Simple browser opening functions
-    ipcMain.handle('loginCursor', login);
+    ipcMain.handle('loginCursor', login)
     ipcMain.handle('signupCursor', signup)
     ipcMain.handle('payCursor', pay)
     ipcMain.handle('settingsCursor', settings)
     ipcMain.handle('logoutCursor', createLogoutWindow)
 
     // Functions to handle electron-fiddle
-    ipcMain.handle('loginData', async (event: IpcMainInvokeEvent, data: {
-        accessToken: string
-        profile: any
-        stripeProfile: string
-    }) => {
-        // Set the global values
-        accessToken = data.accessToken
-        profile = data.profile
-        stripeProfile = data.stripeProfile
-        await refreshTokens(event)
-        await loadStripeProfile()
+    ipcMain.handle(
+        'loginData',
+        async (
+            event: IpcMainInvokeEvent,
+            data: {
+                accessToken: string
+                profile: any
+                stripeProfile: string
+            }
+        ) => {
+            // Set the global values
+            accessToken = data.accessToken
+            profile = data.profile
+            stripeProfile = data.stripeProfile
+            await refreshTokens(event)
+            await loadStripeProfile()
 
-        event.sender.send('updateAuthStatus', {
-            accessToken,
-            profile,
-            stripeProfile,
-        })
-    })
-        
+            event.sender.send('updateAuthStatus', {
+                accessToken,
+                profile,
+                stripeProfile,
+            })
+        }
+    )
+
     ipcMain.handle('refreshTokens', async (event: IpcMainInvokeEvent) => {
         await refreshTokens(event)
         await loadStripeProfile()

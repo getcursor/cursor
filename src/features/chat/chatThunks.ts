@@ -13,7 +13,6 @@ import {
     NoAuthGlobalNewRateLimitError,
     NoAuthGlobalOldRateLimitError,
     NoAuthLocalRateLimitError,
-    NoAuthRateLimitError,
     NotLoggedInError,
     streamSource,
 } from '../../utils'
@@ -53,8 +52,6 @@ import {
     addTransaction,
     openError,
     openFile,
-    openNoAuthRateLimit,
-    openRateLimit,
 } from '../globalSlice'
 import { findFileIdFromPath, getPathForFileId } from '../window/fileUtils'
 import {
@@ -277,11 +274,12 @@ export async function getPayload({
     // hack
     dispatch(updateLastUserMessageMsgType(null))
 
-    let oaiKey : string | undefined | null = state.settingsState.settings.openAIKey;
-    let openAIModel = state.settingsState.settings.openAIModel;
-    let useOpenAI = state.settingsState.settings.useOpenAIKey;
+    let oaiKey: string | undefined | null =
+        state.settingsState.settings.openAIKey
+    const openAIModel = state.settingsState.settings.openAIModel
+    const useOpenAI = state.settingsState.settings.useOpenAIKey
     if (oaiKey == null || oaiKey === '' || !useOpenAI) {
-       oaiKey = null; 
+        oaiKey = null
     }
     const userRequest = {
         // Core request
@@ -337,7 +335,7 @@ export async function getPayload({
         apiKey: oaiKey,
         customModel: openAIModel,
     }
-    console.log({data})
+    console.log({ data })
 
     // document.cookie = `repo_path=${state.global.rootPath}`
     return data
@@ -526,7 +524,7 @@ export const continueGeneration = createAsyncThunk(
         } catch (e) {
             dispatch(setGenerating(false))
             if (e instanceof ExpectedBackendError) {
-                dispatch(openError({error: e}))
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError({}))
                 dispatch(interruptGeneration(null))
@@ -940,7 +938,7 @@ export const streamResponse = createAsyncThunk(
         } catch (e) {
             dispatch(setGenerating(false))
             if (e instanceof ExpectedBackendError) {
-                dispatch(openError({error: e}))
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError({}))
                 dispatch(interruptGeneration(null))
@@ -970,7 +968,7 @@ export const continueUntilEnd = createAsyncThunk(
         } catch (e) {
             dispatch(setGenerating(false))
             if (e instanceof ExpectedBackendError) {
-                dispatch(openError({error: e}))
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError({}))
                 dispatch(interruptGeneration(null))
@@ -1211,7 +1209,7 @@ export const diffResponse = createAsyncThunk(
         } catch (e) {
             dispatch(setGenerating(false))
             if (e instanceof ExpectedBackendError) {
-                dispatch(openError({error: e}))
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
                 dispatch(openError({}))
                 dispatch(interruptGeneration(null))

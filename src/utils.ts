@@ -2,13 +2,12 @@ export const API_ROOT = 'https://aicursor.com'
 export const HOMEPAGE_ROOT = 'https://cursor.so'
 
 export class ExpectedBackendError extends Error {
-    public title: string | null = null;
+    public title: string | null = null
 }
-
 
 export class NoAuthRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'You\'ve reached the rate limit for unauthenticated requests. Please log in to continue.',
+        message = "You've reached the rate limit for unauthenticated requests. Please log in to continue."
     ) {
         super(message)
         this.name = 'NoAuthRateLimitError'
@@ -18,12 +17,13 @@ export class NoAuthRateLimitError extends ExpectedBackendError {
 
 export class AuthRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'It seems like you\'re making an unusual number of AI requests. Please try again later. If you think this is a mistake, please contact admin@cursor.so'
+        message = "It seems like you're making an unusual number of AI requests. Please try again later. If you think this is a mistake, please contact admin@cursor.so"
     ) {
         super(message)
         this.name = 'AuthRateLimitError'
-        this.title = 'You\'re going a bit fast...'
-    } }
+        this.title = "You're going a bit fast..."
+    }
+}
 
 export class NoAuthLocalRateLimitError extends ExpectedBackendError {
     constructor(
@@ -31,13 +31,13 @@ export class NoAuthLocalRateLimitError extends ExpectedBackendError {
     ) {
         super(message)
         this.name = 'NoAuthLocalRateLimitError'
-        this.title = 'You\'re going a bit fast...'
+        this.title = "You're going a bit fast..."
     }
 }
 
 export class NoAuthGlobalOldRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'If you\'ve enjoyed using Cursor, please consider subscribing to one of our paid plans. Otherwise, you can enter your Open AI key (gear icon) to continue using the AI features at-cost.'
+        message = "If you've enjoyed using Cursor, please consider subscribing to one of our paid plans. Otherwise, you can enter your Open AI key (gear icon) to continue using the AI features at-cost."
     ) {
         super(message)
         this.name = 'NoAuthGlobalOldRateLimitError'
@@ -47,7 +47,7 @@ export class NoAuthGlobalOldRateLimitError extends ExpectedBackendError {
 
 export class NoAuthGlobalNewRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'We\'re currently experiencing a high volume of requests. Please try again in a few minutes. For support, please contact admin@cursor.so.'
+        message = "We're currently experiencing a high volume of requests. Please try again in a few minutes. For support, please contact admin@cursor.so."
     ) {
         super(message)
         this.name = 'NoAuthGlobalNewRateLimitError'
@@ -75,15 +75,20 @@ export class BadModelError extends ExpectedBackendError {
 }
 
 export class NotLoggedInError extends ExpectedBackendError {
-    constructor(
-        message = 'You are not logged in. Please log in to continue.'
-    ) {
+    constructor(message = 'You are not logged in. Please log in to continue.') {
         super(message)
         this.name = 'NotLoggedInError'
     }
 }
-export type ExpectedError = NoAuthRateLimitError | AuthRateLimitError | NoAuthLocalRateLimitError | NoAuthGlobalOldRateLimitError |
-    NoAuthGlobalNewRateLimitError | BadOpenAIAPIKeyError | BadModelError | NotLoggedInError
+export type ExpectedError =
+    | NoAuthRateLimitError
+    | AuthRateLimitError
+    | NoAuthLocalRateLimitError
+    | NoAuthGlobalOldRateLimitError
+    | NoAuthGlobalNewRateLimitError
+    | BadOpenAIAPIKeyError
+    | BadModelError
+    | NotLoggedInError
 
 export async function fetchWithCookies(url: string, options: RequestInit = {}) {
     const response = await fetch(url, options)

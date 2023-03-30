@@ -8,7 +8,8 @@ import React, {
 } from 'react'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
-import { Message ,
+import {
+    Message,
     CodeBlock as CodeBlockType,
     CodeSymbolType,
 } from '../features/window/state'
