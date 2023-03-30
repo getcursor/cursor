@@ -304,7 +304,7 @@ export interface Settings {
     textWrapping: string
     openAIKey?: string
     useOpenAIKey?: boolean
-    openAIModel: 'gpt4' | 'gpt3.5'
+    openAIModel?: string
     tabSize?: string
 }
 
@@ -412,7 +412,6 @@ export const initialSettingsState = {
         contextType: 'none',
         textWrapping: 'disabled',
         tabSize: undefined,
-        openAIModel: 'gpt3.5'
     },
 }
 

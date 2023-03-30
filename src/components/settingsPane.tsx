@@ -183,61 +183,114 @@ export function SettingsPopup() {
 
 export function OpenAIPanel() {
     const settings = useAppSelector(ssel.getSettings)
+    const [localAPIKey, setLocalAPIKey] = useState('')
+    const [models, setAvailableModels] = useState<string[]>([])
+    const [keyError, showKeyError] = useState(false)
     const dispatch = useAppDispatch()
+
+    // When the global openai key changes, we change this one
+    useEffect(() => {
+        if (settings.openAIKey && settings.openAIKey != localAPIKey) {
+            setLocalAPIKey(settings.openAIKey)
+            ssel.getModels(settings.openAIKey).then(({models, isValidKey}) => {
+                if (models) {
+                    setAvailableModels(models)
+                }
+            })
+        }
+    }, [settings.openAIKey])
+
+    useEffect(() => {
+        showKeyError(false)
+    }, [localAPIKey]);
+
+    const handleNewAPIKey = useCallback(async () => {
+        const {models, isValidKey} = await ssel.getModels(localAPIKey)
+        console.log({models, isValidKey})
+        if (!isValidKey) {
+            // Error, and we let them know
+            showKeyError(true)
+            setAvailableModels([])
+        } else {
+            setAvailableModels(models)
+            dispatch(
+                changeSettings({
+                    openAIKey: localAPIKey,
+                })
+            )
+        }
+    }, [localAPIKey])
     
     return (
         <div className="settings__item">
+            
             <div className="settings__item_title">
                 OpenAI API Key
             </div>
             <div className="settings__item_description">
                 We'll use your key for any requests to OpenAI. This will help you avoid "maximum capacity" limits.
             </div>
-            <input
-                className="settings__item_textarea"
-                placeholder="Enter your OpenAI API Key"
-                onChange={(e) => {
-                    dispatch(
-                        changeSettings({
-                            openAIKey: e.target.value,
-                        })
-                    )
-                }}
-                value={settings.openAIKey || ""}
-                />
-            <div className="flex items-center">
-                <Switch
-                    checked={settings.useOpenAIKey}
-                    onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
-                    className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
-                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                    >
-                    <span className="sr-only">Use setting</span>
-                    <span
-                        aria-hidden="true"
-                        className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
-                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
-                        />
-                </Switch>
-                {settings.useOpenAIKey ? (
-
-            <span className="ml-2">Enabled</span>
-        ) : (
-            <span className="ml-2">Disabled</span>
-        )}
-            </div>
-            {settings.useOpenAIKey && 
-                <Dropdown
-                    options={['gpt4', 'gpt3.5']}
+            <div className="flex">
+                <input
+                    className={`settings__item_textarea
+                    ${keyError ? 'input-error' : ''}`}
+                    placeholder="Enter your OpenAI API Key"
                     onChange={(e) => {
-                        dispatch(
-                            changeSettings({
-                                openAIModel: e.value,
-                            })
-                        )
+                        setLocalAPIKey(e.target.value)
                     }}
-                    value={settings.openAIModel}
+                    value={localAPIKey || ""}
+                    spellCheck="false"
                     />
+                <button className='settings__button'
+                    onClick={() => {
+                        handleNewAPIKey()
+                    }}
+                >
+                    Submit
+                </button>
+            </div>
+            {keyError && (
+                <div className="error-message">
+                    Invalid API Key. Please try again.
+                </div>
+            )}
+            {settings.openAIKey &&
+                <>
+                <div className="flex items-center">
+                    <Switch
+                        checked={settings.useOpenAIKey}
+                        onChange={(value) => dispatch(changeSettings({useOpenAIKey: value}))}
+                        className={`${settings.useOpenAIKey ? 'bg-green-500' : 'bg-red-500'}
+                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                        >
+                        <span className="sr-only">Use setting</span>
+                        <span
+                            aria-hidden="true"
+                            className={`${settings.useOpenAIKey ? 'translate-x-9' : 'translate-x-0'}
+                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                            />
+                    </Switch>
+                    {settings.useOpenAIKey ? (
+
+                    <span className="ml-2">Enabled</span>
+                ) : (
+                    <span className="ml-2">Disabled</span>
+                )}
+                </div>
+                {settings.useOpenAIKey && 
+                    <Dropdown
+                        options={models}
+                        onChange={(e) => {
+                            dispatch(
+                                changeSettings({
+                                    openAIModel: e.value,
+                                })
+                            )
+                        }}
+                        value={settings.openAIModel}
+                        />
+                }
+            </>
             }
         </div>
     )

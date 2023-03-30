@@ -1672,6 +1672,11 @@ cm-diff-cancel > div {
     flex-grow: 1;
 }
 
+.input-error {
+    border: 1px solid red !important;
+/*     background-color: #ffe6e6; */
+}
+
 .feedbackarea_button {
     color: #ccc;
     margin-right: 8px;
@@ -1683,12 +1688,17 @@ cm-diff-cancel > div {
     cursor: pointer;
 }
 
+.settings__button,
 .copilot__signin button {
     background-color: var(--vscode-blue);
     padding: 4px 12px;
     border-radius: 5px;
     color: #fff;
     margin-top: 8px;
+}
+
+.settings__button {
+    margin-left: 8px;
 }
 
 .settings a {

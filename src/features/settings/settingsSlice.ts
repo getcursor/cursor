@@ -18,6 +18,7 @@ export const changeSettings = createAsyncThunk(
     }
 )
 
+
 export const settingsSlice = createSlice({
     name: 'settings',
     initialState: initialSettingsState as SettingsState,
