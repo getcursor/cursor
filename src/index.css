@@ -1708,6 +1708,8 @@ cm-diff-cancel > div {
 
 .codeblockwrapper {
     position: relative;
+    display: flex;
+    margin: 12px 0px;
 }
 
 .copyButton {
@@ -2557,4 +2559,12 @@ free servers .disabled_command .shortcut__block {
     margin-top: 8px;
     color: rgb(251 142 142 / 90%);
     font-weight: 600;
+}
+
+.codeblockwrapper .cm-editor {
+    border-radius: 5px;
+}
+
+.markdownpopup p {
+    margin: 12px 0px;
 }
