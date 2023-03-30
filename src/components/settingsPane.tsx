@@ -162,6 +162,7 @@ export function SettingsPopup() {
                                 />
                             </div>
 
+                            <CursorLogin />
                             <OpenAIPanel />
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
@@ -172,7 +173,6 @@ export function SettingsPopup() {
                                     languageName={name}
                                 />
                             ))}
-                            <CursorLogin />
                         </div>
                     </div>
                     <div className="cover-bar"></div>
@@ -209,7 +209,6 @@ export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
 
     const handleNewAPIKey = useCallback(async () => {
         const { models, isValidKey } = await ssel.getModels(localAPIKey)
-        console.log({ models, isValidKey })
         if (!isValidKey) {
             // Error, and we let them know
             showKeyError(true)
@@ -219,11 +218,12 @@ export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
             dispatch(
                 changeSettings({
                     openAIKey: localAPIKey,
-                })
-            )
+                    useOpenAIKey: true,
+                    openAIModel: models.at(0) ?? null
+                }))
             onSubmit()
         }
-    }, [localAPIKey])
+    }, [dispatch, localAPIKey])
 
     return (
         <div className="settings__item">
@@ -267,17 +267,17 @@ export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
                                     ? 'bg-green-500'
                                     : 'bg-red-500'
                             }
-                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                            mt-2 relative inline-flex h-[25px] w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                         >
                             <span className="sr-only">Use setting</span>
                             <span
                                 aria-hidden="true"
                                 className={`${
                                     settings.useOpenAIKey
-                                        ? 'translate-x-9'
+                                        ? 'translate-x-7'
                                         : 'translate-x-0'
                                 }
-                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                             />
                         </Switch>
                         {settings.useOpenAIKey ? (
@@ -331,28 +331,32 @@ export function OpenAIPanel() {
     }, [localAPIKey])
 
     const handleNewAPIKey = useCallback(async () => {
+        console.log('here 2')
         const { models, isValidKey } = await ssel.getModels(localAPIKey)
         console.log({ models, isValidKey })
         if (!isValidKey) {
             // Error, and we let them know
+            console.log('here 3')
             showKeyError(true)
             setAvailableModels([])
         } else {
             setAvailableModels(models)
+            console.log('here')
             dispatch(
                 changeSettings({
                     openAIKey: localAPIKey,
-                })
-            )
+                    useOpenAIKey: true,
+                    openAIModel: models.at(0) ?? null
+                }))
         }
-    }, [localAPIKey])
+    }, [dispatch, localAPIKey])
+
 
     return (
         <div className="settings__item">
             <div className="settings__item_title">OpenAI API Key</div>
             <div className="settings__item_description">
-                We'll use your key for any requests to OpenAI. This will help
-                you avoid "maximum capacity" limits.
+                You can enter an OpenAI API key to use Cursor at-cost
             </div>
             <div className="flex">
                 <input
@@ -394,17 +398,17 @@ export function OpenAIPanel() {
                                     ? 'bg-green-500'
                                     : 'bg-red-500'
                             }
-                                            mt-2 relative inline-flex h-[38px] w-[74px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                                            mt-2 relative inline-flex h-[24px] w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
                         >
                             <span className="sr-only">Use setting</span>
                             <span
                                 aria-hidden="true"
                                 className={`${
                                     settings.useOpenAIKey
-                                        ? 'translate-x-9'
+                                        ? 'translate-x-7'
                                         : 'translate-x-0'
                                 }
-                pointer-events-none inline-block h-[34px] w-[34px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
                             />
                         </Switch>
                         {settings.useOpenAIKey ? (
@@ -467,47 +471,61 @@ export function CursorLogin({
     } else {
         if (proVersion) {
             currentPanel = (
-                <div className="copilot__signin">
-                    <button onClick={signOut}>Log out</button>
-                    {showSettings && (
-                        <>
-                            <br />
-                            <button onClick={openAccountSettings}>
-                                Manage settings
-                            </button>
-                        </>
-                    )}
+                <div className="settings__item">
+                    <div className="settings__item_title">Cursor Account</div>
+                    <div className="settings__item_description">
+                        Login to use the AI without an API key
+                    </div>
+                    <div className="copilot__signin">
+                        <button onClick={signOut}>Log out</button>
+                        {showSettings && (
+                    <>
+                        <br />
+                        <button onClick={openAccountSettings}>
+                            Manage settings
+                        </button>
+                    </>
+                )}
+                    </div>
                 </div>
             )
         } else {
             currentPanel = (
-                <div className="copilot__signin">
-                    <br />
-                    <button onClick={signOut}>Log out</button>
-                    {showSettings && (
-                        <>
+                <>
+                    <div className="settings__item">
+                        <div className="settings__item_title">Cursor Account</div>
+                        <div className="settings__item_description">
+                            Login to use the AI without an API key
+                        </div>
+                        <div className="copilot__signin">
+                            <button onClick={signOut}>Log out</button>
+                            {showSettings && (
+                    <>
+                        <br />
+                        <button onClick={openAccountSettings}>
+                            Manage settings
+                        </button>
+                    </>
+                )}
                             <br />
-                            <button onClick={openAccountSettings}>
-                                Manage settings
-                            </button>
-                        </>
-                    )}
-                    <br />
-                    Upgrade for unlimited generations
-                    <button onClick={upgrade}>Upgrade to Pro</button>
-                </div>
+                        </div>
+                    </div>
+                    <div className="settings__item">
+                        <div className="settings__item_title">Cursor Pro</div>
+                        <div className="settings__item_description">
+                            Upgrade for unlimited generations
+                        </div>
+                        <div className="copilot__signin">
+                        <button onClick={upgrade}>Upgrade to Pro</button>
+                        </div>
+                    </div>
+                </>
             )
         }
     }
 
     return (
-        <div className="settings__item">
-            <div className="settings__item_title">Cursor Account</div>
-            <div className="settings__item_description">
-                Login to use the AI without an API key
-            </div>
-            {currentPanel}
-        </div>
+            currentPanel
     )
 }
 

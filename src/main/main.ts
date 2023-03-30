@@ -40,6 +40,7 @@ import todesktop from '@todesktop/runtime'
 todesktop.init()
 
 const store = new Store()
+store.clear()
 
 let main_window: Electron.BrowserWindow
 

@@ -2550,6 +2550,7 @@ free servers .disabled_command .shortcut__block {
 
 .signup__last_module {
     margin-bottom: 0px;
+    text-align: center;
 }
 
 .error-message {

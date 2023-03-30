@@ -51,6 +51,7 @@ const loginStyles = {
         marginLeft: 'auto',
         marginRight: 'auto',
         maxWidth: '450px',
+        overflow: 'none',
     },
 }
 
@@ -177,7 +178,6 @@ export function ErrorPopup() {
                                 Upgrade
                             </div>
                         </div>
-                        <div className="signup__signup_button">Upgrade</div>
                     </div>
                     <div className="signup__module signup__last_module">
                         <div className="signup__subtitle">
