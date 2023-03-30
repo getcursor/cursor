@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
 import { NoAuthGlobalOldRateLimitError, NotLoggedInError, OpenAIError } from '../utils';
 import { CursorLogin, OpenAILoginPanel } from './settingsPane';
+import { signInCursor, upgradeCursor } from '../features/tools/toolSlice';
 
 const customStyles = {
     overlay: {
@@ -109,8 +110,10 @@ export function ErrorPopup() {
                            <div className="signup__title">Cursor</div>
                             <div className="signup__module">
                                <div className="signup__subtitle">To avoid abuse on our backend, we ask that you login in to use the AI features</div>
-                               <div className="signup__signup_button">Log in</div>
-                               <div className="signup__signup_button">Sign up</div>
+                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Log in</div>
+                                
+                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Sign up</div>
+                                
                             </div>
                             <div className="signup__module signup__last_module">
                                <div className="signup__subtitle">Or enter your OpenAI API key</div>
@@ -148,7 +151,8 @@ export function ErrorPopup() {
                            <div className="signup__title">Free tier limit exceeded</div>
                             <div className="signup__module">
                                <div className="signup__subtitle">If you've enjoyed using Cursor, please consider subscribing to one of our paid plans</div>
-                               <div className="signup__signup_button">Upgrade</div>
+                               <div className="signup__signup_button" onClick={() => dispatch(upgradeCursor(null))}>Upgrade</div>
+                                
                             </div>
                             <div className="signup__module signup__last_module">
                                <div className="signup__subtitle">Or enter your OpenAI API key to continue using the AI features at-cost</div>
@@ -174,7 +178,7 @@ export function ErrorPopup() {
                 <div className="errorPopup">
                     <div className="errorPopup__title">
                         <div className="errorPopup__title_text">
-{/*                             {error.title} */}
+                            {error.title}
                         </div>
                         <div
                             className="errorPopup__title_close"
@@ -184,7 +188,7 @@ export function ErrorPopup() {
                         </div>
                     </div>
                     <div className="errorPopup__body">
-{/*                         {error.message} */}
+                        {error.message}
                         <br />
                     </div>
                 </div>
