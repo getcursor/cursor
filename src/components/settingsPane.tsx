@@ -462,10 +462,16 @@ export function CursorLogin({
     let currentPanel
     if (!signedIn) {
         currentPanel = (
-            <div className="copilot__signin">
-                <button onClick={signIn}>Sign in</button>
-                <br />
-                <button onClick={signIn}>Sign up</button>
+            <div className="settings__item">
+                <div className="settings__item_title">Cursor Account</div>
+                <div className="settings__item_description">
+                    Login to use the AI without an API key
+                </div>
+                <div className="copilot__signin">
+                    <button onClick={signIn}>Sign in</button>
+                    <br />
+                    <button onClick={signIn}>Sign up</button>
+                </div>
             </div>
         )
     } else {
