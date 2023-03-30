@@ -8,7 +8,7 @@ import {
     IpcMainInvokeEvent,
     webContents,
 } from 'electron'
-import { API_ROOT } from '../utils'
+import { API_ROOT, HOMEPAGE_ROOT } from '../utils'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
 
@@ -17,14 +17,12 @@ const store = new Store()
 
 let win: BrowserWindow | null = null
 
-// const auth0Domain = 'cursor.us.auth0.com'
-// const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
-// const cursorHome = 'https://cursor.so'
+const auth0Domain = 'cursor.us.auth0.com'
+const clientId = 'KbZUR41cY7W6zRSdpSUJ7I7mLYBKOCmB'
 
 // Test domain/client
-const auth0Domain = 'dev-27d5cph2nbetfllb.us.auth0.com'
-const clientId = 'OzaBXLClY5CAGxNzUhQ2vlknpi07tGuE'
-const cursorHome = 'http://localhost:4000'
+// const auth0Domain = 'dev-27d5cph2nbetfllb.us.auth0.com'
+// const clientId = 'OzaBXLClY5CAGxNzUhQ2vlknpi07tGuE'
 
 let accessToken: string | null = null
 let profile: any | null = null
@@ -42,10 +40,10 @@ const DUMMY_URL = `${API_ROOT}/dummy/*`
 const API_AUDIENCE = `https://${auth0Domain}/api/v2/`
 
 // These are routes that exist on our homepage
-const loginUrl = `${cursorHome}/api/auth/loginDeep`
-const signUpUrl = `${cursorHome}/api/auth/loginDeep`
-const settingsUrl = `${cursorHome}/settings`
-const payUrl = `${cursorHome}/api/auth/checkoutDeep`
+const loginUrl = `${HOMEPAGE_ROOT}/api/auth/loginDeep`
+const signUpUrl = `${HOMEPAGE_ROOT}/api/auth/loginDeep`
+const settingsUrl = `${HOMEPAGE_ROOT}/settings`
+const payUrl = `${HOMEPAGE_ROOT}/pricing?fromCursor=true`
 
 const supportUrl = `${API_ROOT}/auth/support`
 
@@ -128,7 +126,8 @@ export async function refreshTokens(event?: IpcMainInvokeEvent) {
         }
 
         accessToken = data.access_token
-        profile = jwtDecode(data.id_token)
+        const idToken = data.id_token
+        profile = jwtDecode(idToken)
     } else {
         // No refresh token
         //throw new Error('No available refresh token.')
@@ -156,6 +155,7 @@ export async function setupTokens(
     // Get the profile id from this
     await refreshTokens()
     await loadStripeProfile()
+
     webContents.getAllWebContents().forEach((wc) => {
         wc.send('updateAuthStatus', { accessToken, profile, stripeProfile })
     })

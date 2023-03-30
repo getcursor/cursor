@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 
 import { Switch} from '@headlessui/react'
+import {HOMEPAGE_ROOT} from '../utils'
 
 import * as ssel from '../features/settings/settingsSelectors'
 import {
@@ -423,7 +424,7 @@ export function CursorLogin({showSettings = true}: {showSettings?: boolean}) {
         dispatch(upgradeCursor(null))
     }, [])
     const openAccountSettings = useCallback(() => {
-        window.open('https://cursor.so/settings', '_blank')
+        window.open(`${HOMEPAGE_ROOT}/settings`, '_blank')
     }, [])
 
     let currentPanel
