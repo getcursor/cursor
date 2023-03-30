@@ -414,6 +414,9 @@ const electronConnector = {
     refreshTokens() {
         ipcRenderer.invoke('refreshTokens')
     },
+    registerCloseErrors(callback: Callback) {
+        ipcRenderer.on('closeErrors', callback)
+    }
 }
 
 contextBridge.exposeInMainWorld('connector', electronConnector)

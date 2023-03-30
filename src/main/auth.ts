@@ -158,6 +158,7 @@ export async function setupTokens(
 
     webContents.getAllWebContents().forEach((wc) => {
         wc.send('updateAuthStatus', { accessToken, profile, stripeProfile })
+        wc.send('closeErrors')
     })
 }
 
