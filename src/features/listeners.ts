@@ -23,9 +23,9 @@ connector.registerUpdateAuthStatus(
     }
 )
 
-connector.registerCloseErrors = () => {
+connector.registerCloseErrors(() => {
     store.dispatch(gs.closeError())
-}
+})
 
 // @ts-ignore
 connector.registerSaved(() => {
