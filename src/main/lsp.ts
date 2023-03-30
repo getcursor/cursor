@@ -359,8 +359,12 @@ class LSPManager {
                 try {
                     // Check $GOPATH, and remove $GOPATH/go.mod file
                     const goPath = cp.execSync('echo $GOPATH').toString().trim()
-                    fs.accessSync(`${goPath}go.mod`, fs.constants.F_OK)
-                    await fileSystem.unlinkSync(`${goPath}/go.mod`)
+                    try {
+                        fs.accessSync(`${goPath}/go.mod`, fs.constants.F_OK)
+                        await fileSystem.unlinkSync(`${goPath}/go.mod`)
+                    } catch (e) {
+                        // ignore remove remove $GOPATH/go.mod file error, it may not exist
+                    }
                     await promisify(cp.exec)(
                         'go install golang.org/x/tools/gopls@latest',
                         {
