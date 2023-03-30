@@ -40,8 +40,6 @@ import todesktop from '@todesktop/runtime'
 todesktop.init()
 
 const store = new Store()
-store.clear()
-
 let main_window: Electron.BrowserWindow
 
 if (process.defaultApp) {
@@ -65,8 +63,7 @@ if (!gotTheLock) {
             if (main_window.isMinimized()) main_window.restore()
             main_window.focus()
         }
-        console.log('second instance')
-        const url = commandLine.pop()?.slice(0, -1)
+        const url = commandLine.pop()
         // dialog.showErrorBox('Welcome Back (in app already)', `You arrived from: ${url}`)
         if (url) {
             setupTokens(url)
