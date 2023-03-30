@@ -176,11 +176,11 @@ const createWindow = () => {
         return { action: 'deny' }
     })
 
-    main_window.webContents.on('did-finish-load',()=>{
-        const currentWorkingDir = process.cwd();
-        const args = process.argv;
-        const argsPath = args[1] ? path.join(currentWorkingDir, args[1]) : null;
-        if(argsPath !== null){
+    main_window.webContents.on('did-finish-load', () => {
+        const currentWorkingDir = process.cwd()
+        const args = process.argv
+        const argsPath = args[1] ? path.join(currentWorkingDir, args[1]) : null
+        if (argsPath !== null) {
             main_window.webContents.send('open_folder', argsPath)
         }
     })

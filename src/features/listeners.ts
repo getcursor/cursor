@@ -64,7 +64,7 @@ connector.registerCloseAllTabs(() => {
 })
 // @ts-ignore
 connector.openFolderOn((path) => {
-    store.dispatch(gs.openFolder({path}))
+    store.dispatch(gs.openFolder({ path }))
 })
 
 // @ts-ignore
