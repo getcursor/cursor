@@ -40,8 +40,8 @@ const DUMMY_URL = `${API_ROOT}/dummy/*`
 const API_AUDIENCE = `https://${auth0Domain}/api/v2/`
 
 // These are routes that exist on our homepage
-const loginUrl = `${HOMEPAGE_ROOT}/api/auth/loginDeep`
-const signUpUrl = `${HOMEPAGE_ROOT}/api/auth/loginDeep`
+const loginUrl = `${HOMEPAGE_ROOT}/loginDeep`
+const signUpUrl = `${HOMEPAGE_ROOT}/loginDeep`
 const settingsUrl = `${HOMEPAGE_ROOT}/settings`
 const payUrl = `${HOMEPAGE_ROOT}/pricing?fromCursor=true`
 
@@ -208,13 +208,20 @@ export function getLogOutUrl() {
     return `https://${auth0Domain}/v2/logout`
 }
 
+export function addRandomQueryParam(url: string): string {
+    const randomParam = `random=${Math.random().toString(36).substring(7)}`
+    const parsedUrl = new URL(url)
+    parsedUrl.searchParams.append(randomParam, '')
+    return parsedUrl.toString()
+}
+
 export async function login() {
     // const { url, state, } = getAuthenticationURL()
-    await shell.openExternal(loginUrl)
+    await shell.openExternal(addRandomQueryParam(loginUrl))
 }
 
 export async function signup() {
-    await shell.openExternal(signUpUrl)
+    await shell.openExternal(addRandomQueryParam(signUpUrl))    
 }
 
 export async function pay() {
