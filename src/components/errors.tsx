@@ -4,8 +4,9 @@ import { getError, getShowErrors } from '../features/selectors'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
-import { NoAuthGlobalOldRateLimitError, NotLoggedInError } from '../utils'
-import { OpenAILoginPanel } from './settingsPane'
+import { NoAuthGlobalOldRateLimitError, NotLoggedInError, OpenAIError } from '../utils';
+import { CursorLogin, OpenAILoginPanel } from './settingsPane';
+import { signInCursor, upgradeCursor } from '../features/tools/toolSlice';
 
 const customStyles = {
     overlay: {
@@ -102,12 +103,14 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                    <div className="signup__body">
-                        <div className="signup__title">Cursor</div>
-                        <div className="signup__module">
-                            <div className="signup__subtitle">
-                                To avoid abuse on our backend, we ask that you
-                                login in to use the AI features
+                        <div className="signup__body">
+                           <div className="signup__title">Cursor</div>
+                            <div className="signup__module">
+                               <div className="signup__subtitle">To avoid abuse on our backend, we ask that you login in to use the AI features</div>
+                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Log in</div>
+                                
+                               <div className="signup__signup_button" onClick={() => dispatch(signInCursor(null))}>Sign up</div>
+                                
                             </div>
                             <div className="signup__signup_button">Log in</div>
                             <div className="signup__signup_button">Sign up</div>
@@ -145,14 +148,12 @@ export function ErrorPopup() {
                             <FontAwesomeIcon icon={faClose} />
                         </div>
                     </div>
-                    <div className="signup__body">
-                        <div className="signup__title">
-                            Free tier limit exceeded
-                        </div>
-                        <div className="signup__module">
-                            <div className="signup__subtitle">
-                                If you've enjoyed using Cursor, please consider
-                                subscribing to one of our paid plans
+                        <div className="signup__body">
+                           <div className="signup__title">Free tier limit exceeded</div>
+                            <div className="signup__module">
+                               <div className="signup__subtitle">If you've enjoyed using Cursor, please consider subscribing to one of our paid plans</div>
+                               <div className="signup__signup_button" onClick={() => dispatch(upgradeCursor(null))}>Upgrade</div>
+                                
                             </div>
                             <div className="signup__signup_button">Upgrade</div>
                         </div>
@@ -183,7 +184,7 @@ export function ErrorPopup() {
                 <div className="errorPopup">
                     <div className="errorPopup__title">
                         <div className="errorPopup__title_text">
-                            {/*                             {error.title} */}
+                            {error.title}
                         </div>
                         <div
                             className="errorPopup__title_close"
@@ -193,7 +194,7 @@ export function ErrorPopup() {
                         </div>
                     </div>
                     <div className="errorPopup__body">
-                        {/*                         {error.message} */}
+                        {error.message}
                         <br />
                     </div>
                 </div>
