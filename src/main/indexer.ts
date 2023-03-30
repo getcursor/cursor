@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as cp from 'child_process'
 import log from 'electron-log'
 import { Semaphore } from 'await-semaphore'
-import { ipcMain, IpcMainInvokeEvent, BrowserWindow } from 'electron'
+import { BrowserWindow, IpcMainInvokeEvent, ipcMain } from 'electron'
 import Store from 'electron-store'
 import crypto from 'crypto'
 // import gi from 'gitignore';

@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { Settings, File, Folder } from '../features/window/state'
+import { File, Folder, Settings } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
@@ -7,18 +7,18 @@ import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
 import {
-    app,
-    shell,
     BrowserWindow,
-    Menu,
-    ipcMain,
     IpcMainInvokeEvent,
-    session,
-    systemPreferences,
-    globalShortcut,
-    dialog,
-    clipboard,
+    Menu,
     MenuItemConstructorOptions,
+    app,
+    clipboard,
+    dialog,
+    globalShortcut,
+    ipcMain,
+    session,
+    shell,
+    systemPreferences,
 } from 'electron'
 
 import { API_ROOT } from '../utils'
@@ -28,7 +28,7 @@ import Store from 'electron-store'
 import log from 'electron-log'
 import { machineIdSync } from 'node-machine-id'
 
-import { fileSystem, setFileSystem, FileSystem } from './fileSystem'
+import { FileSystem, fileSystem, setFileSystem } from './fileSystem'
 import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'

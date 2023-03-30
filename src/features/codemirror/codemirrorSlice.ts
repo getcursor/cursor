@@ -1,11 +1,11 @@
-import { createAsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
+    EditorSelection,
+    EditorState,
+    Extension,
+    StateField,
     Transaction,
     TransactionSpec,
-    EditorState,
-    StateField,
-    Extension,
-    EditorSelection,
 } from '@codemirror/state'
 import { FullState, State } from '../window/state'
 import { EditorView } from '@codemirror/view'

@@ -1,12 +1,12 @@
 import {
-    ViewPlugin,
     Decoration,
     EditorView,
-    WidgetType,
     PluginValue,
+    ViewPlugin,
+    WidgetType,
 } from '@codemirror/view'
 import { getIndentUnit } from '@codemirror/language'
-import { Extension, Text, RangeSet, EditorState } from '@codemirror/state'
+import { EditorState, Extension, RangeSet, Text } from '@codemirror/state'
 
 const indentationMark = Decoration.mark({
     class: 'cm-indentation-marker',

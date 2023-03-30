@@ -1,4 +1,4 @@
-import { ipcMain, IpcMainInvokeEvent } from 'electron'
+import { IpcMainInvokeEvent, ipcMain } from 'electron'
 
 import Store from 'electron-store'
 const store = new Store()

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import {
-    getPane,
     getCurrentTab,
     getDraggingTabId,
+    getPane,
     getTab,
 } from '../features/selectors'
-import { selectPane, moveDraggingTabToPane } from '../features/globalSlice'
+import { moveDraggingTabToPane, selectPane } from '../features/globalSlice'
 import { HoverState } from '../features/window/state'
 
 import { TabBar } from './tabs'

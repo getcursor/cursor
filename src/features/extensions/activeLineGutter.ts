@@ -1,5 +1,5 @@
 /* This file isn't currently being used */
-import { EditorView, gutter, GutterMarker } from '@codemirror/view'
+import { EditorView, GutterMarker, gutter } from '@codemirror/view'
 import { RangeSet } from '@codemirror/state'
 
 // We arent doing this anymore

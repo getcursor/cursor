@@ -1,9 +1,9 @@
 import {
-    ViewUpdate,
-    ViewPlugin,
+    Decoration,
     DecorationSet,
     EditorView,
-    Decoration,
+    ViewPlugin,
+    ViewUpdate,
     WidgetType,
 } from '@codemirror/view'
 import { Range } from '@codemirror/state'

@@ -1,5 +1,5 @@
 import { syntaxTree } from '@codemirror/language'
-import { linter, Diagnostic, replace, lintState, getDiagnostics } from './lint'
+import { Diagnostic, getDiagnostics, lintState, linter, replace } from './lint'
 
 // async function backendLint = async (source) => {
 //   let diagnostics: Diagnostic[] = []

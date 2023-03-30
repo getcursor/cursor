@@ -6,7 +6,7 @@ import * as ls from '../features/logging/loggingSlice'
 import * as ts from '../features/tools/toolSlice'
 import * as csel from '../features/chat/chatSelectors'
 import * as gsel from '../features/selectors'
-import { useAppSelector, useAppDispatch } from '../app/hooks'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { useEffect, useState } from 'react'
 import SearchFiles from './searchFiles'
 import CommandPalette from './commandPalette'
@@ -15,10 +15,10 @@ import {
     faCog,
     faHandWave,
     faMinus,
-    faSquare,
-    faTimes,
     faRobot,
+    faSquare,
     faSquareTerminal,
+    faTimes,
 } from '@fortawesome/pro-regular-svg-icons'
 
 function Menu({

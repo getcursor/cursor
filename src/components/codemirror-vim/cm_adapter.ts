@@ -1,26 +1,26 @@
-import { EditorSelection, Text, MapMode, ChangeDesc } from '@codemirror/state'
+import { ChangeDesc, EditorSelection, MapMode, Text } from '@codemirror/state'
 import {
     StringStream,
-    matchBrackets,
-    indentUnit,
     ensureSyntaxTree,
     foldCode,
+    indentUnit,
+    matchBrackets,
 } from '@codemirror/language'
 import { EditorView, ViewUpdate } from '@codemirror/view'
-import { RegExpCursor, setSearchQuery, SearchQuery } from '@codemirror/search'
+import { RegExpCursor, SearchQuery, setSearchQuery } from '@codemirror/search'
 import {
-    insertNewlineAndIndent,
-    indentMore,
-    indentLess,
-    indentSelection,
-    deleteCharBackward,
-    deleteCharForward,
+    cursorCharBackward,
     cursorCharLeft,
-    undo,
-    redo,
     cursorLineBoundaryBackward,
     cursorLineBoundaryForward,
-    cursorCharBackward,
+    deleteCharBackward,
+    deleteCharForward,
+    indentLess,
+    indentMore,
+    indentSelection,
+    insertNewlineAndIndent,
+    redo,
+    undo,
 } from '@codemirror/commands'
 
 interface Pos {

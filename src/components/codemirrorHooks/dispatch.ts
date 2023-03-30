@@ -2,15 +2,15 @@ import { EditorView } from '@codemirror/view'
 import React, { useEffect } from 'react'
 import { ReactCodeMirrorRef } from '../react-codemirror'
 import {
-    Transaction,
-    TransactionSpec,
+    Annotation,
     StateEffect,
     Text,
-    Annotation,
+    Transaction,
+    TransactionSpec,
 } from '@codemirror/state'
 import { useAppDispatch } from '../../app/hooks'
 import { flushTransactions } from '../../features/globalSlice'
-import { ReduxTransaction, LineChange } from '../../features/window/state'
+import { LineChange, ReduxTransaction } from '../../features/window/state'
 import { showBar } from '../../features/extensions/cmdZBar'
 
 import { reduxTransaction } from '../../features/extensions/utils'

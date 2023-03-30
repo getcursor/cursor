@@ -1,12 +1,12 @@
 import {
-    webFrame,
+    IpcRendererEvent,
     contextBridge,
     ipcRenderer,
-    IpcRendererEvent,
+    webFrame,
 } from 'electron'
 import {
-    LSPRequestMap,
     LSPNotifyMap,
+    LSPRequestMap,
     Language,
 } from './features/lsp/stdioClient'
 import { Settings } from './features/window/state'

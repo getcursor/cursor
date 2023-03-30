@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnyAction, Dispatch } from '@reduxjs/toolkit'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import cx from 'classnames'
@@ -12,8 +12,8 @@ import {
     openFileTree,
     openSearch,
     triggerFileSearch,
-    untriggerCommandPalette,
     untriggerAICommandPalette,
+    untriggerCommandPalette,
 } from '../features/tools/toolSlice'
 import { toggleSettings } from '../features/settings/settingsSlice'
 import {

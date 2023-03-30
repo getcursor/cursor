@@ -1,6 +1,6 @@
 import {
-    languageServer,
     docPathFacet,
+    languageServer,
     semanticTokenField,
 } from '../lsp/lspPlugin'
 import { getLanguageFromFilename } from './utils'

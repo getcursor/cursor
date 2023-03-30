@@ -1,13 +1,10 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { closeError } from '../features/globalSlice'
-import { getShowErrors, getError } from '../features/selectors'
+import { getError, getShowErrors } from '../features/selectors'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Modal from 'react-modal'
-import {
-    NoAuthGlobalOldRateLimitError,
-    NotLoggedInError,
-} from '../utils'
+import { NoAuthGlobalOldRateLimitError, NotLoggedInError } from '../utils'
 import { OpenAILoginPanel } from './settingsPane'
 
 const customStyles = {

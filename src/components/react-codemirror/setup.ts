@@ -1,32 +1,32 @@
 import {
     KeyBinding,
-    lineNumbers,
-    highlightActiveLineGutter,
-    highlightSpecialChars,
+    crosshairCursor,
     drawSelection,
     dropCursor,
-    rectangularSelection,
-    crosshairCursor,
     highlightActiveLine,
+    highlightActiveLineGutter,
+    highlightSpecialChars,
     keymap,
+    lineNumbers,
+    rectangularSelection,
 } from '@codemirror/view'
 import { EditorState, Extension, Prec } from '@codemirror/state'
-import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import {
-    closeBrackets,
     autocompletion,
+    closeBrackets,
     closeBracketsKeymap,
     completionKeymap,
 } from '@codemirror/autocomplete'
 import {
-    foldGutter,
-    indentOnInput,
-    syntaxHighlighting,
-    defaultHighlightStyle,
     bracketMatching,
-    indentUnit,
+    defaultHighlightStyle,
+    foldGutter,
     foldKeymap,
+    indentOnInput,
+    indentUnit,
+    syntaxHighlighting,
 } from '@codemirror/language'
 
 import { lintKeymap } from '../../features/linter/lint'

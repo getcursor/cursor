@@ -1,5 +1,5 @@
 import * as cp from 'child_process'
-import { ipcMain, IpcMainInvokeEvent } from 'electron'
+import { IpcMainInvokeEvent, ipcMain } from 'electron'
 import { promisify } from 'util'
 
 import { PLATFORM_INFO, rgLoc } from './utils'

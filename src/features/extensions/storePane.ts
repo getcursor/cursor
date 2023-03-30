@@ -1,4 +1,4 @@
-import { StateField, StateEffect } from '@codemirror/state'
+import { StateEffect, StateField } from '@codemirror/state'
 
 // StateEffect to update the current pane id
 export const updatePaneId = StateEffect.define<number>()

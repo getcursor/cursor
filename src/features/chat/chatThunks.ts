@@ -1,8 +1,8 @@
 import {
     ActionCreatorWithoutPayload,
     AnyAction,
-    createAsyncThunk,
     ThunkDispatch,
+    createAsyncThunk,
 } from '@reduxjs/toolkit'
 import {
     API_ROOT,
@@ -48,11 +48,7 @@ import {
     updateLastUserMessageMsgType,
 } from './chatSlice'
 import { Text } from '@codemirror/state'
-import {
-    addTransaction,
-    openError,
-    openFile,
-} from '../globalSlice'
+import { addTransaction, openError, openFile } from '../globalSlice'
 import { findFileIdFromPath, getPathForFileId } from '../window/fileUtils'
 import {
     getPrecedingLines,

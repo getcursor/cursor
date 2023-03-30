@@ -1,10 +1,10 @@
 import {
-    State,
     CachedTab,
-    ReduxEditorState,
     HoverState,
-    nextTabID,
+    ReduxEditorState,
+    State,
     nextPaneID,
+    nextTabID,
 } from './state'
 
 import { doDeleteFile, setSelectedFile } from './fileUtils'

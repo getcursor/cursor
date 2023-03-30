@@ -1,7 +1,7 @@
-import { State, Pane, FullState, Folder } from './window/state'
+import { Folder, FullState, Pane, State } from './window/state'
 import {
-    getPathForFolderId,
     getPathForFileId,
+    getPathForFolderId,
     getRelativePathForFileId,
 } from './window/fileUtils'
 import { createSelector } from 'reselect'

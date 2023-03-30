@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { FullState } from './window/state'
 import { getActiveTabId } from './window/paneUtils'
-import { saveFile, forceCloseTab } from './globalSlice'
+import { forceCloseTab, saveFile } from './globalSlice'
 import { getPathForFileId } from './window/fileUtils'
 import { removeEditor } from './codemirror/codemirrorSlice'
 

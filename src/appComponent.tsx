@@ -1,14 +1,14 @@
 import {
+    useCallback,
+    useEffect,
     useLayoutEffect,
     useRef,
-    useEffect,
     useState,
-    useCallback,
 } from 'react'
 import { faClose } from '@fortawesome/pro-regular-svg-icons'
 import Modal from 'react-modal'
 
-import { useAppSelector, useAppDispatch } from './app/hooks'
+import { useAppDispatch, useAppSelector } from './app/hooks'
 import { PaneHolder } from './components/pane'
 import * as gs from './features/globalSlice'
 import * as cs from './features/chat/chatSlice'
@@ -19,11 +19,11 @@ import * as tsel from './features/tools/toolSelectors'
 import * as gsel from './features/selectors'
 
 import {
+    getFocusedTab,
     getFolders,
     getPaneStateBySplits,
-    getZoomFactor,
     getRootPath,
-    getFocusedTab,
+    getZoomFactor,
 } from './features/selectors'
 
 import { ChatPopup, CommandBar } from './components/markdown'

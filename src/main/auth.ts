@@ -4,8 +4,8 @@ import * as url from 'url'
 // import envVariables from '../env-variables';
 import {
     BrowserWindow,
-    ipcMain,
     IpcMainInvokeEvent,
+    ipcMain,
     webContents,
 } from 'electron'
 import { API_ROOT, HOMEPAGE_ROOT } from '../utils'

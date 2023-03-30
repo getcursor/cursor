@@ -11,10 +11,10 @@ import {
 import {
     copilotChangeEnable,
     copilotChangeSignin,
+    getConnections,
     installLanguageServer,
     runLanguageServer,
     stopLanguageServer,
-    getConnections,
 } from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'

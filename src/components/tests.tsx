@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useAppSelector, useAppDispatch } from '../app/hooks'
-import { getCurrentFilePath, getAllPaths } from '../features/selectors'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { getAllPaths, getCurrentFilePath } from '../features/selectors'
 import { isTestModalVisible } from '../features/tests/testSelectors'
-import { newTestFile, closeTestFileName } from '../features/tests/testSlice'
+import { closeTestFileName, newTestFile } from '../features/tests/testSlice'
 
 export function TestModal() {
     const dispatch = useAppDispatch()

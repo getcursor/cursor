@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react'
 
-import { useAppSelector, useAppDispatch } from '../app/hooks'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faChevronDown,
     faChevronRight,
-    faFile,
     faCode,
-    faImage,
     faCodeMerge,
     faEyeSlash,
+    faFile,
     faGear,
+    faImage,
     faInfoCircle,
 } from '@fortawesome/sharp-solid-svg-icons'
 import * as gs from '../features/globalSlice'

@@ -1,20 +1,20 @@
 import { useEffect, useMemo } from 'react'
 import {
-    EditorState,
-    Prec,
-    Extension,
     Compartment,
+    EditorState,
+    Extension,
+    Prec,
     RangeSetBuilder,
 } from '@codemirror/state'
 import {
-    closeHoverTooltips,
-    EditorView,
-    keymap,
-    scrollPastEnd,
-    ViewPlugin,
-    ViewUpdate,
     Decoration,
     DecorationSet,
+    EditorView,
+    ViewPlugin,
+    ViewUpdate,
+    closeHoverTooltips,
+    keymap,
+    scrollPastEnd,
 } from '@codemirror/view'
 import { syntaxBundle } from '../../features/extensions/syntax'
 import { indentationMarkers } from '../../features/extensions/indentLines'
@@ -36,10 +36,10 @@ import { moveToPane, saveFile } from '../../features/globalSlice'
 import { closeTab } from '../../features/globalThunks'
 import { languageBundle } from '../../features/extensions/lsp'
 import {
-    copilotBundle,
-    rejectSuggestionCommand,
-    getClient,
     completionDecoration,
+    copilotBundle,
+    getClient,
+    rejectSuggestionCommand,
 } from '../../features/extensions/ghostText'
 import {
     copilotStatus,
@@ -58,7 +58,7 @@ import { newLineText } from '../../features/extensions/newLineText'
 import { Tree } from '@lezer/common'
 import { barExtension } from '../../features/extensions/cmdZBar'
 import { updateCommentsEffect } from '../../features/extensions/comments'
-import { getStyleTags, tags, Tag } from '@lezer/highlight'
+import { Tag, getStyleTags, tags } from '@lezer/highlight'
 import { fixLintExtension } from '../../features/linter/fixLSPExtension'
 import { storePaneIdExtensions } from '../../features/extensions/storePane'
 import { store } from '../../app/store'

@@ -1,9 +1,9 @@
 import {
-    configureStore,
-    combineReducers,
-    ThunkAction,
     Action,
     PreloadedState,
+    ThunkAction,
+    combineReducers,
+    configureStore,
 } from '@reduxjs/toolkit'
 import globalReducer from '../features/globalSlice'
 import { initialState } from '../features/window/state'

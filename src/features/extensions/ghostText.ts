@@ -1,19 +1,19 @@
 import { indentUnit } from '@codemirror/language'
 import {
     Decoration,
-    EditorView,
     DecorationSet,
+    EditorView,
     ViewUpdate,
 } from '@codemirror/view'
 import {
+    Annotation,
+    EditorState,
+    Extension,
     Facet,
+    Prec,
     StateEffect,
     StateField,
     Transaction,
-    Extension,
-    Annotation,
-    EditorState,
-    Prec,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
 import { vimStateField } from '../../components/codemirror-vim'
@@ -21,10 +21,10 @@ import { getLanguageFromFilename } from './utils'
 import { LanguageServerClient } from '../lsp/stdioClient'
 import { getConnections } from '../lsp/languageServerSlice'
 import {
-    offsetToPos,
-    posToOffset,
     copilotServer,
     docPathFacet,
+    offsetToPos,
+    posToOffset,
 } from '../lsp/lspPlugin'
 
 // Create Facet for the current docPath

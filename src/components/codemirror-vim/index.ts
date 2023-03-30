@@ -3,18 +3,18 @@ import { CodeMirror } from './cm_adapter'
 import { BlockCursorPlugin, hideNativeSelection } from './block-cursor'
 import {
     Extension,
-    StateField,
-    StateEffect,
     RangeSetBuilder,
+    StateEffect,
+    StateField,
 } from '@codemirror/state'
 import {
-    ViewPlugin,
-    PluginValue,
-    ViewUpdate,
     Decoration,
     EditorView,
-    showPanel,
     Panel,
+    PluginValue,
+    ViewPlugin,
+    ViewUpdate,
+    showPanel,
 } from '@codemirror/view'
 import { setSearchQuery } from '@codemirror/search'
 

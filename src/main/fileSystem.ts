@@ -4,7 +4,7 @@ import * as fs from 'fs'
 
 import Watcher from 'watcher'
 
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process'
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 
 import { promisify } from 'util'
 import { PLATFORM_INFO } from './utils'
