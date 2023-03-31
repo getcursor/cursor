@@ -13,28 +13,28 @@ it seems like that feature is never used.
 */
 import * as JSDiff from 'diff'
 import {
-    RangeSet,
-    StateField,
-    StateEffect,
-    Extension,
-    Transaction,
-    Range,
-    Text,
-    EditorState,
     ChangeSpec,
+    EditorState,
+    Extension,
     Prec,
+    Range,
+    RangeSet,
+    StateEffect,
+    StateField,
+    Text,
+    Transaction,
 } from '@codemirror/state'
 import {
     Decoration,
     DecorationSet,
     EditorView,
-    ViewUpdate,
     GutterMarker,
+    Tooltip,
+    ViewUpdate,
+    WidgetType,
     gutterLineClass,
     keymap,
-    Tooltip,
     showTooltip,
-    WidgetType,
 } from '@codemirror/view'
 import { invertedEffects } from '@codemirror/commands'
 import posthog from 'posthog-js'

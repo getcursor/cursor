@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
-import { getTab, getFile, getRelativeFilePath } from '../features/selectors'
+import { getFile, getRelativeFilePath, getTab } from '../features/selectors'
 import { setDraggingTab, stopDraggingTab } from '../features/globalSlice'
 
 import { getIconElement } from './filetree'

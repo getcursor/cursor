@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Combobox } from '@headlessui/react'
 import { getIconElement } from './filetree'
 import { openFile } from '../features/globalSlice'

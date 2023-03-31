@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { API_ROOT, streamSource } from '../../utils'
-import { nextId, State } from '../window/state'
+import { State, nextId } from '../window/state'
 import {
     createFileIfNeeded,
     findFileIdFromPath,

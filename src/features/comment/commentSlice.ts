@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { findFileIdFromPath } from '../window/fileUtils'
 import { CommentFunction, CommentState, FullState } from '../window/state'
 

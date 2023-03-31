@@ -1,69 +1,69 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
-    startConnections,
     getDefinition,
-    runLanguageServer,
     getIdentifier,
+    runLanguageServer,
+    startConnections,
     startCopilotWithoutFolder,
 } from './lsp/languageServerSlice'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { changeSettingsNoSideffect } from './settings/settingsSlice'
 import { getLanguageFromFilename } from './extensions/utils'
 
-import { join } from '../utils'
+import { ExpectedError, join } from '../utils'
 import {
-    State,
+    Folder,
+    FolderData,
     FullState,
     HoverState,
     ReduxEditorState,
-    FolderData,
-    nextFolderID,
-    nextFileID,
-    initialState,
-    nextTabID,
     RepoProgress,
-    Folder,
+    State,
+    initialState,
+    nextFileID,
+    nextFolderID,
+    nextTabID,
 } from './window/state'
 import {
-    getActivePaneID,
+    createCachedTabIfNotExists,
+    doCloseTab,
+    doMoveTabToPane,
+    doMoveToAdjacentPane,
+    doSelectFile,
     getActiveFileId,
+    getActivePaneID,
+    getActiveTabId,
+    getPaneActiveTabId,
     getTabForFile,
     insertFirstPane,
     insertNewTab,
     setActiveTab,
-    createCachedTabIfNotExists,
-    getActiveTabId,
-    doCloseTab,
-    updateEditorState,
-    setPaneActive,
-    doMoveTabToPane,
-    splitPane,
-    doSelectFile,
-    doMoveToAdjacentPane,
     setOpenParentFolders,
-    getPaneActiveTabId,
+    setPaneActive,
+    splitPane,
+    updateEditorState,
 } from './window/paneUtils'
 import {
-    getPathForFileId,
-    setSelectedFile,
-    isValidRenameName,
-    getPathForFolderId,
-    getNewFileName,
-    updateCachedContents,
-    doDeleteFile,
+    abortFileRename,
     commitFileRename,
-    insertNewFile,
-    triggerFileRename,
-    sortAllFolders,
-    getContentsIfNeeded,
-    loadFileIfNeeded,
-    getNewFolderName,
-    insertNewFolder,
-    getAllParentIds,
+    doDeleteFile,
     doDeleteFolder,
     findFileIdFromPath,
     findFolderIdFromPath,
-    abortFileRename,
+    getAllParentIds,
+    getContentsIfNeeded,
+    getNewFileName,
+    getNewFolderName,
+    getPathForFileId,
+    getPathForFolderId,
+    insertNewFile,
+    insertNewFolder,
+    isValidRenameName,
+    loadFileIfNeeded,
+    setSelectedFile,
+    sortAllFolders,
+    triggerFileRename,
+    updateCachedContents,
 } from './window/fileUtils'
 
 import { CustomTransaction } from '../components/codemirrorHooks/dispatch'
@@ -1394,9 +1394,18 @@ const globalSlice = createSlice({
         },
         closeError(state: State) {
             state.showError = false
+            state.errorValue = null
         },
-        openError(state: State) {
+        openError(
+            state: State,
+            action: PayloadAction<{ error?: ExpectedError }>
+        ) {
             state.showError = true
+            if (action.payload.error) {
+                state.errorValue = action.payload.error
+            } else {
+                state.errorValue = null
+            }
         },
         setVersion(state: State, action: PayloadAction<string>) {
             state.version = action.payload

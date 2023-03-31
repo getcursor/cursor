@@ -1,4 +1,4 @@
-import { TreeCursor, SyntaxNode } from '@lezer/common'
+import { SyntaxNode, TreeCursor } from '@lezer/common'
 import { store } from '../../app/store'
 import { getCurrentTab, getFilePath, getFocusedTab, getTab } from '../selectors'
 import { getTests, selectHasTests } from '../tests/testSelectors'

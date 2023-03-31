@@ -1,5 +1,5 @@
-import { SelectionRange, Prec } from '@codemirror/state'
-import { ViewUpdate, EditorView, Direction } from '@codemirror/view'
+import { Prec, SelectionRange } from '@codemirror/state'
+import { Direction, EditorView, ViewUpdate } from '@codemirror/view'
 import { CodeMirror } from '.'
 
 type Measure = { cursors: Piece[] }

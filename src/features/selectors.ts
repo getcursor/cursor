@@ -1,7 +1,7 @@
-import { State, Pane, FullState, Folder } from './window/state'
+import { Folder, FullState, Pane, State } from './window/state'
 import {
-    getPathForFolderId,
     getPathForFileId,
+    getPathForFolderId,
     getRelativePathForFileId,
 } from './window/fileUtils'
 import { createSelector } from 'reselect'
@@ -526,6 +526,7 @@ export const getShowErrors = (state: FullState) => state.global.showError
 export const getShowRateLimit = (state: FullState) => state.global.showRateLimit
 export const getErrorType = (state: FullState) => state.global.errorType
 export const getErrorInfo = (state: FullState) => state.global.errorInfo
+export const getError = (state: FullState) => state.global.errorValue
 export const getShowNoAuthRateLimit = (state: FullState) =>
     state.global.showNoAuthRateLimit
 

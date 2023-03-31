@@ -1,5 +1,5 @@
 // import keybinding and keymap
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { EditorView, ViewUpdate } from '@codemirror/view'
 import { vimStateField } from './codemirror-vim/index'
 import { historyField } from '@codemirror/commands'
@@ -11,16 +11,16 @@ import { throttleCallback } from './componentUtils'
 import {
     getCachedTab,
     getFileContents,
-    getTab,
-    getKeyListeners,
-    getFilePath,
-    getFileName,
-    getPaneIsActive,
     getFileIndentUnit,
-    getRelativeFilePath,
-    getPageType,
+    getFileName,
+    getFilePath,
     getFileRenameName,
+    getKeyListeners,
+    getPageType,
+    getPaneIsActive,
     getPendingTransactions,
+    getRelativeFilePath,
+    getTab,
 } from '../features/selectors'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { CachedTab, ReduxTransaction, Tab } from '../features/window/state'
@@ -34,9 +34,9 @@ import * as csel from '../features/chat/chatSelectors'
 //import { useRenderDiffs} from './chat/hooks';
 import { diagnosticsField, setDiagnostics } from '../features/linter/lint'
 import {
-    useDispatchHook,
     customDispatch,
     dontShowAnnotation,
+    useDispatchHook,
 } from './codemirrorHooks/dispatch'
 import { getSettings } from '../features/settings/settingsSelectors'
 import { useExtensions } from './codemirrorHooks/extensions'

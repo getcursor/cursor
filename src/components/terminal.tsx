@@ -2,16 +2,19 @@ import React, { useEffect, useRef } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
+import { SearchAddon } from 'xterm-addon-search'
 import 'xterm/css/xterm.css'
-import { useAppSelector, useAppDispatch } from '../app/hooks'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { FullState } from '../features/window/state'
 import * as gs from '../features/globalSlice'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { throttleCallback } from './componentUtils'
+import { faChevronDown, faChevronUp } from '@fortawesome/pro-regular-svg-icons'
 
 export function XTermComponent({ height }: { height: number }) {
     const terminalRef = useRef<HTMLDivElement>(null)
+    const searchBarInputRef = useRef<HTMLInputElement>(null)
     const terminal = useRef<Terminal | null>(null)
     const fitAddon = useRef<FitAddon>(new FitAddon())
     const webLinksAddon = useRef<WebLinksAddon>(
@@ -20,6 +23,8 @@ export function XTermComponent({ height }: { height: number }) {
             connector.terminalClickLink(url)
         })
     )
+    const searchAddon = useRef<SearchAddon>(new SearchAddon())
+    const [searchBarOpen, setSearchBarOpen] = React.useState(false)
 
     const handleIncomingData = (e: any, data: any) => {
         terminal.current!.write(data)
@@ -38,6 +43,7 @@ export function XTermComponent({ height }: { height: number }) {
 
         terminal.current.loadAddon(fitAddon.current)
         terminal.current.loadAddon(webLinksAddon.current)
+        terminal.current.loadAddon(searchAddon.current)
 
         if (terminalRef.current) {
             terminal.current.open(terminalRef.current)
@@ -47,6 +53,17 @@ export function XTermComponent({ height }: { height: number }) {
 
         terminal.current.onData((e) => {
             connector.terminalInto(e)
+        })
+
+        terminal.current.attachCustomKeyEventHandler((e) => {
+            if (e.ctrlKey && e.key === 'f') {
+                openSearchBar()
+                return false
+            } else if (e.key === 'Escape') {
+                closeSearchBar()
+                return false
+            }
+            return true
         })
 
         connector.registerIncData(handleIncomingData)
@@ -68,12 +85,77 @@ export function XTermComponent({ height }: { height: number }) {
         }
     }, [height, terminal, fitAddon])
 
+    const openSearchBar = () => {
+        setSearchBarOpen(true)
+        searchBarInputRef.current?.focus()
+    }
+
+    const closeSearchBar = () => {
+        setSearchBarOpen(false)
+        terminal.current?.focus()
+    }
+
+    const findNextSearchResult = () => {
+        if (searchBarInputRef.current?.value) {
+            searchAddon.current.findNext(searchBarInputRef.current.value)
+        }
+    }
+
+    const findPreviousSearchResult = () => {
+        if (searchBarInputRef.current?.value) {
+            searchAddon.current.findPrevious(searchBarInputRef.current.value)
+        }
+    }
+
     return (
         <div
             className="terminalInnerContainer"
             ref={terminalRef}
-            style={{ height: height + 'px' }}
-        ></div>
+            style={{ height: height + 'px', position: 'relative' }}
+        >
+            {searchBarOpen && (
+                <div
+                    className="search-input flex justify-end absolute top-1 right-4 z-10 md:w-80"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                            closeSearchBar()
+                        }
+                    }}
+                >
+                    <input
+                        className="search-input w-full"
+                        placeholder="Search..."
+                        autoFocus
+                        ref={searchBarInputRef}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                findNextSearchResult()
+                            }
+                        }}
+                    />
+                    <div className="flex">
+                        <button
+                            className="icon"
+                            onClick={() => findPreviousSearchResult()}
+                        >
+                            <FontAwesomeIcon icon={faChevronUp} />
+                        </button>
+                        <button
+                            className="icon"
+                            onClick={() => findNextSearchResult()}
+                        >
+                            <FontAwesomeIcon icon={faChevronDown} />
+                        </button>
+                        <button
+                            className="icon"
+                            onClick={() => closeSearchBar()}
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 export const BottomTerminal: React.FC = () => {

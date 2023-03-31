@@ -1,23 +1,23 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FileTree, getIconElement } from './filetree'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+    faArrowRightLong,
     faChevronDown,
     faChevronRight,
-    faArrowRightLong,
 } from '@fortawesome/sharp-solid-svg-icons'
-import { useAppSelector, useAppDispatch } from '../app/hooks'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { getLeftTab, getLeftTabActive } from '../features/tools/toolSelectors'
 import {
+    collapseLeftSide,
     leftTabInactive,
     openFileTree,
     openSearch,
-    collapseLeftSide,
 } from '../features/tools/toolSlice'
 import {
-    updateFeedbackMessage,
     sendFeedbackMessage,
     toggleFeedback,
+    updateFeedbackMessage,
 } from '../features/logging/loggingSlice'
 import {
     getFeedbackMessage,

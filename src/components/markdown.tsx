@@ -1,17 +1,17 @@
 import React, {
-    useRef,
-    useEffect,
-    useState,
-    useCallback,
     ReactNode,
+    useCallback,
+    useEffect,
     useMemo,
+    useRef,
+    useState,
 } from 'react'
 import cx from 'classnames'
 import { ActionTips, Tip } from '../app/constants'
 import {
-    Message,
     CodeBlock as CodeBlockType,
     CodeSymbolType,
+    Message,
 } from '../features/window/state'
 import { faArrowUp, faClose } from '@fortawesome/pro-regular-svg-icons'
 import { getIconElement } from '../components/filetree'
@@ -25,13 +25,13 @@ import {
 } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { languages } from '@codemirror/language-data'
-import { useAppSelector, useAppDispatch } from '../app/hooks'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { syntaxBundle } from '../features/extensions/syntax'
 import {
-    getFilePath,
-    getFile,
-    getFolderPath,
     getCurrentFilePath,
+    getFile,
+    getFilePath,
+    getFolderPath,
 } from '../features/selectors'
 import { ContextBuilder } from '../features/chat/context'
 

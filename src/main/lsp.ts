@@ -4,7 +4,7 @@ import * as rpc from 'vscode-jsonrpc/node'
 import * as path from 'path'
 import { promisify } from 'util'
 import { type } from 'os'
-import { app, ipcMain, IpcMainInvokeEvent } from 'electron'
+import { IpcMainInvokeEvent, app, ipcMain } from 'electron'
 import fetch from 'node-fetch'
 import AdmZip from 'adm-zip'
 import * as targz from 'targz'
@@ -359,8 +359,12 @@ class LSPManager {
                 try {
                     // Check $GOPATH, and remove $GOPATH/go.mod file
                     const goPath = cp.execSync('echo $GOPATH').toString().trim()
-                    fs.accessSync(`${goPath}go.mod`, fs.constants.F_OK)
-                    await fileSystem.unlinkSync(`${goPath}/go.mod`)
+                    try {
+                        fs.accessSync(`${goPath}/go.mod`, fs.constants.F_OK)
+                        await fileSystem.unlinkSync(`${goPath}/go.mod`)
+                    } catch (e) {
+                        // ignore remove remove $GOPATH/go.mod file error, it may not exist
+                    }
                     await promisify(cp.exec)(
                         'go install golang.org/x/tools/gopls@latest',
                         {

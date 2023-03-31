@@ -1,13 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
+    BotMessage,
+    BotMessageType,
     ChatState,
-    initialChatState,
     CodeBlock,
     CodeSymbol,
-    BotMessageType,
     ResponseType,
     UserMessage,
-    BotMessage,
+    initialChatState,
 } from '../window/state'
 import { v4 as uuidv4 } from 'uuid'
 

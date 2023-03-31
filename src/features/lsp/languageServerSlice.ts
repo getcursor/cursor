@@ -1,6 +1,6 @@
-import { createAsyncThunk, PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getLanguageFromFilename } from '../extensions/utils'
-import { LanguageServerClient, LSLanguages } from './stdioClient'
+import { LSLanguages, LanguageServerClient } from './stdioClient'
 import { Text } from '@codemirror/state'
 
 import { offsetToPos } from './lspPlugin'

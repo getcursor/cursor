@@ -1,4 +1,4 @@
-import { EditorSelection, SelectionRange, Line } from '@codemirror/state'
+import { EditorSelection, Line, SelectionRange } from '@codemirror/state'
 import { ViewUpdate } from '@codemirror/view'
 
 export interface Statistics {

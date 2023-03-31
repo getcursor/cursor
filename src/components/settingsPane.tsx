@@ -1,4 +1,8 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks'
+
+import { Switch } from '@headlessui/react'
+import { HOMEPAGE_ROOT } from '../utils'
+
 import * as ssel from '../features/settings/settingsSelectors'
 import {
     changeSettings,
@@ -7,10 +11,10 @@ import {
 import {
     copilotChangeEnable,
     copilotChangeSignin,
+    getConnections,
     installLanguageServer,
     runLanguageServer,
     stopLanguageServer,
-    getConnections,
 } from '../features/lsp/languageServerSlice'
 // REMOVED CODEBASE-WIDE FEATURES!
 // import { initializeIndex } from '../features/globalSlice'
@@ -159,7 +163,7 @@ export function SettingsPopup() {
                             </div>
 
                             <CursorLogin />
-
+                            <OpenAIPanel />
                             <CopilotPanel />
                             {/* REMOVED CODEBASE-WIDE FEATURES!
                             <RemoteCodebaseSettingsPanel />*/}
@@ -178,7 +182,265 @@ export function SettingsPopup() {
     )
 }
 
-function CursorLogin() {
+export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
+    const settings = useAppSelector(ssel.getSettings)
+    const [localAPIKey, setLocalAPIKey] = useState('')
+    const [models, setAvailableModels] = useState<string[]>([])
+    const [keyError, showKeyError] = useState(false)
+    const dispatch = useAppDispatch()
+
+    // When the global openai key changes, we change this one
+    useEffect(() => {
+        if (settings.openAIKey && settings.openAIKey != localAPIKey) {
+            setLocalAPIKey(settings.openAIKey)
+            ssel.getModels(settings.openAIKey).then(
+                ({ models, isValidKey }) => {
+                    if (models) {
+                        setAvailableModels(models)
+                    }
+                }
+            )
+        }
+    }, [settings.openAIKey])
+
+    useEffect(() => {
+        showKeyError(false)
+    }, [localAPIKey])
+
+    const handleNewAPIKey = useCallback(async () => {
+        const { models, isValidKey } = await ssel.getModels(localAPIKey)
+        if (!isValidKey) {
+            // Error, and we let them know
+            showKeyError(true)
+            setAvailableModels([])
+        } else {
+            setAvailableModels(models)
+            dispatch(
+                changeSettings({
+                    openAIKey: localAPIKey,
+                    useOpenAIKey: true,
+                    openAIModel: models.at(0) ?? null
+                }))
+            onSubmit()
+        }
+    }, [dispatch, localAPIKey])
+
+    return (
+        <div className="settings__item">
+            <div className="flex">
+                <input
+                    className={`settings__item_textarea
+                    ${keyError ? 'input-error' : ''}`}
+                    placeholder="Enter your OpenAI API Key"
+                    onChange={(e) => {
+                        setLocalAPIKey(e.target.value)
+                    }}
+                    value={localAPIKey || ''}
+                    spellCheck="false"
+                />
+                <button
+                    className="settings__button"
+                    onClick={() => {
+                        handleNewAPIKey()
+                    }}
+                >
+                    Submit
+                </button>
+            </div>
+            {keyError && (
+                <div className="error-message">
+                    Invalid API Key. Please try again.
+                </div>
+            )}
+            {settings.openAIKey && (
+                <>
+                    <div className="flex items-center">
+                        <Switch
+                            checked={settings.useOpenAIKey}
+                            onChange={(value) =>
+                                dispatch(
+                                    changeSettings({ useOpenAIKey: value })
+                                )
+                            }
+                            className={`${
+                                settings.useOpenAIKey
+                                    ? 'bg-green-500'
+                                    : 'bg-red-500'
+                            }
+                                            mt-2 relative inline-flex h-[25px] w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                        >
+                            <span className="sr-only">Use setting</span>
+                            <span
+                                aria-hidden="true"
+                                className={`${
+                                    settings.useOpenAIKey
+                                        ? 'translate-x-7'
+                                        : 'translate-x-0'
+                                }
+                pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                            />
+                        </Switch>
+                        {settings.useOpenAIKey ? (
+                            <span className="ml-2">Enabled</span>
+                        ) : (
+                            <span className="ml-2">Disabled</span>
+                        )}
+                    </div>
+                    {settings.useOpenAIKey && (
+                        <Dropdown
+                            options={models}
+                            onChange={(e) => {
+                                dispatch(
+                                    changeSettings({
+                                        openAIModel: e.value,
+                                    })
+                                )
+                            }}
+                            value={settings.openAIModel}
+                        />
+                    )}
+                </>
+            )}
+        </div>
+    )
+}
+
+export function OpenAIPanel() {
+    const settings = useAppSelector(ssel.getSettings)
+    const [localAPIKey, setLocalAPIKey] = useState('')
+    const [models, setAvailableModels] = useState<string[]>([])
+    const [keyError, showKeyError] = useState(false)
+    const dispatch = useAppDispatch()
+
+    // When the global openai key changes, we change this one
+    useEffect(() => {
+        if (settings.openAIKey && settings.openAIKey != localAPIKey) {
+            setLocalAPIKey(settings.openAIKey)
+            ssel.getModels(settings.openAIKey).then(
+                ({ models, isValidKey }) => {
+                    if (models) {
+                        setAvailableModels(models)
+                    }
+                }
+            )
+        }
+    }, [settings.openAIKey])
+
+    useEffect(() => {
+        showKeyError(false)
+    }, [localAPIKey])
+
+    const handleNewAPIKey = useCallback(async () => {
+        console.log('here 2')
+        const { models, isValidKey } = await ssel.getModels(localAPIKey)
+        console.log({ models, isValidKey })
+        if (!isValidKey) {
+            // Error, and we let them know
+            console.log('here 3')
+            showKeyError(true)
+            setAvailableModels([])
+        } else {
+            setAvailableModels(models)
+            console.log('here')
+            dispatch(
+                changeSettings({
+                    openAIKey: localAPIKey,
+                    useOpenAIKey: true,
+                    openAIModel: models.at(0) ?? null
+                }))
+        }
+    }, [dispatch, localAPIKey])
+
+
+    return (
+        <div className="settings__item">
+            <div className="settings__item_title">OpenAI API Key</div>
+            <div className="settings__item_description">
+                You can enter an OpenAI API key to use Cursor at-cost
+            </div>
+            <div className="flex">
+                <input
+                    className={`settings__item_textarea
+                    ${keyError ? 'input-error' : ''}`}
+                    placeholder="Enter your OpenAI API Key"
+                    onChange={(e) => {
+                        setLocalAPIKey(e.target.value)
+                    }}
+                    value={localAPIKey || ''}
+                    spellCheck="false"
+                />
+                <button
+                    className="settings__button"
+                    onClick={() => {
+                        handleNewAPIKey()
+                    }}
+                >
+                    Submit
+                </button>
+            </div>
+            {keyError && (
+                <div className="error-message">
+                    Invalid API Key. Please try again.
+                </div>
+            )}
+            {settings.openAIKey && (
+                <>
+                    <div className="flex items-center">
+                        <Switch
+                            checked={settings.useOpenAIKey}
+                            onChange={(value) =>
+                                dispatch(
+                                    changeSettings({ useOpenAIKey: value })
+                                )
+                            }
+                            className={`${
+                                settings.useOpenAIKey
+                                    ? 'bg-green-500'
+                                    : 'bg-red-500'
+                            }
+                                            mt-2 relative inline-flex h-[24px] w-[52px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                        >
+                            <span className="sr-only">Use setting</span>
+                            <span
+                                aria-hidden="true"
+                                className={`${
+                                    settings.useOpenAIKey
+                                        ? 'translate-x-7'
+                                        : 'translate-x-0'
+                                }
+                pointer-events-none inline-block h-[20px] w-[20px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                            />
+                        </Switch>
+                        {settings.useOpenAIKey ? (
+                            <span className="ml-2">Enabled</span>
+                        ) : (
+                            <span className="ml-2">Disabled</span>
+                        )}
+                    </div>
+                    {settings.useOpenAIKey && (
+                        <Dropdown
+                            options={models}
+                            onChange={(e) => {
+                                dispatch(
+                                    changeSettings({
+                                        openAIModel: e.value,
+                                    })
+                                )
+                            }}
+                            value={settings.openAIModel}
+                        />
+                    )}
+                </>
+            )}
+        </div>
+    )
+}
+
+export function CursorLogin({
+    showSettings = true,
+}: {
+    showSettings?: boolean
+}) {
     const dispatch = useAppDispatch()
 
     const { signedIn, proVersion } = useAppSelector(loginStatus)
@@ -193,40 +455,83 @@ function CursorLogin() {
     const upgrade = useCallback(() => {
         dispatch(upgradeCursor(null))
     }, [])
+    const openAccountSettings = useCallback(() => {
+        window.open(`${HOMEPAGE_ROOT}/settings`, '_blank')
+    }, [])
 
     let currentPanel
     if (!signedIn) {
         currentPanel = (
-            <div className="copilot__signin">
-                <button onClick={signIn}>Sign in</button>
-                <button onClick={signIn}>Sign up</button>
+            <div className="settings__item">
+                <div className="settings__item_title">Cursor Account</div>
+                <div className="settings__item_description">
+                    Login to use the AI without an API key
+                </div>
+                <div className="copilot__signin">
+                    <button onClick={signIn}>Sign in</button>
+                    <br />
+                    <button onClick={signIn}>Sign up</button>
+                </div>
             </div>
         )
     } else {
         if (proVersion) {
             currentPanel = (
-                <div className="copilot__signin">
-                    <button onClick={signOut}>Log out</button>
+                <div className="settings__item">
+                    <div className="settings__item_title">Cursor Account</div>
+                    <div className="settings__item_description">
+                        Login to use the AI without an API key
+                    </div>
+                    <div className="copilot__signin">
+                        <button onClick={signOut}>Log out</button>
+                        {showSettings && (
+                    <>
+                        <br />
+                        <button onClick={openAccountSettings}>
+                            Manage settings
+                        </button>
+                    </>
+                )}
+                    </div>
                 </div>
             )
         } else {
             currentPanel = (
-                <div className="copilot__signin">
-                    <button onClick={upgrade}>Upgrade to Pro</button>
-                    <button onClick={signOut}>Log out</button>
-                </div>
+                <>
+                    <div className="settings__item">
+                        <div className="settings__item_title">Cursor Account</div>
+                        <div className="settings__item_description">
+                            Login to use the AI without an API key
+                        </div>
+                        <div className="copilot__signin">
+                            <button onClick={signOut}>Log out</button>
+                            {showSettings && (
+                    <>
+                        <br />
+                        <button onClick={openAccountSettings}>
+                            Manage settings
+                        </button>
+                    </>
+                )}
+                            <br />
+                        </div>
+                    </div>
+                    <div className="settings__item">
+                        <div className="settings__item_title">Cursor Pro</div>
+                        <div className="settings__item_description">
+                            Upgrade for unlimited generations
+                        </div>
+                        <div className="copilot__signin">
+                        <button onClick={upgrade}>Upgrade to Pro</button>
+                        </div>
+                    </div>
+                </>
             )
         }
     }
 
     return (
-        <div className="settings__item">
-            <div className="settings__item_title">Cursor Pro</div>
-            <div className="settings__item_description">
-                Optionally reserve capacity to avoid "maximum capacity" limits.
-            </div>
-            {currentPanel}
-        </div>
+            currentPanel
     )
 }
 

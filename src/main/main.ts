@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { Settings, File, Folder } from '../features/window/state'
+import { File, Folder, Settings } from '../features/window/state'
 
 import { setupCommentIndexer } from './commentIndexer'
 import { setupTestIndexer } from './testIndexer'
@@ -7,18 +7,18 @@ import { lspStore, setupLSPs } from './lsp'
 import { setupSearch } from './search'
 
 import {
-    app,
-    shell,
     BrowserWindow,
-    Menu,
-    ipcMain,
     IpcMainInvokeEvent,
-    session,
-    systemPreferences,
-    globalShortcut,
-    dialog,
-    clipboard,
+    Menu,
     MenuItemConstructorOptions,
+    app,
+    clipboard,
+    dialog,
+    globalShortcut,
+    ipcMain,
+    session,
+    shell,
+    systemPreferences,
 } from 'electron'
 
 import { API_ROOT } from '../utils'
@@ -28,18 +28,48 @@ import Store from 'electron-store'
 import log from 'electron-log'
 import { machineIdSync } from 'node-machine-id'
 
-import { fileSystem, setFileSystem, FileSystem } from './fileSystem'
+import { FileSystem, fileSystem, setFileSystem } from './fileSystem'
 import { setupStoreHandlers } from './storeHandler'
 import { resourcesDir } from './utils'
 import { setupIndex } from './indexer'
 
-import { authPackage } from './auth'
+import { authPackage, setupTokens } from './auth'
 
 import { setupTerminal } from './terminal'
 import todesktop from '@todesktop/runtime'
 todesktop.init()
 
 const store = new Store()
+let main_window: Electron.BrowserWindow
+
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient('electron-fiddle', process.execPath, [
+            path.resolve(process.argv[1]),
+        ])
+    }
+} else {
+    app.setAsDefaultProtocolClient('electron-fiddle')
+}
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (main_window) {
+            if (main_window.isMinimized()) main_window.restore()
+            main_window.focus()
+        }
+        const url = commandLine.pop()
+        // dialog.showErrorBox('Welcome Back (in app already)', `You arrived from: ${url}`)
+        if (url) {
+            setupTokens(url)
+        }
+    })
+}
 
 type Event = IpcMainInvokeEvent
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -49,7 +79,12 @@ if (require('electron-squirrel-startup')) {
     app.quit()
 }
 
-let main_window: Electron.BrowserWindow
+app.on('open-url', (event, url) => {
+    // dialog.showErrorBox('Welcome (first time i think)', `You arrived from: ${url}`)
+    if (url) {
+        setupTokens(url)
+    }
+})
 
 // Remove holded defaults
 if (process.platform === 'darwin')

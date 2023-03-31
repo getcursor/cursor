@@ -1,6 +1,6 @@
 import { EditorView } from '@codemirror/view'
 import { BotMessage } from '../../features/window/state'
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { EditorState, Text } from '@codemirror/state'
 import { rejectDiff, setDiff } from '../../features/extensions/diff'
 import { editBoundaryState } from '../../features/extensions/hackDiff'

@@ -1,22 +1,95 @@
 export const API_ROOT = 'https://aicursor.com'
+export const HOMEPAGE_ROOT = 'https://cursor.so'
 
-export class NoAuthRateLimitError extends Error {
+export class ExpectedBackendError extends Error {
+    public title: string | null = null
+}
+
+export class NoAuthRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'You have reached the rate limit for unauthenticated requests. Please authenticate to continue.'
+        message = "You've reached the rate limit for unauthenticated requests. Please log in to continue."
     ) {
         super(message)
         this.name = 'NoAuthRateLimitError'
+        this.title = 'Please log in to continue...'
     }
 }
 
-export class AuthRateLimitError extends Error {
+export class AuthRateLimitError extends ExpectedBackendError {
     constructor(
-        message = 'You have reached the rate limit for authenticated requests. Please wait before making more requests.'
+        message = "It seems like you're making an unusual number of AI requests. Please try again later. If you think this is a mistake, please contact admin@cursor.so"
     ) {
         super(message)
         this.name = 'AuthRateLimitError'
+        this.title = "You're going a bit fast..."
     }
 }
+
+export class NoAuthLocalRateLimitError extends ExpectedBackendError {
+    constructor(
+        message = 'To protect our backend, we ask that free users limit their usage to 30 prompts per hour. To raise this limit, feel free to upgrade to pro.'
+    ) {
+        super(message)
+        this.name = 'NoAuthLocalRateLimitError'
+        this.title = "You're going a bit fast..."
+    }
+}
+
+export class NoAuthGlobalOldRateLimitError extends ExpectedBackendError {
+    constructor(
+        message = "If you've enjoyed using Cursor, please consider subscribing to one of our paid plans. Otherwise, you can enter your Open AI key (gear icon) to continue using the AI features at-cost."
+    ) {
+        super(message)
+        this.name = 'NoAuthGlobalOldRateLimitError'
+        this.title = 'Free tier limit exceeded'
+    }
+}
+
+export class NoAuthGlobalNewRateLimitError extends ExpectedBackendError {
+    constructor(
+        message = "We're currently experiencing a high volume of requests. Please try again in a few minutes. For support, please contact admin@cursor.so."
+    ) {
+        super(message)
+        this.name = 'NoAuthGlobalNewRateLimitError'
+        this.title = 'Our servers are overloaded...'
+    }
+}
+
+export class OpenAIError extends ExpectedBackendError {}
+export class BadOpenAIAPIKeyError extends OpenAIError {
+    constructor(
+        message = 'The provided OpenAI API key is invalid. Please provide a valid API key.'
+    ) {
+        super(message)
+        this.name = 'BadOpenAIAPIKeyError'
+    }
+}
+
+export class BadModelError extends ExpectedBackendError {
+    constructor(
+        message = 'The provided model ID is invalid. Please provide a valid model ID.'
+    ) {
+        super(message)
+        this.name = 'BadModelError'
+    }
+}
+
+export class NotLoggedInError extends ExpectedBackendError {
+    constructor(message = 'You are not logged in. Please log in to continue.') {
+        super(message)
+        this.name = 'NotLoggedInError'
+    }
+}
+export type ExpectedError =
+    | NoAuthRateLimitError
+    | AuthRateLimitError
+    | NoAuthLocalRateLimitError
+    | NoAuthGlobalOldRateLimitError
+    | NoAuthGlobalNewRateLimitError
+    | BadOpenAIAPIKeyError
+    | BadModelError
+    | NotLoggedInError
+
 export async function fetchWithCookies(url: string, options: RequestInit = {}) {
     const response = await fetch(url, options)
     // Get the cookies

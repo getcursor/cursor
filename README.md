@@ -25,10 +25,10 @@ Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you
 
 Long term, our plan is to build Cursor into the world's most productive development environment. Using LLMs, we want to do things like:
 
--   Auto-fix errors as soon as they show up in your terminal
--   Embed AI-written documentation into the UI
 -   "Heal" your repository when you're halfway through a refactor
 -   Allow you to code by editing a "pseudocode" version of your codebase
+-   Auto-fix errors as soon as they show up in your terminal
+-   Embed AI-written documentation into the UI
 
 ## Development
 

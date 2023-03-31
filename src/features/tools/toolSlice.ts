@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { FullState, ToolState } from '../window/state'
 
 const initialState: ToolState = {
@@ -141,6 +141,7 @@ export const toolSlice = createSlice({
                 stripeProfile?: string | null
             }>
         ) {
+            console.log('Triggered with', action.payload)
             if (action.payload.accessToken) {
                 state.cursorLogin.accessToken = action.payload.accessToken
             } else if (action.payload.accessToken === null) {

@@ -1517,6 +1517,13 @@ cm-diff-cancel > div {
     padding: 12px;
 }
 
+.search-input {
+    border-radius: 5px;
+    background-color: var(--input-background);
+    color: var(--input-text);
+    padding: 4px;
+}
+
 /* .cm-diagnostic {
   display: block;
   word-break: keep-all;
@@ -1672,6 +1679,11 @@ cm-diff-cancel > div {
     flex-grow: 1;
 }
 
+.input-error {
+    border: 1px solid rgba(255, 0, 0, 0.5) !important;
+    /*     background-color: #ffe6e6; */
+}
+
 .feedbackarea_button {
     color: #ccc;
     margin-right: 8px;
@@ -1683,12 +1695,17 @@ cm-diff-cancel > div {
     cursor: pointer;
 }
 
-.settings button {
+.settings__button,
+.copilot__signin button {
     background-color: var(--vscode-blue);
     padding: 4px 12px;
     border-radius: 5px;
     color: #fff;
     margin-top: 8px;
+}
+
+.settings__button {
+    margin-left: 8px;
 }
 
 .settings a {
@@ -1698,6 +1715,8 @@ cm-diff-cancel > div {
 
 .codeblockwrapper {
     position: relative;
+    display: flex;
+    margin: 12px 0px;
 }
 
 .copyButton {
@@ -2404,6 +2423,14 @@ free servers .disabled_command .shortcut__block {
     align-items: center;
 }
 
+.terminalInnerContainer .icon {
+    color: #bbb;
+    font-size: 18px;
+    margin: auto;
+    width: 24px;
+    height: 24px;
+}
+
 .terminalTitle {
     color: #bbb;
     flex-grow: 1;
@@ -2494,4 +2521,65 @@ free servers .disabled_command .shortcut__block {
     padding: 8px;
     box-sizing: border-box;
     border-radius: 2px;
+}
+
+.signup__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 18px;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.signup__title {
+    font-size: 24px;
+    margin-bottom: 24px;
+    font-weight: 600;
+    color: #ddd;
+}
+
+.signup__subtitle {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.signup__signup_button {
+    padding: 8px 16px;
+    width: 100%;
+    background-color: var(--vscode-blue);
+    border-radius: 5px;
+    margin: 8px 0px;
+    cursor: pointer;
+}
+
+.signup__signup_button:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.signup__module {
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.signup__last_module {
+    margin-bottom: 0px;
+    text-align: center;
+}
+
+.error-message {
+    margin-top: 8px;
+    color: rgb(251 142 142 / 90%);
+    font-weight: 600;
+}
+
+.codeblockwrapper .cm-editor {
+    border-radius: 5px;
+}
+
+.markdownpopup p {
+    margin: 12px 0px;
 }

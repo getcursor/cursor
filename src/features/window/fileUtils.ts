@@ -1,15 +1,15 @@
 import {
-    FullState,
-    State,
     CachedFile,
     File,
+    Folder,
+    FullState,
+    State,
+    initialState,
     nextFileID,
     nextFolderID,
-    Folder,
-    initialState,
 } from './state'
 
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 // Returns a new CachedFile object with the given contents and a counter of 0.
 export function newCachedFile(contents = ''): CachedFile {

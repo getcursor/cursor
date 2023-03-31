@@ -1,13 +1,19 @@
 import {
     ActionCreatorWithoutPayload,
     AnyAction,
-    createAsyncThunk,
     ThunkDispatch,
+    createAsyncThunk,
 } from '@reduxjs/toolkit'
 import {
     API_ROOT,
     AuthRateLimitError,
-    NoAuthRateLimitError,
+    BadModelError,
+    BadOpenAIAPIKeyError,
+    ExpectedBackendError,
+    NoAuthGlobalNewRateLimitError,
+    NoAuthGlobalOldRateLimitError,
+    NoAuthLocalRateLimitError,
+    NotLoggedInError,
     streamSource,
 } from '../../utils'
 import { getViewId } from '../codemirror/codemirrorSelectors'
@@ -42,13 +48,7 @@ import {
     updateLastUserMessageMsgType,
 } from './chatSlice'
 import { Text } from '@codemirror/state'
-import {
-    addTransaction,
-    openError,
-    openFile,
-    openNoAuthRateLimit,
-    openRateLimit,
-} from '../globalSlice'
+import { addTransaction, openError, openFile } from '../globalSlice'
 import { findFileIdFromPath, getPathForFileId } from '../window/fileUtils'
 import {
     getPrecedingLines,
@@ -272,7 +272,9 @@ export async function getPayload({
 
     let oaiKey: string | undefined | null =
         state.settingsState.settings.openAIKey
-    if (oaiKey == null || oaiKey === '') {
+    const openAIModel = state.settingsState.settings.openAIModel
+    const useOpenAI = state.settingsState.settings.useOpenAIKey
+    if (oaiKey == null || oaiKey === '' || !useOpenAI) {
         oaiKey = null
     }
     const userRequest = {
@@ -327,7 +329,9 @@ export async function getPayload({
 
         rootPath: state.global.rootPath,
         apiKey: oaiKey,
+        customModel: openAIModel,
     }
+    console.log({ data })
 
     // document.cookie = `repo_path=${state.global.rootPath}`
     return data
@@ -380,16 +384,25 @@ export const continueGeneration = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
+                        default:
+                            break
                     }
                 }
                 return resp
@@ -506,14 +519,10 @@ export const continueGeneration = createAsyncThunk(
             }
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
             }
             dispatch(setHitTokenLimit({ conversationId, hitTokenLimit: false }))
@@ -598,16 +607,25 @@ export const streamResponse = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
+                        default:
+                            break
                     }
                 }
                 return resp
@@ -915,14 +933,10 @@ export const streamResponse = createAsyncThunk(
             dispatch(finishResponse())
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
             }
         }
@@ -949,18 +963,11 @@ export const continueUntilEnd = createAsyncThunk(
             dispatch(finishResponse())
         } catch (e) {
             dispatch(setGenerating(false))
-            if (e instanceof NoAuthRateLimitError) {
-                dispatch(openNoAuthRateLimit())
-                dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
-            } else if (e instanceof AuthRateLimitError) {
-                dispatch(openRateLimit())
-                dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({ error: e }))
             } else if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
             }
         }
     }
@@ -1034,16 +1041,25 @@ export const diffResponse = createAsyncThunk(
                 //credentials: 'include',
                 body: JSON.stringify(data),
             }).then(async (resp) => {
-                console.log('CAUGHT e', resp)
-                if (resp.status === 429) {
+                if (resp.status != 200) {
                     const text = await resp.json()
-                    console.log('message', text)
-                    if (text.detail.includes('NO_AUTH')) {
-                        console.log('THROWING THIS ERROR')
-                        throw new NoAuthRateLimitError()
-                    } else if (text.detail === 'AUTH') {
-                        console.log('THROWING THIS OTHER ERROR')
-                        throw new AuthRateLimitError()
+                    switch (text.detail) {
+                        case 'NO_AUTH_LOCAL':
+                            throw new NoAuthLocalRateLimitError()
+                        case 'NO_AUTH_GLOBAL_NEW':
+                            throw new NoAuthGlobalOldRateLimitError()
+                        case 'NO_AUTH_GLOBAL_OLD':
+                            throw new NoAuthGlobalNewRateLimitError()
+                        case 'AUTH':
+                            throw new AuthRateLimitError()
+                        case 'BAD_API_KEY':
+                            throw new BadOpenAIAPIKeyError()
+                        case 'BAD_MODEL':
+                            throw new BadModelError()
+                        case 'NOT_LOGGED_IN':
+                            throw new NotLoggedInError()
+                        default:
+                            break
                     }
                 }
                 return resp
@@ -1187,12 +1203,12 @@ export const diffResponse = createAsyncThunk(
             checkSend()
             //debugger
         } catch (e) {
-            console.error(e)
             dispatch(setGenerating(false))
-            if (!(e instanceof PromptCancelledError)) {
-                dispatch(openError())
+            if (e instanceof ExpectedBackendError) {
+                dispatch(openError({ error: e }))
+            } else if (!(e instanceof PromptCancelledError)) {
+                dispatch(openError({}))
                 dispatch(interruptGeneration(null))
-                dispatch(finishResponse())
             }
         }
     }

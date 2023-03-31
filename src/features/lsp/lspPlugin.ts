@@ -2,36 +2,36 @@ import { URI } from 'vscode-uri'
 import { autocompletion, pickedCompletion } from '@codemirror/autocomplete'
 import posthog from 'posthog-js'
 import {
+    DiagnosticWithAction,
     LanguageServerClient,
     LanguageServerPluginInterface,
     Notification,
-    DiagnosticWithAction,
 } from './stdioClient'
 import { gotoDefinition } from '../globalSlice'
 import {
+    Action,
     ActionTransaction,
     Diagnostic,
     getDiagnostics,
     lintState,
     setDiagnostics,
-    Action,
 } from '../linter/lint'
 import {
-    EditorView,
-    ViewPlugin,
-    Tooltip,
-    hoverTooltip,
     Decoration,
     DecorationSet,
+    EditorView,
+    Tooltip,
+    ViewPlugin,
+    hoverTooltip,
 } from '@codemirror/view'
 import type { ViewUpdate } from '@codemirror/view'
 import {
-    Facet,
-    Text,
-    Range,
-    StateField,
-    StateEffect,
     Extension,
+    Facet,
+    Range,
+    StateEffect,
+    StateField,
+    Text,
 } from '@codemirror/state'
 
 import {
@@ -49,9 +49,9 @@ import type {
 } from '@codemirror/autocomplete'
 import md from 'markdown-it'
 import {
-    DiagnosticSeverity,
     CompletionItemKind,
     CompletionTriggerKind,
+    DiagnosticSeverity,
 } from 'vscode-languageserver-protocol'
 
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
