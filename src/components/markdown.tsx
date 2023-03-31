@@ -348,24 +348,26 @@ export function ChatPopup() {
                     }}
                 >
                     {/* Subtle padding to separate content from scroll bar*/}
-                    <div className="px-4 overflow-auto">
-                        <div className="markdownpopup__dismiss h-8 flex items-center">
-                            <CommandBarActionTips tips={commandBarActionTips} />
+                    <div>
+                        <div className="markdownpopup__dismiss h-8 flex flex-col mt-3  items-center">
+                                <CommandBarActionTips tips={commandBarActionTips} />
                         </div>
-                        <div className="flex flex-col space-y-2">
-                            {markdownPopups}
-                        </div>
-                        <div
-                            className={cx('my-4', {
-                                'opacity-100': !isGenerating,
-                                'opacity-0': isGenerating,
-                            })}
-                            ref={commandBoxRef}
-                        >
-                            {!isGenerating && (
-                                <CommandBar parentCaller={'chat'} />
-                            )}
-                        </div>
+                      <div className="chatpopup__content  px-4 overflow-auto ">
+                            <div className="flex flex-col space-y-2">
+                                {markdownPopups}
+                            </div>
+                            <div
+                                className={cx('my-4', {
+                                    'opacity-100': !isGenerating,
+                                    'opacity-0': isGenerating,
+                                })}
+                                ref={commandBoxRef}
+                            >
+                                {!isGenerating && (
+                                    <CommandBar parentCaller={'chat'} />
+                                )}
+                            </div>
+                      </div>
                     </div>
                     {isChatHistoryOpen && (
                         <ChatHistory onSelect={handleSelectHistory} />
@@ -759,7 +761,7 @@ function formatPromptTime(sentAt: number): string {
     const hours = date.getHours()
     const minutes = date.getMinutes()
     const ampm = hours >= 12 ? 'pm' : 'am'
-    const formattedHours = hours % 12 === 0 ? 12 : hours % 12
+    const formattedHours = hours % 12  ? 12 : hours % 12
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
     return `${formattedHours}:${formattedMinutes}${ampm}`
 }
@@ -798,7 +800,7 @@ function ChatHistory(props: {
                     return (
                         <button
                             key={msg.conversationId}
-                            className="w-full bg-neutral-600 rounded-sm px-4 py-2 "
+                            className="w-full bg-neutral-600 rounded-sm px-4 py-2"
                             onClick={() => props.onSelect?.(msg.conversationId)}
                         >
                             <div
@@ -806,10 +808,10 @@ function ChatHistory(props: {
                                     'flex justify-between whitespace-nowrap items-center'
                                 }
                             >
-                                <span className="text-neutral-300 text-xs customEllipsis">
+                                <span className="text-neutral-300 text-base customEllipsis">
                                     {formatPromptPreview(msg.message)}
                                 </span>
-                                <span className="text-neutral-400 text-xs">
+                                <span className="text-neutral-400 text-base">
                                     {formatPromptTime(msg.sentAt)}
                                 </span>
                             </div>

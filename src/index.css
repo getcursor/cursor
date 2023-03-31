@@ -101,10 +101,7 @@ body {
 }
 .customEllipsis:after {
     content: '"';
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
+    margin-left: 2px;
 }
 
 .cm-content {
@@ -1367,6 +1364,10 @@ cm-diff-cancel > div {
     width: fit-content;
     cursor: pointer;
     color: #eee;
+}
+
+.chatpopup__content {
+    max-height: 76vh;
 }
 
 .markdownpopup .cm-content {
