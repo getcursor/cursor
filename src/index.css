@@ -1517,6 +1517,13 @@ cm-diff-cancel > div {
     padding: 12px;
 }
 
+.search-input {
+    border-radius: 5px;
+    background-color: var(--input-background);
+    color: var(--input-text);
+    padding: 4px;
+}
+
 /* .cm-diagnostic {
   display: block;
   word-break: keep-all;
@@ -2414,6 +2421,14 @@ free servers .disabled_command .shortcut__block {
 .terminalContainer .header {
     display: flex;
     align-items: center;
+}
+
+.terminalInnerContainer .icon {
+    color: #bbb;
+    font-size: 18px;
+    margin: auto;
+    width: 24px;
+    height: 24px;
 }
 
 .terminalTitle {
