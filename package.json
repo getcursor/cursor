@@ -172,6 +172,7 @@
         "watcher": "^2.2.2",
         "webpack": "^5.75.0",
         "xterm": "^4.19.0",
+        "xterm-addon-search": "^0.9.0",
         "xterm-addon-web-links": "^0.6.0"
     }
 }
