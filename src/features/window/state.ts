@@ -413,7 +413,7 @@ export const initialSettingsState = {
         contextType: 'none',
         textWrapping: 'disabled',
         tabSize: undefined,
-        betterComments: 'enabled',
+        betterComments: 'disabled',
     },
 }
 
