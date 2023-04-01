@@ -14,7 +14,6 @@ module.exports = {
         type: 'filesystem',
     },
     resolve: {
-        // modules: [path.resolve(__dirname, 'src', 'main'), 'node_modules'],
         extensions: ['.js', '.ts', '.jsx', '.tsx'],
     },
 }

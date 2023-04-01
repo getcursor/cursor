@@ -140,12 +140,11 @@ export async function refreshTokens(event?: IpcMainInvokeEvent) {
 
 export async function setupTokens(
     callbackURL: string
-    // window: BrowserWindow
 ) {
     const urlParts = url.parse(callbackURL, true)
     const query = urlParts.query
     const host = urlParts.host
-    //
+
     if (host?.toLowerCase() === 'changetokens') {
         accessToken = query.accessToken as string
         refreshToken = query.refreshToken as string
