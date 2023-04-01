@@ -1,4 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import * as csel from '../../features/chat/chatSelectors'
+import * as ssel from '../../features/settings/settingsSelectors'
+
 import {
     Compartment,
     EditorState,
@@ -16,25 +18,7 @@ import {
     keymap,
     scrollPastEnd,
 } from '@codemirror/view'
-import { syntaxBundle } from '../../features/extensions/syntax'
-import { indentationMarkers } from '../../features/extensions/indentLines'
-// import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { diffExtension } from '../../features/extensions/diff'
-import { hackExtension } from '../../features/extensions/hackDiff'
-import { diagnosticsField, lintGutter } from '../../features/linter/lint'
-import { autocompleteView } from '../../features/extensions/autocomplete'
-import { acceptCompletion } from '@codemirror/autocomplete'
-import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import * as csel from '../../features/chat/chatSelectors'
-import * as ssel from '../../features/settings/settingsSelectors'
-import { Tab } from '../../features/window/state'
-import { ReactCodeMirrorRef } from '../react-codemirror'
-import { getFileIndentUnit } from '../../features/selectors'
-import { indentUnit, syntaxTree } from '@codemirror/language'
-import { vim } from '../codemirror-vim'
-import { moveToPane, saveFile } from '../../features/globalSlice'
-import { closeTab } from '../../features/globalThunks'
-import { languageBundle } from '../../features/extensions/lsp'
+import { Tag, getStyleTags, tags } from '@lezer/highlight'
 import {
     completionDecoration,
     copilotBundle,
@@ -45,24 +29,44 @@ import {
     copilotStatus,
     languageServerStatus,
 } from '../../features/lsp/languageServerSelector'
-import { getLanguageFromFilename } from '../../features/extensions/utils'
-import { scrollbarPlugin } from '../../features/extensions/minimap'
+import { diagnosticsField, lintGutter } from '../../features/linter/lint'
+import { indentUnit, syntaxTree } from '@codemirror/language'
+import { moveToPane, saveFile } from '../../features/globalSlice'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { useEffect, useMemo } from 'react'
+
+import { ReactCodeMirrorRef } from '../react-codemirror'
+import { Tab } from '../../features/window/state'
+import { Tree } from '@lezer/common'
+import { acceptCompletion } from '@codemirror/autocomplete'
+import { autocompleteView } from '../../features/extensions/autocomplete'
+import { barExtension } from '../../features/extensions/cmdZBar'
+import { betterComments } from '../../features/extensions/betterComments'
+import { closeTab } from '../../features/globalThunks'
 import { cursorTooltip } from '../../features/extensions/selectionTooltip'
+// import { indentationMarkers } from '@replit/codemirror-indentation-markers';
+import { diffExtension } from '../../features/extensions/diff'
+import { emacs } from '@replit/codemirror-emacs'
+import { fixLintExtension } from '../../features/linter/fixLSPExtension'
+import { getFileIndentUnit } from '../../features/selectors'
+import { getLanguageFromFilename } from '../../features/extensions/utils'
+import { hackExtension } from '../../features/extensions/hackDiff'
+import { indentSelection } from '@codemirror/commands'
+import { indentationMarkers } from '../../features/extensions/indentLines'
+import { languageBundle } from '../../features/extensions/lsp'
+import { newLineText } from '../../features/extensions/newLineText'
+import { scrollbarPlugin } from '../../features/extensions/minimap'
+import { store } from '../../app/store'
+import { storePaneIdExtensions } from '../../features/extensions/storePane'
+import { syntaxBundle } from '../../features/extensions/syntax'
+import { triggerFileSearch } from '../../features/tools/toolSlice'
+import { updateCommentsEffect } from '../../features/extensions/comments'
+import { vim } from '../codemirror-vim'
+
 // import { activeGutter } from '../../features/extensions/activeLineGutter'
 
-import { indentSelection } from '@codemirror/commands'
-import { emacs } from '@replit/codemirror-emacs'
 
-import { newLineText } from '../../features/extensions/newLineText'
 
-import { Tree } from '@lezer/common'
-import { barExtension } from '../../features/extensions/cmdZBar'
-import { updateCommentsEffect } from '../../features/extensions/comments'
-import { Tag, getStyleTags, tags } from '@lezer/highlight'
-import { fixLintExtension } from '../../features/linter/fixLSPExtension'
-import { storePaneIdExtensions } from '../../features/extensions/storePane'
-import { store } from '../../app/store'
-import { triggerFileSearch } from '../../features/tools/toolSlice'
 
 const getTagName = (tag: Tag) => {
     for (const key of Object.keys(tags)) {
@@ -87,7 +91,8 @@ const syntaxCompartment = new Compartment(),
     copilotCompartment = new Compartment(),
     lsCompartment = new Compartment(),
     commentCompartment = new Compartment(),
-    readOnlyCompartment = new Compartment()
+    readOnlyCompartment = new Compartment(),
+    betterCommentCompartment = new Compartment()
 
 const OPEN_BRACKETS = ['{', '[', '(']
 const CLOSE_BRACKETS = ['}', ']', ')']
@@ -240,6 +245,7 @@ const globalExtensions = [
     copilotCompartment.of([]),
     commentCompartment.of([]),
     readOnlyCompartment.of([]),
+    betterCommentCompartment.of([]),
 ]
 
 function getSelectedPos(view: EditorView) {
@@ -507,6 +513,21 @@ export function useExtensions({
             })
         }
     }, [settings.tabSize, editorRef.current, justCreated])
+
+        // depends on the settings better comments value and the editorRef.current
+        useEffect(() => {
+
+            const isEnabled = settings.betterComments === 'enabled'
+    
+            editorRef.current.view?.dispatch({
+                effects: betterCommentCompartment.reconfigure([
+                    betterComments(isEnabled)
+                ]),
+            })
+    
+            
+        }, [settings.betterComments, editorRef.current])
+    
 
     return globalExtensions
 }

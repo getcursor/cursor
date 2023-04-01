@@ -1,9 +1,8 @@
-import { useAppDispatch, useAppSelector } from '../app/hooks'
-
-import { Switch } from '@headlessui/react'
-import { HOMEPAGE_ROOT } from '../utils'
+import 'react-dropdown/style.css'
 
 import * as ssel from '../features/settings/settingsSelectors'
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
     changeSettings,
     toggleSettings,
@@ -16,26 +15,29 @@ import {
     runLanguageServer,
     stopLanguageServer,
 } from '../features/lsp/languageServerSlice'
-// REMOVED CODEBASE-WIDE FEATURES!
-// import { initializeIndex } from '../features/globalSlice'
-
-import Dropdown from 'react-dropdown'
-import 'react-dropdown/style.css'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
     copilotStatus,
     getLanguages,
     languageServerStatus,
 } from '../features/lsp/languageServerSelector'
-
 import {
     signInCursor,
     signOutCursor,
     upgradeCursor,
 } from '../features/tools/toolSlice'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+
+import Dropdown from 'react-dropdown'
+import { HOMEPAGE_ROOT } from '../utils'
+import Modal from 'react-modal'
+import { Switch } from '@headlessui/react'
 import { loginStatus } from '../features/tools/toolSelectors'
 
-import Modal from 'react-modal'
+// REMOVED CODEBASE-WIDE FEATURES!
+// import { initializeIndex } from '../features/globalSlice'
+
+
+
 
 export function SettingsPopup() {
     const dispatch = useAppDispatch()
@@ -139,6 +141,26 @@ export function SettingsPopup() {
                                         )
                                     }}
                                     value={settings.textWrapping}
+                                />
+                            </div>
+
+                            <div className="settings__item">
+                                <div className="settings__item_title">
+                                    Enable Better Comments
+                                </div>
+                                <div className="settings__item_description">
+                                    Controls whether better comments is enabled
+                                </div>
+                                <Dropdown
+                                    options={['enabled', 'disabled']}
+                                    onChange={(e) => {
+                                        dispatch(
+                                            changeSettings({
+                                                betterComments: e.value,
+                                            })
+                                        )
+                                    }}
+                                    value={settings.betterComments}
                                 />
                             </div>
 

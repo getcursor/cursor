@@ -1,7 +1,7 @@
 import { Action } from '@reduxjs/toolkit'
 import { CustomTransaction } from '../../components/codemirrorHooks/dispatch'
-import { v4 as uuidv4 } from 'uuid'
 import { ExpectedError } from '../../utils'
+import { v4 as uuidv4 } from 'uuid'
 
 export interface File {
     parentFolderId: number
@@ -306,6 +306,7 @@ export interface Settings {
     useOpenAIKey?: boolean
     openAIModel?: string
     tabSize?: string
+    betterComments: string
 }
 
 export interface SettingsState {
@@ -412,6 +413,7 @@ export const initialSettingsState = {
         contextType: 'none',
         textWrapping: 'disabled',
         tabSize: undefined,
+        betterComments: 'enabled',
     },
 }
 
