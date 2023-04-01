@@ -350,9 +350,9 @@ export function ChatPopup() {
                     {/* Subtle padding to separate content from scroll bar*/}
                     <div>
                         <div className="markdownpopup__dismiss h-8 flex flex-col mt-3  items-center">
-                                <CommandBarActionTips tips={commandBarActionTips} />
+                            <CommandBarActionTips tips={commandBarActionTips} />
                         </div>
-                      <div className="chatpopup__content  px-4 overflow-auto ">
+                        <div className="chatpopup__content  px-4 overflow-auto ">
                             <div className="flex flex-col space-y-2">
                                 {markdownPopups}
                             </div>
@@ -367,7 +367,7 @@ export function ChatPopup() {
                                     <CommandBar parentCaller={'chat'} />
                                 )}
                             </div>
-                      </div>
+                        </div>
                     </div>
                     {isChatHistoryOpen && (
                         <ChatHistory onSelect={handleSelectHistory} />
@@ -761,7 +761,7 @@ function formatPromptTime(sentAt: number): string {
     const hours = date.getHours()
     const minutes = date.getMinutes()
     const ampm = hours >= 12 ? 'pm' : 'am'
-    const formattedHours = hours % 12  ? 12 : hours % 12
+    const formattedHours = hours % 12 ? 12 : hours % 12
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
     return `${formattedHours}:${formattedMinutes}${ampm}`
 }
