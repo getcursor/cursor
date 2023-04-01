@@ -76,7 +76,6 @@ export function XTermComponent({
             return true
         })
 
-        connector.registerIncData(id, handleIncomingData)
         const wrappedCallback = connector.registerIncData(
             id,
             handleIncomingData
