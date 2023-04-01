@@ -57,14 +57,13 @@ const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
     app.quit()
 } else {
-    app.on('second-instance', (event, commandLine, workingDirectory) => {
+    app.on('second-instance', (_event, commandLine) => {
         // Someone tried to run a second instance, we should focus our window.
         if (main_window) {
             if (main_window.isMinimized()) main_window.restore()
             main_window.focus()
         }
         const url = commandLine.pop()
-        // dialog.showErrorBox('Welcome Back (in app already)', `You arrived from: ${url}`)
         if (url) {
             setupTokens(url)
         }
@@ -79,8 +78,7 @@ if (require('electron-squirrel-startup')) {
     app.quit()
 }
 
-app.on('open-url', (event, url) => {
-    // dialog.showErrorBox('Welcome (first time i think)', `You arrived from: ${url}`)
+app.on('open-url', (_event, url) => {
     if (url) {
         setupTokens(url)
     }
@@ -196,7 +194,7 @@ const createWindow = () => {
     ipcMain.handle(
         'setCookies',
         async (
-            event: IpcMainInvokeEvent,
+            _event: IpcMainInvokeEvent,
             cookieObject: { url: string; name: string; value: string }
         ) => {
             await main_window.webContents.session.cookies.set(cookieObject)
@@ -421,7 +419,7 @@ const createWindow = () => {
     ipcMain.handle(
         'get_folder',
         async function (
-            event: any,
+            _event: any,
             folderName: string,
             children: string[],
             origDepth: number,
@@ -495,20 +493,18 @@ const createWindow = () => {
 
     log.info('setting up handle getClipboard')
     ipcMain.handle('getClipboard', function (_event: any) {
-        const clip = clipboard.readText()
-        return clip
+        return clipboard.readText()
     })
 
-    ipcMain.handle('saveUploadPreference', function (event: any, arg: string) {
+    ipcMain.handle('saveUploadPreference', function (_event: any, arg: string) {
         store.set('uploadPreferences', arg)
     })
 
     ipcMain.handle('getUploadPreference', function (_event: any) {
         if (store.has('uploadPreferences')) {
             return store.get('uploadPreferences')
-        } else {
-            return false
         }
+        return false
     })
 
     ipcMain.handle('createTutorDir', function (_event: any) {
@@ -527,7 +523,7 @@ const createWindow = () => {
         return toCopyTo
     })
 
-    ipcMain.handle('checkSave', function (event: Event, filePath: string) {
+    ipcMain.handle('checkSave', function (_event: Event, filePath: string) {
         const iconPath = path.join(__dirname, 'assets', 'icon', 'icon128.png')
         const basename = path.basename(filePath)
         const options = {
@@ -591,9 +587,7 @@ const createWindow = () => {
         let data = ''
         try {
             data = await fileSystem.readFileSync(filePath, encoding)
-        } catch {
-            data = ''
-        }
+        } catch { /* empty */ }
         return data
     })
 
@@ -653,7 +647,7 @@ const createWindow = () => {
     )
     ipcMain.handle(
         'checkFileExists',
-        async function (event: Event, path: string) {
+        async function (_event: Event, path: string) {
             // check if the file exists on disk
             const fileExists = await fileSystem.existsSync(path)
             return fileExists
@@ -664,7 +658,7 @@ const createWindow = () => {
         return app.getVersion()
     })
 
-    ipcMain.handle('save_folder', async function (event: Event, arg: string) {
+    ipcMain.handle('save_folder', async function (_event: Event, arg: string) {
         // save the file
         log.info('Trying to save the file', arg)
         // create a new folder if it doesn't exist
@@ -675,7 +669,7 @@ const createWindow = () => {
         return true
     })
 
-    ipcMain.handle('saveProject', function (event: Event, data: any) {
+    ipcMain.handle('saveProject', function (_event: Event, data: any) {
         if (store.has('projectPath')) {
             store.delete('projectPath')
         }
@@ -686,7 +680,7 @@ const createWindow = () => {
     ipcMain.handle(
         'rename_file',
         async function (
-            event: Event,
+            _event: Event,
             arg: { old_path: string; new_path: string }
         ) {
             // rename the file
@@ -698,7 +692,7 @@ const createWindow = () => {
     ipcMain.handle(
         'rename_folder',
         async function (
-            event: Event,
+            _event: Event,
             arg: { old_path: string; new_path: string }
         ) {
             // rename the folder
@@ -882,7 +876,7 @@ const createWindow = () => {
         }
     )
 
-    ipcMain.handle('delete_file', async function (event: Event, path: string) {
+    ipcMain.handle('delete_file', async function (_event: Event, path: string) {
         // delete the file
         await fileSystem.unlinkSync(path)
         return true
@@ -907,7 +901,7 @@ const createWindow = () => {
     ipcMain.handle(
         'set_remote_file_system',
         async function (
-            event: any,
+            _event: any,
             arg: { sshCommand: string; remotePath: string }
         ) {
             // set the remote file system
@@ -1050,5 +1044,3 @@ app.on('ready', createWindow)
 app.on('window-all-closed', () => {
     app.quit()
 })
-
-export {}
