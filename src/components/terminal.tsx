@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
@@ -12,10 +12,18 @@ import { faTimes, faPlus, faTerminal } from '@fortawesome/free-solid-svg-icons'
 import { throttleCallback } from './componentUtils'
 import { faChevronDown, faChevronUp } from '@fortawesome/pro-regular-svg-icons'
 
-export function XTermComponent({ height, id }: { height: number; id: number }) {
+export function XTermComponent({
+    height,
+    id,
+    terminalInstance,
+}: {
+    height: number
+    id: number
+    terminalInstance: Terminal
+}) {
     const terminalRef = useRef<HTMLDivElement>(null)
     const searchBarInputRef = useRef<HTMLInputElement>(null)
-    const terminal = useRef<Terminal | null>(null)
+    const terminal = useRef<Terminal>(terminalInstance)
     const fitAddon = useRef<FitAddon>(new FitAddon())
     const webLinksAddon = useRef<WebLinksAddon>(
         new WebLinksAddon((event: MouseEvent, url: string) => {
@@ -31,7 +39,7 @@ export function XTermComponent({ height, id }: { height: number; id: number }) {
 
     const handleIncomingData = useCallback(
         (e: { id: number }, data: any) => {
-            if (e.id === id && terminal.current) {
+            if (e.id === id) {
                 terminal.current.write(data)
             }
         },
@@ -39,15 +47,11 @@ export function XTermComponent({ height, id }: { height: number; id: number }) {
     )
 
     useEffect(() => {
-        terminal.current = new Terminal({
-            theme: {
-                background: '#1e1e1e',
-                foreground: '#f1f1f1',
-            },
-        })
-        terminal.current.onResize((size: { cols: number; rows: number }) => {
-            connector.terminalResize(id, size)
-        })
+        const resizeDisposable = terminal.current.onResize(
+            (size: { cols: number; rows: number }) => {
+                connector.terminalResize(id, size)
+            }
+        )
 
         terminal.current.loadAddon(fitAddon.current)
         terminal.current.loadAddon(webLinksAddon.current)
@@ -55,11 +59,9 @@ export function XTermComponent({ height, id }: { height: number; id: number }) {
 
         if (terminalRef.current) {
             terminal.current.open(terminalRef.current)
-            // Send a single newline character to the terminal when it is first opened
-            connector.terminalInto(id, '\n')
         }
 
-        terminal.current.onData((e) => {
+        const dataDisposable = terminal.current.onData((e) => {
             connector.terminalInto(id, e)
         })
 
@@ -75,17 +77,20 @@ export function XTermComponent({ height, id }: { height: number; id: number }) {
         })
 
         connector.registerIncData(id, handleIncomingData)
+        const wrappedCallback = connector.registerIncData(
+            id,
+            handleIncomingData
+        )
 
         // Make the terminal's size and geometry fit the size of #terminal-container
         fitAddon.current.fit()
 
         return () => {
-            if (terminal.current) {
-                terminal.current.dispose()
-            }
-            connector.deregisterIncData(id, handleIncomingData)
+            dataDisposable.dispose()
+            resizeDisposable.dispose()
+            connector.deregisterIncData(id, wrappedCallback)
         }
-    }, [terminalRef, id, handleIncomingData])
+    }, [id, terminalInstance])
 
     useEffect(() => {
         if (terminal.current != null) {
@@ -186,6 +191,7 @@ export function XTermComponent({ height, id }: { height: number; id: number }) {
 
 type TerminalWrapper = {
     id: number
+    terminalInstance: Terminal
 }
 
 type TerminalTabsProps = {
@@ -242,17 +248,36 @@ export const BottomTerminal: React.FC = () => {
         (state: FullState) => state.global.rootPath
     )
 
-    const [terminals, setTerminals] = React.useState([{ id: 0 }])
-    const [activeTerminal, setActiveTerminal] = React.useState(terminals[0])
+    const [terminals, setTerminals] = React.useState<TerminalWrapper[]>([
+        {
+            id: 0,
+            terminalInstance: new Terminal({
+                theme: {
+                    background: '#1e1e1e',
+                    foreground: '#f1f1f1',
+                },
+            }),
+        },
+    ])
+    const [activeTerminal, setActiveTerminal] = React.useState<TerminalWrapper>(
+        terminals[0]
+    )
 
-    const [terminalOpen, setTerminalOpen] = React.useState(false)
-
-    const addTerminal = () => {
+    const addTerminal = async () => {
         if (terminals.length >= 10) {
             return
         }
-        connector.createNewTerminal()
-        const newTerminal = { id: Math.max(...terminals.map((t) => t.id)) + 1 }
+        const newTerminalId = await connector.createNewTerminal()
+        const newTerminalInstance = new Terminal({
+            theme: {
+                background: '#1e1e1e',
+                foreground: '#f1f1f1',
+            },
+        })
+        const newTerminal: TerminalWrapper = {
+            id: newTerminalId,
+            terminalInstance: newTerminalInstance,
+        }
         setTerminals([...terminals, newTerminal])
         setActiveTerminal(newTerminal)
     }
@@ -264,6 +289,10 @@ export const BottomTerminal: React.FC = () => {
                     (terminal) => terminal.id !== terminalToRemove.id
                 )
             )
+            // Send SIGKILL to the terminal
+            connector.sendSigKill(terminalToRemove.id)
+            // Dispose the Terminal object
+            terminalToRemove.terminalInstance.dispose()
             if (activeTerminal.id === terminalToRemove.id) {
                 setActiveTerminal(terminals[0] || {})
             }
@@ -274,14 +303,7 @@ export const BottomTerminal: React.FC = () => {
 
     const switchTerminal = (terminal: TerminalWrapper) => {
         setActiveTerminal(terminal)
-        connector.sendSigCont(terminal.id)
     }
-
-    useEffect(() => {
-        if (terminalOpenSelector) {
-            setTerminalOpen(true)
-        }
-    }, [terminalOpenSelector])
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -332,7 +354,7 @@ export const BottomTerminal: React.FC = () => {
 
     return (
         <>
-            {terminalOpen ? (
+            {terminalOpenSelector ? (
                 <div className="terminalOuterContainer">
                     <div
                         className="dragHandle"
@@ -378,6 +400,9 @@ export const BottomTerminal: React.FC = () => {
                                                 terminalInnerContainerHeight
                                             }
                                             id={terminal.id}
+                                            terminalInstance={
+                                                terminal.terminalInstance
+                                            }
                                         />
                                     )
                             )}

@@ -33,6 +33,9 @@ export function setupTerminal(
                 env: filteredEnv,
             })
             ptyProcess = res
+            if (newTerminalId === 0) {
+                ptyProcess.write('\n')
+            }
             break
         } catch (e) {
             // ignore errors
@@ -54,8 +57,8 @@ export function setupTerminal(
         ptyProcess.resize(size.cols, size.rows)
     })
 
-    ipcMain.handle(`terminal-sigcont-${newTerminalId}`, (event) => {
-        ptyProcess.kill('SIGCONT')
+    ipcMain.handle(`terminal-sigkill-${newTerminalId}`, (event) => {
+        ptyProcess.kill('SIGKILL')
     })
 
     ptyProcess.on('data', (data: any) => {

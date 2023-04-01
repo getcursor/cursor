@@ -959,7 +959,7 @@ const createWindow = () => {
             setupTerminal(main_window, terminalCounter)
         }
         terminalCounter++
-        return terminalCounter
+        return terminalCounter - 1
     }
 
     ipcMain.handle('create-new-terminal', (event) => {

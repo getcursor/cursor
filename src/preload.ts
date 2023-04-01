@@ -130,6 +130,7 @@ export const clientPreloads = () => {
     }
 }
 const info = getPlatformInfo()
+
 const electronConnector = {
     PLATFORM_DELIMITER: info.PLATFORM_DELIMITER,
     PLATFORM_META_KEY: info.PLATFORM_META_KEY,
@@ -182,19 +183,15 @@ const electronConnector = {
         ipcRenderer.on('openRemotePopup', callback),
 
     registerIncData(id: number, callback: (event: any, data: any) => void) {
-        ipcRenderer.on(`terminal-incData-${id}`, (event: any, data: any) => {
+        const wrappedCallback = (event: any, data: any) => {
             callback({ ...event, id }, data)
-        })
+        }
+        ipcRenderer.on(`terminal-incData-${id}`, wrappedCallback)
+        return wrappedCallback
     },
+
     deregisterIncData(id: number, callback: (event: any, data: any) => void) {
-        ipcRenderer.removeListener(
-            `terminal-incData-${id}`,
-            (event: any, data: any) => {
-                if (event.id === id) {
-                    callback(event, data)
-                }
-            }
-        )
+        ipcRenderer.removeListener(`terminal-incData-${id}`, callback)
     },
     terminalInto: (terminalId: number, data: any) =>
         ipcRenderer.invoke(`terminal-into-${terminalId}`, data),
@@ -204,8 +201,8 @@ const electronConnector = {
         const terminalId = await ipcRenderer.invoke('create-new-terminal')
         return terminalId
     },
-    sendSigCont(terminalId: number) {
-        ipcRenderer.invoke(`terminal-sigcont-${terminalId}`)
+    sendSigKill(terminalId: number) {
+        ipcRenderer.invoke(`terminal-sigkill-${terminalId}`)
     },
     terminalResize: (terminalId: number, data: any) =>
         ipcRenderer.invoke(`terminal-resize-${terminalId}`, data),
@@ -433,7 +430,7 @@ const electronConnector = {
     },
     registerCloseErrors(callback: Callback) {
         ipcRenderer.on('closeErrors', callback)
-    }
+    },
 }
 
 contextBridge.exposeInMainWorld('connector', electronConnector)
