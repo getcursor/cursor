@@ -104,13 +104,6 @@ export default function setupMainMenu() {
                     click: () => {
                         mainWindow.win?.webContents.send('zoom_in')
                     },
-                    accelerator: META_KEY + '+Plus',
-                },
-                {
-                    label: 'Zoom In',
-                    click: () => {
-                        mainWindow.win?.webContents.send('zoom_in')
-                    },
                     accelerator: META_KEY + '+=',
                 },
                 {
