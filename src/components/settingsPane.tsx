@@ -219,8 +219,9 @@ export function OpenAILoginPanel({ onSubmit }: { onSubmit: () => void }) {
                 changeSettings({
                     openAIKey: localAPIKey,
                     useOpenAIKey: true,
-                    openAIModel: models.at(0) ?? null
-                }))
+                    openAIModel: models.at(0) ?? null,
+                })
+            )
             onSubmit()
         }
     }, [dispatch, localAPIKey])
@@ -346,11 +347,11 @@ export function OpenAIPanel() {
                 changeSettings({
                     openAIKey: localAPIKey,
                     useOpenAIKey: true,
-                    openAIModel: models.at(0) ?? null
-                }))
+                    openAIModel: models.at(0) ?? null,
+                })
+            )
         }
     }, [dispatch, localAPIKey])
-
 
     return (
         <div className="settings__item">
@@ -485,13 +486,13 @@ export function CursorLogin({
                     <div className="copilot__signin">
                         <button onClick={signOut}>Log out</button>
                         {showSettings && (
-                    <>
-                        <br />
-                        <button onClick={openAccountSettings}>
-                            Manage settings
-                        </button>
-                    </>
-                )}
+                            <>
+                                <br />
+                                <button onClick={openAccountSettings}>
+                                    Manage settings
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             )
@@ -499,20 +500,22 @@ export function CursorLogin({
             currentPanel = (
                 <>
                     <div className="settings__item">
-                        <div className="settings__item_title">Cursor Account</div>
+                        <div className="settings__item_title">
+                            Cursor Account
+                        </div>
                         <div className="settings__item_description">
                             Login to use the AI without an API key
                         </div>
                         <div className="copilot__signin">
                             <button onClick={signOut}>Log out</button>
                             {showSettings && (
-                    <>
-                        <br />
-                        <button onClick={openAccountSettings}>
-                            Manage settings
-                        </button>
-                    </>
-                )}
+                                <>
+                                    <br />
+                                    <button onClick={openAccountSettings}>
+                                        Manage settings
+                                    </button>
+                                </>
+                            )}
                             <br />
                         </div>
                     </div>
@@ -522,7 +525,7 @@ export function CursorLogin({
                             Upgrade for unlimited generations
                         </div>
                         <div className="copilot__signin">
-                        <button onClick={upgrade}>Upgrade to Pro</button>
+                            <button onClick={upgrade}>Upgrade to Pro</button>
                         </div>
                     </div>
                 </>
@@ -530,9 +533,7 @@ export function CursorLogin({
         }
     }
 
-    return (
-            currentPanel
-    )
+    return currentPanel
 }
 
 function CopilotPanel() {

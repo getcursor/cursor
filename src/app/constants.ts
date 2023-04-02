@@ -4,7 +4,11 @@ import {
     faTimes,
 } from '@fortawesome/free-solid-svg-icons'
 import { faChevronsLeft } from '@fortawesome/pro-regular-svg-icons'
-import { setChatOpen, toggleChatHistory } from '../features/chat/chatSlice'
+import {
+    setChatHistoryOpen,
+    setChatOpen,
+    toggleChatHistory,
+} from '../features/chat/chatSlice'
 import { store } from './store'
 
 export type Tip = [string, string, IconDefinition, () => void]
@@ -24,5 +28,11 @@ export const ActionTips: ActionTipsInterface = {
         'Cmd+H',
         faChevronsLeft,
         () => store.dispatch(toggleChatHistory()),
+    ],
+    CLOSE_HISTORY_DIRECTLY: [
+        'Close History Directly',
+        '',
+        faTimes,
+        () => store.dispatch(setChatHistoryOpen(false)),
     ],
 }

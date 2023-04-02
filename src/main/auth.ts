@@ -221,7 +221,7 @@ export async function login() {
 }
 
 export async function signup() {
-    await shell.openExternal(addRandomQueryParam(signUpUrl))    
+    await shell.openExternal(addRandomQueryParam(signUpUrl))
 }
 
 export async function pay() {

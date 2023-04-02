@@ -53,6 +53,11 @@ import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete'
 
 import Modal from 'react-modal'
 
+export enum historyPosition {
+    COMMAND_BAR = 'COMMAND_BAR',
+    CHAT_POPUP = 'CHAT_POPUP',
+}
+
 export function PreBlock({ children }: { children: ReactNode | ReactNode[] }) {
     function getResult(child: ReactNode) {
         if (React.isValidElement(child)) {
@@ -350,9 +355,9 @@ export function ChatPopup() {
                     {/* Subtle padding to separate content from scroll bar*/}
                     <div>
                         <div className="markdownpopup__dismiss h-8 flex flex-col mt-3  items-center">
-                                <CommandBarActionTips tips={commandBarActionTips} />
+                            <CommandBarActionTips tips={commandBarActionTips} />
                         </div>
-                      <div className="chatpopup__content  px-4 overflow-auto ">
+                        <div className="chatpopup__content  px-4 overflow-auto ">
                             <div className="flex flex-col space-y-2">
                                 {markdownPopups}
                             </div>
@@ -367,10 +372,12 @@ export function ChatPopup() {
                                     <CommandBar parentCaller={'chat'} />
                                 )}
                             </div>
-                      </div>
+                        </div>
                     </div>
                     {isChatHistoryOpen && (
-                        <ChatHistory onSelect={handleSelectHistory} />
+                        <div className="w-80">
+                            <ChatHistory onSelect={handleSelectHistory} />
+                        </div>
                     )}
                 </div>
             )}
@@ -761,7 +768,7 @@ function formatPromptTime(sentAt: number): string {
     const hours = date.getHours()
     const minutes = date.getMinutes()
     const ampm = hours >= 12 ? 'pm' : 'am'
-    const formattedHours = hours % 12  ? 12 : hours % 12
+    const formattedHours = hours % 12 ? 12 : hours % 12
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes
     return `${formattedHours}:${formattedMinutes}${ampm}`
 }
@@ -781,19 +788,30 @@ function formatPromptPreview(prompt: string): string {
 function ChatHistory(props: {
     onSelect?: (id: string) => void
     onClose?: () => void
+    position?: historyPosition
 }) {
+    const { onSelect, position = historyPosition.CHAT_POPUP } = props
     const conversationIds = useAppSelector(csel.getConversationIds)
     const conversationPrompts = useAppSelector(
         csel.getConversationPrompts(conversationIds, 'reverse')
     )
 
+    const tips = useMemo(() => {
+        switch (position) {
+            case historyPosition.CHAT_POPUP:
+                return ActionTips.CLOSE_HISTORY
+            case historyPosition.COMMAND_BAR:
+                return ActionTips.CLOSE_HISTORY_DIRECTLY
+            default:
+                return ActionTips.CLOSE_HISTORY
+        }
+    }, [])
+
     return (
-        <div className="flex flex-col items-center w-80 select-none">
-            <button className="w-full" onClick={props.onClose}>
-                <CommandBarActionTips
-                    align="right"
-                    tips={[ActionTips.CLOSE_HISTORY]}
-                />
+        <div className="flex flex-col items-center select-none mt-2.5 h-full">
+            {/* <button className="w-full" onClick={props.onClose}> */}
+            <button className="w-full">
+                <CommandBarActionTips align="right" tips={[tips]} />
             </button>
             <div className="flex flex-col w-full items-center space-y-1 mt-1 overflow-auto">
                 {conversationPrompts.map((msg) => {
@@ -801,7 +819,7 @@ function ChatHistory(props: {
                         <button
                             key={msg.conversationId}
                             className="w-full bg-neutral-600 rounded-sm px-4 py-2"
-                            onClick={() => props.onSelect?.(msg.conversationId)}
+                            onClick={() => onSelect?.(msg.conversationId)}
                         >
                             <div
                                 className={
@@ -830,6 +848,13 @@ export function CommandBar({
 }) {
     const dispatch = useAppDispatch()
 
+    const handleSelectHistory = (id: string) => {
+        dispatch(cs.toggleChatHistory())
+        dispatch(cs.setCurrentConversation(id))
+    }
+    const msgType = useAppSelector(csel.getMsgType)
+    const isChatHistoryOpen = useAppSelector<boolean>(csel.getHistoryStatus)
+
     const customStyles = {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -854,7 +879,7 @@ export function CommandBar({
     }
 
     const commandBarOpen = useAppSelector(csel.getIsCommandBarOpen)
-    const isChatHistoryAvailable = useAppSelector(
+    const _isChatHistoryAvailable = useAppSelector(
         csel.getIsChatHistoryAvailable
     )
 
@@ -869,7 +894,7 @@ export function CommandBar({
                     style={customStyles}
                 >
                     <div className="tipArea">
-                        Previous
+                        For Chat History Using
                         <div className="tipKeyCommand">
                             Ctrl+Shift+
                             <FontAwesomeIcon icon={faArrowUp} />
@@ -882,6 +907,14 @@ export function CommandBar({
                             </div>
                         </div>
                     </div>
+                    {isChatHistoryOpen && msgType === 'freeform' && (
+                        <div className="h-96">
+                            <ChatHistory
+                                onSelect={handleSelectHistory}
+                                position={historyPosition.COMMAND_BAR}
+                            />
+                        </div>
+                    )}
                 </Modal>
             ) : (
                 <div className="commandBar__container">
