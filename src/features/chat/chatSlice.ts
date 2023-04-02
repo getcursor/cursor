@@ -320,6 +320,7 @@ export const chatSlice = createSlice({
         openCommandBar(chatState: ChatState) {
             chatState.isCommandBarOpen = true
             chatState.chatIsOpen = false
+            chatState.chatHistoryIsOpen = true
             const newConversationId = uuidv4()
 
             chatState.currentConversationId = newConversationId
@@ -525,18 +526,26 @@ export const chatSlice = createSlice({
                 chatState.commandBarHistoryIndex
 
             const historyMessage = chatState.userMessages.at(index)
+            const currentConversationId = chatState.currentConversationId
+            const currentDraftMessage =
+                chatState.draftMessages[currentConversationId]
             if (historyMessage) {
                 // chatState.currentConversationId = historyMessage.conversationId
-                const currentConversationId = chatState.currentConversationId
-                const currentDraftMessage =
-                    chatState.draftMessages[currentConversationId]
                 currentDraftMessage.message = historyMessage.message
+            } else {
+                currentDraftMessage.message = ''
             }
             // if (historyMessage) {
             //     chatState.commandBarText = historyMessage.message
             // } else {
             //     chatState.commandBarText = ''
             // }
+        },
+        setChatHistoryOpen(
+            chatState: ChatState,
+            action: PayloadAction<boolean>
+        ) {
+            chatState.chatHistoryIsOpen = action.payload
         },
     },
 })
@@ -577,4 +586,5 @@ export const {
     _submitCommandBar: dummySubmitCommandBar,
     // Bad - I added tech debt and will fix later
     setMaxOrigLine,
+    setChatHistoryOpen,
 } = chatSlice.actions

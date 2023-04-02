@@ -416,7 +416,7 @@ const electronConnector = {
     },
     registerCloseErrors(callback: Callback) {
         ipcRenderer.on('closeErrors', callback)
-    }
+    },
 }
 
 contextBridge.exposeInMainWorld('connector', electronConnector)
