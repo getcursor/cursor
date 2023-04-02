@@ -158,3 +158,6 @@ export const getIsChatHistoryAvailable = createSelector(
 export const getFireCommandK = (state: FullState) =>
     state.chatState.fireCommandK
 export const getMsgType = (state: FullState) => state.chatState.msgType
+
+export const getHistoryStatus = (state: FullState) =>
+    state.chatState.chatHistoryIsOpen
