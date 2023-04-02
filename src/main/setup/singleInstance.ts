@@ -1,5 +1,5 @@
 import { app } from 'electron'
-import mainWindow from '../mainWindow'
+import mainWindow from '../window'
 import { setupTokens } from '../auth'
 
 export default function setupSingleInstance() {

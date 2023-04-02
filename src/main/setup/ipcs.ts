@@ -9,7 +9,7 @@ import path from 'path';
 
 import { File, Folder, Settings } from '../../features/window/state';
 import { FileSystem, fileSystem, setFileSystem } from '../fileSystem';
-import mainWindow from '../mainWindow';
+import mainWindow from '../window';
 import { store } from '../storeHandler';
 import { resourcesDir } from '../utils';
 

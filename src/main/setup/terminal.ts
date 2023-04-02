@@ -1,4 +1,4 @@
-import mainWindow from '../mainWindow'
+import mainWindow from '../window'
 import { store } from '../storeHandler'
 import { setupTerminal as setup } from '../terminal'
 

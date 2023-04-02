@@ -1,6 +1,6 @@
 import { Menu, MenuItemConstructorOptions, app } from "electron"
 import { META_KEY } from "./utils"
-import mainWindow from "./mainWindow"
+import mainWindow from "./window"
 
 export default function setupMainMenu() {
     let menuList: any[] = []

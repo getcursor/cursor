@@ -1,6 +1,6 @@
 import { dialog } from "electron";
 import { isAppInApplicationsFolder } from "../utils";
-import mainWindow from "../mainWindow";
+import mainWindow from "../window";
 
 export default function setupApplicationsFolder() {
 
