@@ -729,7 +729,7 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
                  *  公司：神策数据
                  *  修改时间：2023年4月5号
                  */
-                if (!e.shiftKey && e.key === 'Enter' && e.keycode == 13) {
+                if (!e.shiftKey && e.key === 'Enter' && e.keyCode == 13) {
                     // Don't submit an empty prompt
                     if (textareaRef.current.value!.value.trim().length > 0) {
                         dispatch(ct.submitCommandBar(null))
