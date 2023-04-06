@@ -723,7 +723,13 @@ export function CommandBarInner({ autofocus }: { autofocus: boolean }) {
             // ref = {textareaRef}
             innerRef={(ref) => void (textareaRef.current.value = ref)}
             onKeyDown={(e) => {
-                if (!e.shiftKey && e.key === 'Enter') {
+                /**
+                 *  问题 兼容中文输入法时的冲突问题，中文输入法时enter键对应keycode是229，中文输入法关闭的时候keycode为13，所以增加一个keycode为13的条件即能解决此问题
+                 *  修改人：方晓
+                 *  公司：神策数据
+                 *  修改时间：2023年4月5号
+                 */
+                if (!e.shiftKey && e.key === 'Enter' && e.keyCode == 13) {
                     // Don't submit an empty prompt
                     if (textareaRef.current.value!.value.trim().length > 0) {
                         dispatch(ct.submitCommandBar(null))
