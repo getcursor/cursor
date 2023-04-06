@@ -16,3 +16,10 @@ export const rgLoc = path.join(
 )
 
 export const PLATFORM_INFO = getPlatformInfo()
+
+export const isAppInApplicationsFolder =
+    app.getPath('exe').includes('Applications') ||
+    !app.isPackaged ||
+    process.platform !== 'darwin'
+
+export const META_KEY = process.platform === 'darwin' ? 'Cmd' : 'Ctrl'
