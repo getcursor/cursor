@@ -1,10 +1,10 @@
 name: CI
 
 on:
-    pull_request:
+    push:
         branches:
             - main
-    push:
+    pull_request:
         branches:
             - main
 
@@ -18,10 +18,7 @@ jobs:
 
         strategy:
             matrix:
-                os:
-                    - macos-latest
-                    - ubuntu-latest
-                    - windows-latest
+                os: [macos-latest, ubuntu-latest, windows-latest]
 
         runs-on: ${{matrix.os}}
 
