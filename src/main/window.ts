@@ -98,7 +98,7 @@ class MainWindow {
         globalShortcut.register(META_KEY + '+M', () => {
             this.win?.minimize()
         })
-    
+
         globalShortcut.register(META_KEY + '+Shift+M', () => {
             if (this.win?.isMaximized()) {
                 this.win.restore()
@@ -106,7 +106,6 @@ class MainWindow {
                 this.win?.maximize()
             }
         })
-    
     }
 }
 

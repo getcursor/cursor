@@ -1,17 +1,24 @@
 import {
-    app, BrowserWindow, clipboard, dialog, ipcMain, IpcMainInvokeEvent, Menu,
-    MenuItemConstructorOptions, shell
-} from 'electron';
-import log from 'electron-log';
-import * as fs from 'fs';
-import { machineIdSync } from 'node-machine-id';
-import path from 'path';
+    app,
+    BrowserWindow,
+    clipboard,
+    dialog,
+    ipcMain,
+    IpcMainInvokeEvent,
+    Menu,
+    MenuItemConstructorOptions,
+    shell,
+} from 'electron'
+import log from 'electron-log'
+import * as fs from 'fs'
+import { machineIdSync } from 'node-machine-id'
+import path from 'path'
 
-import { File, Folder, Settings } from '../../features/window/state';
-import { FileSystem, fileSystem, setFileSystem } from '../fileSystem';
-import mainWindow from '../window';
-import { store } from '../storeHandler';
-import { resourcesDir } from '../utils';
+import { File, Folder, Settings } from '../../features/window/state'
+import { FileSystem, fileSystem, setFileSystem } from '../fileSystem'
+import mainWindow from '../window'
+import { store } from '../storeHandler'
+import { resourcesDir } from '../utils'
 
 // TODO: These IPCs should be separated into different modules.
 export default function setupIpcs() {

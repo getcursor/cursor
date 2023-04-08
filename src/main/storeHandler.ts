@@ -3,8 +3,8 @@ import { IpcMainInvokeEvent, ipcMain } from 'electron'
 import Store from 'electron-store'
 export const store = new Store()
 
- // check if store has uploadPreferences, if not, then ask the user for them
- if (store.get('uploadPreferences') == undefined) {
+// check if store has uploadPreferences, if not, then ask the user for them
+if (store.get('uploadPreferences') == undefined) {
     store.set('uploadPreferences', false)
 }
 
