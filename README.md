@@ -32,7 +32,9 @@ Long term, our plan is to build Cursor into the world's most productive developm
 
 ## Development
 
-We welcome PRs :) To get started:
+(This repo currently houses our `0.1.x` branch)
+
+To get started:
 
 ```
 git clone git@github.com:getcursor/cursor.git
