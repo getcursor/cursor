@@ -67,8 +67,6 @@ export const createTheme = ({ settings, styles }: CreateThemeOptions): any => {
     const extension = [syntaxHighlighting(highlightStyle)]
 
     return { themeOptions, extension }
-
-    return extension
 }
 
 interface CreateThemeOptions {
