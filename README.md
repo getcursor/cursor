@@ -4,13 +4,13 @@
 
 This is an issues-only repo for **[Cursor](https://cursor.so), an editor made for programming with AI.** 
 
+Creating new tickets for bugs or feature requests is much appreciated 🙂 Feel free to react to the ones you'd like us to prioritize. Our goal is to make Cursor work great for you, and your feedback is super helpful.
+
 <p align="center">
 <a href="https://cursor.so/">
 <img src="https://user-images.githubusercontent.com/4297743/235380904-b2efe56f-4e73-4d6b-82dd-98b414f53687.png" width="800"><br>
 </a>
 </p>
-
-Creating new issues for bugs or feature requests is much appreciated 🙂 Feel free to react to the ones you'd like us to prioritize. Our goal is to make Cursor work great for you, and your feedback is super helpful.
 
 ## Getting Started
 
