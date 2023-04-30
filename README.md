@@ -11,7 +11,7 @@ This is an issues-only repo for **[Cursor](https://cursor.so), an editor made fo
 
 <p align="center">
 <a href="https://cursor.so/">
-<img src="https://user-images.githubusercontent.com/4297743/227696390-0c1886c7-0cda-4528-9259-0b2944892d4c.png" width="1000"><br>
+<img src="https://user-images.githubusercontent.com/4297743/235380904-b2efe56f-4e73-4d6b-82dd-98b414f53687.png" width="800"><br>
 </a>
 </p>
 
@@ -36,4 +36,6 @@ Long term, our plan is to build Cursor into the world's most productive developm
 
 ## OSS
 
-We'd previously open-sourced our old Codemirror-based editor. You can find that code [here](https://github.com/getcursor/cursor-codemirror). The newest versions of Cursor are not yet open-source; if you'd much prefer we open-source the editor, feel free to reach out to admin@cursor.so.
+We'd previously open-sourced our old Codemirror-based editor. You can find that code [here](https://github.com/getcursor/cursor-codemirror).
+
+The VSCodeium-based versions of Cursor are not yet open-source; if you'd much prefer we open-source the editor, feel free to reach out to admin@cursor.so.
