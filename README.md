@@ -2,14 +2,9 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/getcursor/cursor/blob/main/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]() [![](https://dcbadge.vercel.app/api/server/PJEgRywgRy?style=flat&compact=true)](https://discord.gg/PJEgRywgRy)
 
-This is an issues-only repo for **[Cursor](https://cursor.so), an editor made for programming with AI.** Feel free to file tickets for bugs or feature requests. You can upvote 👍 the ones you'd like us to prioritize. 
+This is an issues-only repo for **[Cursor](https://cursor.so), an editor made for programming with AI.** 
 
-It's early days, but right now Cursor can help you with a few things...
-
--   **Chat**: Talk with a ChatGPT-like bot that sees your current file
--   **Edit**: Ask the AI to change a block of code, see an inline diff of the edits
--   **Debug**: Hover over linter errors to auto-fix them
--   **Write**: Generate entire codebases from short English descriptions 
+Creating new issues for bugs or feature requests is much appreciated 🙂 Feel free to react to the ones you'd like us to prioritize. Our goal is to make Cursor work great for you, and your feedback is super helpful.
 
 <p align="center">
 <a href="https://cursor.so/">
@@ -20,6 +15,15 @@ It's early days, but right now Cursor can help you with a few things...
 ## Getting Started
 
 Head over to [our website](https://cursor.so/) to download and try out the editor.
+
+## Features
+
+It's early days, but right now Cursor can help you with a few things...
+
+-   **Chat**: Talk with a ChatGPT-like bot that sees your current file
+-   **Edit**: Ask the AI to change a block of code, see an inline diff of the edits
+-   **Debug**: Hover over linter errors to auto-fix them
+-   **Write**: Generate entire codebases from short English descriptions 
 
 ## Roadmap
 
