@@ -15,15 +15,11 @@ This is an issues-only repo for **[Cursor](https://cursor.so), an editor made fo
 </a>
 </p>
 
+Feel free to file tickets for bugs or feature requests. You can upvote 👍 the ones you'd like us to prioritize. 
+
 ## Getting Started
 
 Head over to [our website](https://cursor.so/) to download and try out the editor.
-
-## Contributing
-
-We appreciate any and all feedback 🙂 Our goal is to make Cursor work great for you
-
-Feel free to file tickets for bugs or feature requests. You can upvote 👍 the ones you'd like us to prioritize.
 
 ## Roadmap
 
