@@ -1,5 +1,5 @@
 ---
-name: Please attach a screenshot to your bug report
+name: Bug Report
 about: Screenshot!
 title: ''
 labels: ''
