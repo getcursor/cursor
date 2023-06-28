@@ -20,7 +20,7 @@ Head over to [our website](https://cursor.so/) to download and try out the edito
 
 It's early days, but right now Cursor can help you with a few things...
 
--   **Chat**: Talk with a ChatGPT-like bot that sees your current file
+-   **Chat**: Talk with a ChatGPT-like bot that can see your file, terminal, and entire repo
 -   **Edit**: Ask the AI to change a block of code, see an inline diff of the edits
 -   **Debug**: Hover over linter errors to auto-fix them
 -   **Write**: Generate entire codebases from short English descriptions 
