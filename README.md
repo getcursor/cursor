@@ -38,4 +38,4 @@ Long term, our plan is to build Cursor into the world's most productive developm
 
 We'd previously open-sourced our old Codemirror-based editor. You can find that code [here](https://github.com/getcursor/cursor-codemirror).
 
-The VSCodium-based versions of Cursor are not yet open-source; if you'd much prefer we open-source the editor, feel free to reach out to admin@cursor.so.
+The VSCodium-based versions of Cursor are not yet open-source; if you'd much prefer we open-source the editor, feel free to reach out to hi@cursor.so.
