@@ -37,4 +37,4 @@ Long term, our plan is to build Cursor into the world's most productive developm
 
 We'd previously open-sourced our old Codemirror-based editor. You can find that code [here](https://github.com/getcursor/cursor-codemirror).
 
-The VSCodium-based versions of Cursor are not yet open-source; if you'd much prefer we open-source the editor, feel free to reach out to hi@cursor.so.
+The VSCodium-based version of Cursor is not open-sourced, but we may open up parts or all of it in the future. Our [prompting library](https://github.com/anysphere/priompt) is open source.
