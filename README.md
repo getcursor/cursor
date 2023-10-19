@@ -24,6 +24,8 @@ It's early days, but right now Cursor can help you with a few things...
 -   **Edit**: Ask the AI to change a block of code, see an inline diff of the edits
 -   **Debug**: Hover over linter errors or stack traces to auto-fix them
 
+[See here](https://cursor.sh/features) for more info on Cursor's features.
+
 ## Roadmap
 
 Long term, our plan is to build Cursor into the world's most productive development environment. Using LLMs, we want to do things like:
