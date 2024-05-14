@@ -1,7 +1,5 @@
 # Cursor
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/getcursor/cursor/blob/main/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]() [![](https://dcbadge.vercel.app/api/server/PJEgRywgRy?style=flat&compact=true)](https://discord.gg/PJEgRywgRy)
-
 This is an issues-only repo for **[Cursor](https://cursor.so), an editor made for programming with AI.** 
 
 Creating new tickets for bugs or feature requests is much appreciated 🙂 Feel free to react to the ones you'd like us to prioritize. Our goal is to make Cursor work great for you, and your feedback is super helpful.
