@@ -7,7 +7,7 @@ body:
     attributes:
       label: "Dupe Check"
       options:
-        - label: "I have [searched Cursor bugs](https://github.com/getcursor/cursor/issues) and there are no duplicates"
+        - label: "I have [searched Cursor bugs](https://github.com/getcursor/cursor/issues?q=is%3Aissue+label%3Abug+) and there are no duplicates"
           required: true
   - type: textarea
     id: "describe-the-bug"
