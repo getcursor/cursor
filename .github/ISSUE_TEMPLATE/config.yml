@@ -2,3 +2,5 @@ blank_issues_enabled: true
 contact_links:
   - name: Cursor Homepage
     url: https://www.cursor.com
+  - name: Cursor Changelog
+    url: https://changelog.cursor.sh/
