@@ -47,7 +47,7 @@ body:
       multiple: false
       options:
         - MacOS
-        # - Linux
+        - Linux
         # - Windows
     validations:
       required: true
