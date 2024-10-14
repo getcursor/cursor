@@ -1,0 +1,107 @@
+name: Bug Report
+description: "Found a bug? We'd appreciate if you'd first search through our open issues and docs, to make sure the issue isn't already known."
+labels: ["bug"]
+title: "bug: " 
+body:
+  - type: checkboxes
+    attributes:
+      label: "Dupe Check"
+      options:
+        - label: "I have [searched Cursor bugs](https://github.com/getcursor/cursor/issues?q=is%3Aissue+label%3Abug+) and there are no duplicates"
+          required: true
+  - type: textarea
+    id: "describe-the-bug"
+    attributes:
+      label: "Describe the bug"
+      description: "A clear and concise description of what the bug is."
+      placeholder: Tell us what you see.
+    validations:
+      required: true
+  - type: textarea
+    id: "to-reproduce"
+    attributes:
+      label: "To reproduce"
+      description: "Bug reports with clear reproduction will get prioritized higher and addressed more quickly."
+      placeholder: "Steps to reproduce: 1. Go to '...' 2. Click on '...' 3. Scroll down to '...' 4. See error '...'"
+    validations:
+      required: true
+  - type: textarea
+    id: "expected-behavior"
+    attributes:
+      label: "Expected behavior"
+      description: "A clear and concise description of what you expected to happen."
+      placeholder: Tell us what you expect to see.
+    validations:
+      required: false
+  - type: textarea
+    id: "screenshots"
+    attributes:
+      label: "Screenshots"
+      description: "If applicable, add screenshots/videos to help explain your problem. While optional, screenshots help expedite the time in which your bug is addressed."
+    validations:
+      required: false
+  - type: dropdown
+    id: "os"
+    attributes:
+      label: "Operating system"
+      multiple: false
+      options:
+        - MacOS
+        # - Linux
+        # - Windows
+    validations:
+      required: true
+  - type: textarea
+    id: "cursor-version"
+    attributes:
+      label: "Current Cursor version"
+      description: "Click on Cursor Menu->About Cursor->Copy"
+      placeholder: |
+        Version: 0.36.2
+        VSCode Version: 1.89.1
+        Commit: 9a6d781540ba2732cf26551c07629e68121c6580
+        Date: 2024-07-07T21:57:45.723Z
+        Electron: 28.2.8
+        ElectronBuildId: undefined
+        Chromium: 120.0.6099.291
+        Node.js: 18.18.2
+        V8: 12.0.267.19-electron.0
+        OS: Darwin arm64 23.5.0
+    validations:
+      required: true
+  - type: dropdown
+    id: "regression"
+    attributes:
+      label: "Regression"
+      description: "Is this a regression (used to work in a previous Cursor version)?"
+      multiple: false
+      options:
+        - "No, this bug or issue has existed throughout my experience using Cursor"
+        - "Yes, this bug started recently"
+    validations:
+      required: true
+  - type: input
+    id: "cursor-version-regression-date"
+    attributes:
+      label: "Recent working Cursor date"
+      description: "Most recent date that Cursor worked as expected"
+    validations:
+      required: false
+  - type: textarea
+    id: "additional-context"
+    attributes:
+      label: "Additional context"
+      description: "Add any other context about the problem here"
+    validations:
+      required: false
+  - type: dropdown
+    id: "blocker"
+    attributes:
+      label: "Does this block you from using Cursor IDE daily?"
+      description: "All feedback will be reviewed, even if you select 'No'."
+      multiple: false
+      options:
+        - "No"
+        - "Yes, this issue prevents me from using Cursor IDE daily."
+    validations:
+      required: true
